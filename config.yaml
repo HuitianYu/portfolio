@@ -47,7 +47,7 @@ params:
 
   # enable google crawl
   analytics:
-    googlesiteVerificationTag: ${{ process.env.GOOGLE_SITE_VERIFICATION_TAG }}
+    googlesiteVerificationTag: ${process.env.GOOGLE_SITE_VERIFICATION_TAG}
 
   # Home Page
   profileMode:
@@ -59,7 +59,7 @@ params:
     imageHeight: 220
     buttons:
       - name: Résumé
-        url: ${{ process.env.RESUME_LINK }}
+        url: "${process.env.RESUME_LINK}"
 
   # List View
   hideDescriptionInList: false
