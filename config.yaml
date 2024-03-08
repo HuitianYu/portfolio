@@ -59,7 +59,7 @@ params:
     imageHeight: 220
     buttons:
       - name: Résumé
-        url: ${{ vars.RESUME_LINK }}
+        url: ${{ env.RESUME_LINK }}
 
   # List View
   hideDescriptionInList: false
