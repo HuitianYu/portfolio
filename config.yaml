@@ -1,0 +1,103 @@
+baseURL: "https://arkalim.org"
+languageCode: en-us
+title: Huitian Yu
+theme: PaperMod
+
+menu:
+  main:
+    - identifier: home
+      name: Home
+      url: /
+      weight: 10
+    - identifier: blog
+      name: Blog
+      url: /blog
+      weight: 20
+    - identifier: projects
+      name: Projects
+      url: /projects
+      weight: 30
+    - identifier: experience
+      name: Experience
+      url: /experience
+      weight: 40
+    - identifier: search
+      name: Search
+      url: /search
+      weight: 50
+    # - identifier: tags
+    #   name: Tags
+    #   url: /tags
+    #   weight: 60
+    # - identifier: notes
+    #   name: Notes
+    #   url: https://notes.arkalim.org
+    #   weight: 70
+
+params:
+  # theme
+  showToc: true
+  TocOpen: false
+  ShowBreadCrumbs: true
+  ShowCodeCopyButtons: true
+  hideMeta: false
+
+  # for enchanced SEO
+  env: production
+
+  # Home Page
+  profileMode:
+    enabled: true
+    title: "Huitian Yu"
+    subtitle: Hello! I'm Huitian, a passionate PhD candidate at [**SVT (TUM)**](https://www.lse.ls.tum.de/en/svt/home/), dedicated to revolutionizing population balance models for practical applications, especially in crystallization control. With a background in Chemical and Process Engineering from [**KIT**](https://www.kit.edu/) and [**ETHz**](https://ethz.ch/en.html), I excel in bridging theory and reality through simulation modeling. My expertise in modelling spans diverse systems, from thermal properties of lithium-ion batteries to mechanical characters of human brain tissues. I actively explore the potential of IoT in crystallization control alongside developing a universal artificial intelligence framework during my master program. Proficient in R, Python and C#, I've utilized them extensively, including developing a full-stack web application based on R-Shiny and Docker for temperature anomaly prediction for [**BASF**](https://www.basf.com/global/en.html). Additionally, I've applied Unity for inverse kinetics to realize a digital twin for a real cocktail bot for [**FZI**](https://www.fzi.de/en/). Till now, I have already published one paper, one for [**hyperelasticity**](https://www.researchgate.net/publication/371124424_Automated_discovery_of_interpretable_hyperelastic_material_models_for_human_brain_tissue_with_EUCLID) and one for [**AI deployment**](https://www.researchgate.net/publication/373462473_KI-Einsatz_in_KMU_Einstiegshurden_ausraumenClearing_entry_hurdles_for_AI_deployment_in_SMEs_-_Artificial_intelligence_for_German_SMEs). I've also delivered speeches at international conferences, such as [**AMLD 2022**](https://appliedmldays.org/events/amld-epfl-2022/talks/discovering-hyperelastic-material-models-through-sparse-regression-with-an-application-to-human-brain-tissue) and [**DECHEMA 2024**](https://dechema.converia.de/frontend/index.php?page_id=15974&v=List). Beyond academia, I enjoy programming and playing musical instruments, combining both to innovate, such as creating a music simulator in MATLAB.
+    imageUrl: "home/formal-pic-small.jpeg"
+    imageWidth: 260
+    imageHeight: 260
+    buttons:
+      - name: Résumé
+        url: "https://drive.google.com/file/d/1AjRPyzCSuZa_jRmooEE9hd9hwuqbLYai/view?usp=sharing"
+
+  # List View
+  hideDescriptionInList: false
+
+  # cover image for posts
+  cover:
+    hiddenInList: false # hide on list pages and home
+    hiddenInSingle: false # hide on single page
+
+  socialIcons:
+    - name: "email"
+      url: "mailto:martin.huitian.yu@gmail.com"
+    - name: "linkedin"
+      url: "https://www.linkedin.com/in/huitian-yu-8448a2153"
+    - name: "github"
+      url: "https://github.com/huitianyu"
+    - name: "researchgate"
+      url: "https://www.researchgate.net/profile/Huitian-Yu"
+    - name: "svt"
+      url: "https://www.lse.ls.tum.de/en/svt/staff/m-sc-huitian-yu/"
+    # - name: "cv"
+    #   url: "https://drive.google.com/file/d/1AjRPyzCSuZa_jRmooEE9hd9hwuqbLYai/view?usp=sharing"
+
+  # text search
+  fuseOpts:
+    isCaseSensitive: false
+    shouldSort: true
+    location: 0
+    distance: 1000
+    threshold: 0.4
+    minMatchCharLength: 0
+    keys: ["title", "permalink", "summary", "content"]
+
+# for search using Fuse.js
+outputs:
+  home:
+    - HTML
+    - RSS
+    - JSON
+
+# allow HTML in MD
+markup:
+  goldmark:
+    renderer:
+      unsafe: true
