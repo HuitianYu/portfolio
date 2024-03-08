@@ -49,10 +49,10 @@ params:
   profileMode:
     enabled: true
     title: "Huitian Yu"
-    subtitle: Hello! I'm Huitian, a passionate PhD candidate at [**SVT (TUM)**](https://www.lse.ls.tum.de/en/svt/home/), dedicated to revolutionizing population balance models for practical applications, especially in crystallization control. With a background in Chemical and Process Engineering from [**KIT**](https://www.kit.edu/) and [**ETHz**](https://ethz.ch/en.html), I excel in bridging theory and reality through simulation modeling. My expertise in modelling spans diverse systems, from thermal properties of lithium-ion batteries to mechanical characters of human brain tissues. I actively explore the potential of IoT in crystallization control alongside developing a universal artificial intelligence framework during my master program. Proficient in R, Python and C#, I've utilized them extensively, including developing a full-stack web application based on R-Shiny and Docker for temperature anomaly prediction for [**BASF**](https://www.basf.com/global/en.html). Additionally, I've applied Unity for inverse kinetics to realize a digital twin for a real cocktail bot for [**FZI**](https://www.fzi.de/en/). Till now, I have already published one paper, one for [**hyperelasticity**](https://www.researchgate.net/publication/371124424_Automated_discovery_of_interpretable_hyperelastic_material_models_for_human_brain_tissue_with_EUCLID) and one for [**AI deployment**](https://www.researchgate.net/publication/373462473_KI-Einsatz_in_KMU_Einstiegshurden_ausraumenClearing_entry_hurdles_for_AI_deployment_in_SMEs_-_Artificial_intelligence_for_German_SMEs). I've also delivered speeches at international conferences, such as [**AMLD 2022**](https://appliedmldays.org/events/amld-epfl-2022/talks/discovering-hyperelastic-material-models-through-sparse-regression-with-an-application-to-human-brain-tissue) and [**DECHEMA 2024**](https://dechema.converia.de/frontend/index.php?page_id=15974&v=List). Beyond academia, I enjoy programming and playing musical instruments, combining both to innovate, such as creating a music simulator in MATLAB.
+    subtitle: \| PhD candidate in crystallization control @ [SVT (TUM)](https://www.lse.ls.tum.de/en/svt/home/) \| <br /> \| M.Sc. in Process Engineering @ [ETHz](https://ethz.ch/en.html) \| <br /> \| M.Sc. & B.Sc. in Chemical Process Engineering @ [KIT](https://www.kit.edu/) both with "sehr gut" \|
     imageUrl: "home/formal-pic-small.jpeg"
-    imageWidth: 260
-    imageHeight: 260
+    imageWidth: 220
+    imageHeight: 220
     buttons:
       - name: Résumé
         url: "https://drive.google.com/file/d/1AjRPyzCSuZa_jRmooEE9hd9hwuqbLYai/view?usp=sharing"
