@@ -13,26 +13,30 @@ menu:
       name: Blog
       url: /blog
       weight: 20
+    - identifier: wiki
+      name: Wiki
+      url: /wiki
+      weight: 30
     - identifier: projects
       name: Projects
       url: /projects
-      weight: 30
+      weight: 40
     - identifier: experience
       name: Experience
       url: /experience
-      weight: 40
+      weight: 50
     - identifier: search
       name: Search
       url: /search
-      weight: 50
-    # - identifier: tags
-    #   name: Tags
-    #   url: /tags
-    #   weight: 60
+      weight: 60
     # - identifier: notes
     #   name: Notes
     #   url: https://notes.arkalim.org
     #   weight: 70
+    # - identifier: notes2
+    #   name: Notes2
+    #   url: https://notes2.arkalim.org
+    #   weight: 80
 
 params:
   # theme
