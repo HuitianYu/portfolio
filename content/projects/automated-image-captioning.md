@@ -2,7 +2,7 @@
 title: "Automated Image Captioning (Bachelor Thesis)"
 description: "Can computers summarize the contents of an image?"
 dateString: Jan 2021 - May 2021
-draft: false
+draft: true
 tags: ["Python", "PyTorch", "CNN", "LSTM", "CRNN", "DL", "AI"]
 showToc: true
 weight: 203
