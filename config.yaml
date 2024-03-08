@@ -45,6 +45,10 @@ params:
   # for enchanced SEO
   env: production
 
+  # enable google crawl
+  analytics:
+    googlesiteVerificationTag: ${{ secrets.GOOGLE_SITE_VERIFICATION_TAG }}
+
   # Home Page
   profileMode:
     enabled: true
@@ -55,7 +59,7 @@ params:
     imageHeight: 220
     buttons:
       - name: Résumé
-        url: "https://drive.google.com/file/d/1AjRPyzCSuZa_jRmooEE9hd9hwuqbLYai/view?usp=sharing"
+        url: "${{ vars.RESUME_LINK }}"
 
   # List View
   hideDescriptionInList: false
