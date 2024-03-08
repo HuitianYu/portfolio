@@ -52,7 +52,7 @@ params:
   # Home Page
   profileMode:
     enabled: true
-    title: ${RESUME_LINK}
+    title: ${{RESUME_LINK}}
     subtitle: \| PhD candidate in crystallization control @ [SVT (TUM)](https://www.lse.ls.tum.de/en/svt/home/) \| <br /> \| M.Sc. in Process Engineering @ [ETHz](https://ethz.ch/en.html) \| <br /> \| M.Sc. & B.Sc. in Chemical Process Engineering @ [KIT](https://www.kit.edu/) both with "sehr gut" \|
     imageUrl: "home/formal-pic-small.jpeg"
     imageWidth: 220
