@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+  xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://huitianyu.netlify.app/wiki/tiddly-wiki/</loc>
+  </url><url>
+    <loc>https://huitianyu.netlify.app/categories/</loc>
+  </url><url>
+    <loc>https://huitianyu.netlify.app/</loc>
+  </url><url>
+    <loc>https://huitianyu.netlify.app/search/</loc>
+  </url><url>
+    <loc>https://huitianyu.netlify.app/tags/</loc>
+  </url><url>
+    <loc>https://huitianyu.netlify.app/tags/tiddlywiki/</loc>
+  </url><url>
+    <loc>https://huitianyu.netlify.app/wiki/</loc>
+  </url>
+</urlset>
