@@ -63,7 +63,7 @@ params:
     imageHeight: 220
     buttons:
       - name: Résumé
-        url: https://drive.google.com/file/d/1aals5wYs8LirYr6ig9e8cP7rYvR4K4wg/view?usp=sharing
+        url: https://drive.google.com/file/d/1Qqe740-izGZLRWTwRfmHGGQaIeT9DL6W/view?usp=drive_link
 
   # List View
   hideDescriptionInList: false
