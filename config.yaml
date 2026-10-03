@@ -8,6 +8,10 @@ menu:
     - identifier: home
       name: Home
       url: /
+    - identifier: research
+      name: Research
+      url: /research
+      weight: 30
       weight: 10
     - identifier: blog
       name: Blog
@@ -62,8 +66,10 @@ params:
     imageWidth: 220
     imageHeight: 220
     buttons:
-      - name: Résumé
-        url: https://drive.google.com/file/d/1Qqe740-izGZLRWTwRfmHGGQaIeT9DL6W/view?usp=drive_link
+      - name: "Résumé"
+        url: "https://drive.google.com/file/d/1Qqe740-izGZLRWTwRfmHGGQaIeT9DL6W/view?usp=drive_link"
+      - name: "Pulication"
+        url: "research/publication"
 
   # List View
   hideDescriptionInList: false
@@ -82,6 +88,10 @@ params:
       url: "https://github.com/huitianyu"
     - name: "researchgate"
       url: "https://www.researchgate.net/profile/Huitian-Yu"
+    - name: "googlescholar"
+      url: "https://scholar.google.com/citations?user=X0Qo6yAAAAAJ&hl=en"
+    - name: "orcid"
+      url: "https://orcid.org/0009-0006-1639-8932/"
     - name: "svt"
       url: "https://www.lse.ls.tum.de/en/svt/staff/m-sc-huitian-yu/"
     # - name: "cv"
