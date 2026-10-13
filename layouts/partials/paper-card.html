@@ -1,0 +1,19 @@
+<article class="paper-card" id="paper-{{ .File.Dir | path.Clean | path.Base }}">
+  <a class="paper-image" href="{{ .RelPermalink }}">
+    <img src="{{ .Params.image | relURL }}" alt="{{ .Params.alt }}" loading="lazy" />
+  </a>
+  <div class="paper-copy">
+    <div class="eyebrow">
+      {{ .Params.topic }}
+      <span>· {{ .Date.Format "2006" }}</span>
+    </div>
+    <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
+    <p class="authors">{{ delimit .Params.authors ", " }}</p>
+    <p class="journal">{{ .Params.journal }} · {{ .Params.displayDate }}</p>
+    {{ $slug := .File.Dir | path.Clean | path.Base }}{{ $relatedURL := "" }}{{ $relatedLabel := "" }}{{ range (partial "labs-data.html" .) }}
+      {{ if eq .paper $slug }}
+        {{ $relatedURL = .url }}{{ $relatedLabel = printf "Open %s" .name }}
+      {{ end }}
+    {{ end }}{{ partial "card-actions.html" (dict "primaryURL" .RelPermalink "primaryLabel" "Read paper details" "relatedURL" $relatedURL "relatedLabel" $relatedLabel) }}
+  </div>
+</article>

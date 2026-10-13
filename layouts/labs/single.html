@@ -1,0 +1,68 @@
+{{ define "main" }}
+  {{ $id := .Params.id }}{{ $lab := index (where (partial "labs-data.html" .) "id" $id) 0 }}
+  <section class="lab-shell">
+    <div class="lab-toolbar">
+      <a href="{{ "labs/" | relURL }}">← Labs</a>
+      <span class="lab-toolbar-brand">
+        <span
+          class="theme-icon"
+          aria-hidden="true"
+          style="--icon-url:url('{{ $lab.iconurl }}')"
+        ></span>
+        <span>{{ $lab.name }}</span>
+      </span>
+      <div class="lab-toolbar-actions" role="group" aria-label="Workspace actions">
+        <button
+          id="toggle-lab-headers"
+          class="lab-header-toggle"
+          type="button"
+          aria-pressed="false"
+          aria-label="{{ (index hugo.Data "lab-ui").shell.hideHeaders }}"
+          title="{{ (index hugo.Data "lab-ui").shell.headerHint }}"
+          data-label-hide="{{ (index hugo.Data "lab-ui").shell.hideHeaders }}"
+          data-label-show="{{ (index hugo.Data "lab-ui").shell.showHeaders }}"
+        >
+          <span aria-hidden="true">▴</span>
+        </button>
+        {{ with $lab.paperurl }}
+          <a href="{{ . }}">Related paper →</a>
+        {{ end }}{{ with $lab.data.recordurl }}
+          <a href="{{ . }}" target="_blank" rel="noopener">Dataset ↗</a>
+        {{ end }}
+        <button
+          id="restart-lab"
+          type="button"
+          title="{{ (index hugo.Data "lab-ui").shell.reloadHint }}"
+        >
+          {{ (index hugo.Data "lab-ui").shell.reload }} ↻
+        </button>
+        <button
+          id="focus-lab"
+          type="button"
+          aria-pressed="false"
+          data-label-focus="{{ (index hugo.Data "lab-ui").shell.focus }}"
+          data-label-exit="{{ (index hugo.Data "lab-ui").shell.exitFocus }}"
+          title="{{ (index hugo.Data "lab-ui").shell.focusHint }}"
+        >
+          {{ (index hugo.Data "lab-ui").shell.focus }} ⤢
+        </button>
+        <a
+          href="{{ $lab.appurl }}"
+          target="_blank"
+          rel="noopener"
+          title="{{ (index hugo.Data "lab-ui").shell.newInstanceHint }}"
+        >
+          {{ (index hugo.Data "lab-ui").shell.newInstance }} ↗
+        </a>
+      </div>
+    </div>
+    <iframe
+      id="lab-frame"
+      title="{{ $lab.name }} interactive workspace"
+      src="{{ $lab.appurl }}"
+      allow="fullscreen"
+      sandbox="allow-scripts allow-same-origin allow-downloads"
+      loading="eager"
+    ></iframe>
+  </section>
+{{ end }}

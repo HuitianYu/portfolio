@@ -1,0 +1,144 @@
+[
+  {
+    "id": "isic-2026",
+    "date": "2026-09-06",
+    "dates": "6–9 September 2026",
+    "title": "Robust Inline Growth-Rate Sensing for Cascaded Model-Predictive Control of Crystallization Processes",
+    "authors": [
+      "Huitian Yu",
+      "Heiko Briesen"
+    ],
+    "event": "23rd International Symposium on Industrial Crystallization",
+    "acronym": "ISIC 2026",
+    "location": "Budapest, Hungary",
+    "format": "Presentation",
+    "url": "https://akcongress.com/isic2026/",
+    "verified": "Event name, dates and location confirmed from the organizer; presentation title and authors supplied by the author."
+  },
+  {
+    "id": "dechema-2026",
+    "date": "2026-03-04",
+    "dates": "4–6 March 2026",
+    "title": "Growth–Abrasion Dynamics: Roundness and a Bivariate PBM",
+    "authors": [
+      "Huitian Yu",
+      "Heiko Briesen"
+    ],
+    "event": "Jahrestreffen der DECHEMA/VDI-Fachgruppen Kristallisation und Trocknungstechnik",
+    "acronym": "DECHEMA / VDI 2026",
+    "location": "Frankfurt am Main, Germany",
+    "format": "Presentation",
+    "url": "https://dechema.de/JTR_KRI_TRO_2026.html",
+    "verified": "Event confirmed from organizer. Presentation title normalized from author-supplied shorthand; final wording still to confirm."
+  },
+  {
+    "id": "dechema-2025",
+    "date": "2025-03-18",
+    "dates": "18–19 March 2025",
+    "title": "Non-Linear Model Predictive Control of Cooling Crystallization Utilizing a Growth Rate Monitoring Sensor",
+    "authors": [
+      "Huitian Yu",
+      "Heiko Briesen"
+    ],
+    "event": "Jahrestreffen der DECHEMA/VDI-Fachgruppe Kristallisation",
+    "acronym": "DECHEMA / VDI 2025",
+    "location": "Winterthur, Switzerland",
+    "format": "Presentation",
+    "url": "https://dechema.de/Veranstaltungen/2025/JTR_KRI_%2B18__19_3_25_%2BWinterthur_CH-p-20540916.html",
+    "verified": "Event confirmed. TUM mediatum lists Jiewen Zhao as additional coauthor; retained author-supplied two-author list pending confirmation."
+  },
+  {
+    "id": "dechema-2024",
+    "date": "2024-02-27",
+    "dates": "27–28 February 2024",
+    "title": "Experimentelle Bestimmung der Einflüsse von Abrieb und Wachstum auf Größen- und Formverteilungen mittels Mikro-Computertomographie",
+    "authors": [
+      "Huitian Yu",
+      "Heiko Briesen"
+    ],
+    "event": "Jahrestreffen der DECHEMA/VDI-Fachgruppen Grenzflächenbestimmte Systeme und Prozesse, Kristallisation, Mechanische Flüssigkeitsabtrennung und Partikelmesstechnik",
+    "acronym": "DECHEMA / VDI 2024",
+    "location": "Frankfurt am Main, Germany",
+    "format": "Presentation",
+    "url": "https://dechema.de/JTR_GFSP_KRI_MFA_PMT.html",
+    "verified": "Event confirmed from organizer; presentation title and authors supplied by author."
+  },
+  {
+    "id": "amld-2022",
+    "date": "2022-03-26",
+    "dates": "26 March 2022",
+    "title": "Discovering Hyperelastic Material Models through Sparse Regression with an Application to Human Brain Tissue",
+    "authors": [
+      "Huitian Yu",
+      "Laura De Lorenzis"
+    ],
+    "event": "Applied Machine Learning Days 2022",
+    "acronym": "AMLD 2022",
+    "location": "Lausanne, Switzerland",
+    "format": "Pitch",
+    "url": "https://appliedmldays.org/events/amld-epfl-2022",
+    "verified": "Author-supplied title, date, authors and format; historical talk URL not accessible during verification."
+  },
+  {
+    "id": "battery-2019",
+    "date": "2019-04-03",
+    "dates": "3–4 April 2019",
+    "title": "Determination of Thermal Transport Properties for Electrodes of Lithium-Ion Cells",
+    "authors": [
+      "D. Oehler",
+      "Huitian Yu",
+      "C. Schmidt",
+      "V. Honold",
+      "D. J. Becker",
+      "P. Seegert",
+      "Th. Wetzel"
+    ],
+    "event": "Advanced Battery Power – Kraftwerk Batterie",
+    "acronym": "Kraftwerk Batterie 2019",
+    "location": "Aachen, Germany",
+    "format": "Poster",
+    "url": "https://www.tvt.kit.edu/21_2163.php"
+  },
+  {
+    "id": "processnet-2019",
+    "date": "2019-03-18",
+    "dates": "18–19 March 2019",
+    "title": "Experimentelle Bestimmung und Modellierung thermischer Transporteigenschaften von Elektroden",
+    "authors": [
+      "D. Oehler",
+      "Huitian Yu",
+      "C. Schmidt",
+      "V. Honold",
+      "D. J. Becker",
+      "Th. Wetzel"
+    ],
+    "event": "Jahrestreffen der ProcessNet-Fachgruppe Wärme- und Stoffübertragung",
+    "acronym": "ProcessNet 2019",
+    "location": "Essen, Germany",
+    "format": "Poster",
+    "url": "https://dechema.de/",
+    "verified": "CV gives May; organizer programme identifies March. Heat and mass transfer sessions 18–19 March within the joint 18–20 March meeting."
+  },
+  {
+    "id": "photoiupac-2018",
+    "date": "2018-07-08",
+    "dates": "8–13 July 2018",
+    "title": "Degradation of Micropollutant in a Novel Microstructured Photocatalytic Membrane Reactor",
+    "authors": [
+      "X. Zhan",
+      "Y. Zhang",
+      "Huitian Yu",
+      "C. Yan",
+      "F. Kirschhoefer",
+      "M. Klumpp",
+      "G. Brenner-Weiß",
+      "A. Schaefer",
+      "R. Dittmeyer"
+    ],
+    "event": "27th IUPAC Symposium on Photochemistry",
+    "acronym": "PhotoIUPAC 2018",
+    "location": "Dublin, Ireland",
+    "format": "Presentation",
+    "url": "https://photoiupac2018.com/"
+  }
+]

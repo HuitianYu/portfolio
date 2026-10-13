@@ -1,0 +1,11 @@
+{{ $links := slice }}
+{{ range .Params }}
+  {{ with site.GetPage (printf "/labs/%s" .) }}
+    {{ $links = $links | append . }}
+  {{ end }}
+{{ end }}
+{{ if $links }}
+  <div class="inline-links">
+    {{ range $links }}<a href="{{ .RelPermalink }}">Explore {{ .Title }} →</a>{{ end }}
+  </div>
+{{ end }}

@@ -1,0 +1,200 @@
+{{ define "main" }}
+  <div class="container">
+    <section class="home-hero personal-hero">
+      <div class="hero-copy">
+        <span class="eyebrow">
+          <i class="status-dot"></i>
+          CRYSTALLIZATION · CONTROL · SCIENTIFIC COMPUTING
+        </span>
+        <h1>
+          Huitian Yu
+          <em>.</em>
+        </h1>
+        <h2 class="personal-tagline">
+          Curious about crystals.
+          <br />
+          <em>Driven by understanding.</em>
+        </h2>
+        <p class="hero-description">
+          PhD candidate at the Technical University of Munich. I connect physical models,
+          measurements and computation to understand crystals and shape crystallization processes.
+        </p>
+        <p class="current-location">Based in {{ partial "current-location.html" . }}</p>
+        <div class="hero-actions">
+          <a class="button primary" href="{{ "papers/" | relURL }}">
+            Explore my research
+            <span>→</span>
+          </a>
+          <a class="button" href="{{ "cv/" | relURL }}">
+            View my CV
+            <span>→</span>
+          </a>
+        </div>
+        <div class="personal-links" aria-label="Personal and academic profiles">
+          <a href="mailto:{{ site.Params.email }}">Email ↗</a>
+          {{ partial "contact-links.html" slice }}
+        </div>
+      </div>
+      <figure class="portrait-card">
+        <div class="portrait-frame">
+          <img
+            src="{{ site.Params.portrait | relURL }}"
+            alt="Portrait of Huitian Yu"
+            fetchpriority="high"
+          />
+        </div>
+        <figcaption>
+          <span>
+            Huitian Yu
+            <small>Researcher · Process engineering</small>
+          </span>
+          <span class="portrait-location">Shot in {{ site.Params.portraitLocation }}</span>
+        </figcaption>
+      </figure>
+    </section>
+    <section class="education-strip" aria-labelledby="education-title">
+      <div>
+        <span class="eyebrow">THE PATH SO FAR</span>
+        <h2 id="education-title">Education.</h2>
+      </div>
+      <div class="education-item">
+        <div class="education-identity">
+          <span class="education-number">01 / CURRENT</span>
+          {{ partial "institution-logo.html" "tum" }}
+        </div>
+        <h3>{{ hugo.Data.institutions.tum.display }}</h3>
+        <p>PhD candidate · Crystallization & process control</p>
+      </div>
+      <div class="education-item">
+        <div class="education-identity">
+          <span class="education-number">02 / MASTER’S</span>
+          {{ partial "institution-logo.html" "eth" }}
+        </div>
+        <h3>{{ hugo.Data.institutions.eth.display }}</h3>
+        <p>M.Sc. · Process Engineering</p>
+      </div>
+      <div class="education-item">
+        <div class="education-identity">
+          <span class="education-number">03 / MASTER’S & BACHELOR’S</span>
+          {{ partial "institution-logo.html" "kit" }}
+        </div>
+        <h3>{{ hugo.Data.institutions.kit.display }}</h3>
+        <div class="education-details">
+          <p>M.Sc. & B.Sc. · Chemical & Process Engineering</p>
+        </div>
+      </div>
+    </section>
+    <section class="home-section">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">EXPLORE & EXPERIMENT</span>
+          <h2>Research you can interact with.</h2>
+        </div>
+        <div class="carousel-heading-actions">
+          <a class="text-link" href="{{ "labs/" | relURL }}">All labs →</a>
+          <div class="carousel-arrows">
+            <button
+              class="carousel-pause"
+              type="button"
+              data-pause="home-labs"
+              aria-label="Pause labs carousel"
+              aria-pressed="false"
+            >
+              Ⅱ
+            </button>
+            <button
+              type="button"
+              data-carousel="home-labs"
+              data-direction="-1"
+              aria-label="Previous labs"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              data-carousel="home-labs"
+              data-direction="1"
+              aria-label="Next labs"
+            >
+              →
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="home-carousel lab-carousel"
+        id="home-labs"
+        tabindex="0"
+        aria-label="Interactive labs"
+      >
+        {{ range partial "labs-data.html" . }}{{ partial "lab-card.html" . }}{{ end }}
+      </div>
+    </section>
+    <section class="home-section">
+      <div class="section-heading">
+        <div>
+          <span class="eyebrow">RECENT WORK</span>
+          <h2>Selected papers.</h2>
+        </div>
+        <div class="carousel-heading-actions">
+          <a class="text-link" href="{{ "papers/" | relURL }}">All papers →</a>
+          <div class="carousel-arrows">
+            <button
+              class="carousel-pause"
+              type="button"
+              data-pause="home-papers"
+              aria-label="Pause papers carousel"
+              aria-pressed="false"
+            >
+              Ⅱ
+            </button>
+            <button
+              type="button"
+              data-carousel="home-papers"
+              data-direction="-1"
+              aria-label="Previous papers"
+            >
+              ←
+            </button>
+            <button
+              type="button"
+              data-carousel="home-papers"
+              data-direction="1"
+              aria-label="Next papers"
+            >
+              →
+            </button>
+          </div>
+        </div>
+      </div>
+      <div
+        class="home-carousel paper-carousel"
+        id="home-papers"
+        tabindex="0"
+        aria-label="Recent papers"
+      >
+        {{ range first 4 (where site.RegularPages "Section" "papers").ByDate.Reverse }}
+          {{ partial "paper-card.html" . }}
+        {{ end }}
+      </div>
+    </section>
+    <section class="home-contact">
+      <div>
+        <span class="eyebrow">CONTACT</span>
+        <h2>
+          Questions, ideas
+          <br />
+          <em>or a shared interest?</em>
+        </h2>
+      </div>
+      <div>
+        {{ partial "contact-emails.html" . }}
+        <p>{{ hugo.Data.contact.intro }}</p>
+        <div class="inline-links">
+          {{ partial "contact-links.html" (slice "scholar" "linkedin" "tum") }}
+          <a href="{{ "contact/" | relURL }}">All contact details →</a>
+        </div>
+      </div>
+    </section>
+  </div>
+{{ end }}

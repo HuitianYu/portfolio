@@ -1,0 +1,50 @@
+{{ $entries := slice }}{{ $label := "Sections" }}{{ if eq .Section "papers" }}
+  {{ $label = "Papers" }}{{ range .RegularPages.ByDate.Reverse }}
+    {{ $id := printf "paper-%s" (.File.Dir | path.Clean | path.Base) }}{{ $entries = $entries | append (dict "id" $id "title" .Title "meta" (.Date.Format "2006")) }}
+  {{ end }}
+{{ else if eq .Section "conferences" }}
+  {{ $label = "Conferences" }}{{ range sort hugo.Data.conferences "date" "desc" }}
+    {{ $entries = $entries | append (dict "id" .id "title" .title "meta" (printf "%s · %s" .acronym .location)) }}
+  {{ end }}
+{{ else if eq .Section "labs" }}
+  {{ $label = "Labs" }}{{ range (partial "labs-data.html" .) }}
+    {{ $entries = $entries | append (dict "id" (printf "lab-%s" .id) "title" .name "meta" .tagline) }}
+  {{ end }}
+{{ else if eq .Section "cv" }}
+  {{ $entries = $entries | append (dict "id" "page-overview" "title" "Overview" "meta" "") }}{{ range hugo.Data.cv }}
+    {{ $entries = $entries | append (dict "id" (printf "cv-%s" (.id | default (.title | urlize))) "title" (.navTitle | default .title) "meta" "") }}
+  {{ end }}
+{{ else }}
+  {{ $entries = $entries | append (dict "id" "page-overview" "title" .Title "meta" "Overview") }}
+{{ end }}{{ if gt (len $entries) 1 }}
+  <aside class="page-outline" aria-label="Page contents">
+    <button
+      type="button"
+      class="outline-toggle"
+      id="outline-toggle"
+      aria-expanded="true"
+      aria-controls="page-outline-links"
+      title="Collapse or expand contents"
+    >
+      <span class="outline-symbol" aria-hidden="true">☷</span>
+      <span class="outline-heading">
+        Contents
+        <small>{{ len $entries }} {{ $label | lower }}</small>
+      </span>
+      <span class="outline-chevron" aria-hidden="true">›</span>
+    </button>
+    <nav id="page-outline-links" aria-label="On this page">
+      {{ range $index, $entry := $entries }}
+        <a href="#{{ .id }}" title="{{ .title }}">
+          <span class="outline-number">{{ printf "%02d" (add $index 1) }}</span>
+          <span>
+            <span class="outline-title">{{ .title }}</span>
+            {{ with .meta }}
+              <small>{{ . }}</small>
+            {{ end }}
+          </span>
+        </a>
+      {{ end }}
+    </nav>
+  </aside>
+{{ end }}

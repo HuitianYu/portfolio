@@ -1,0 +1,13 @@
+{{- $e := .entry -}}{{- $mode := .mode | default "display" -}}{{- with $e.institutionID -}}
+  {{- $org := index hugo.Data.institutions . -}}{{- with $e.unit -}}
+    {{ printf "%s · " . }}
+  {{- end -}}{{- if eq $mode "full" -}}
+    {{ $org.fullLabel | default (printf "%s (%s)" $org.full $org.short) }}
+  {{- else if eq $mode "short" -}}
+    {{ $org.short }}
+  {{- else -}}
+    {{ $org.display }}
+  {{- end -}}{{- if $e.showCountry -}}, {{ $org.country }}{{- end -}}
+{{- else -}}
+  {{ $e.institution }}
+{{- end -}}

@@ -1,6 +1,6 @@
 [build]
-  command = "git submodule update --init --recursive && hugo"
+  command = "npm run format:check && npm run check:shared && npm run check && hugo --minify --cleanDestinationDir"
   publish = "public"
-
 [build.environment]
-  HUGO_VERSION = "0.113.0" 
+  HUGO_VERSION = "0.167.0"
+  NODE_VERSION = "22"

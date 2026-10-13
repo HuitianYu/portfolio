@@ -1,0 +1,52 @@
+{{ define "main" }}
+  <article class="container article-container">
+    <a class="back-link" href="{{ printf "%s/" .Section | relURL }}">← {{ .Section | title }}</a>
+    <header class="article-heading">
+      <span class="eyebrow">{{ .Params.topic | default .Section }}</span>
+      <h1>{{ .Title }}</h1>
+      {{ with .Params.authors }}
+        <p class="authors">{{ delimit . ", " }}</p>
+      {{ end }}{{ with .Params.contributionNote }}
+        <p class="contribution-note">{{ . }}</p>
+      {{ end }}
+      {{ if eq .Section "news" }}
+        <p class="journal">
+          <time datetime="{{ .Date.Format "2006-01-02" }}">{{ .Params.displayDate }}</time>
+        </p>
+      {{ else }}
+        <p class="journal">
+          {{ .Params.journal }}{{ with .Params.displayDate }}{{ printf " · %s" . }}{{ end }}
+        </p>
+      {{ end }}
+    </header>
+    {{ with .Params.image }}
+      <figure class="article-figure">
+        <img src="{{ . | relURL }}" alt="{{ $.Params.alt }}" />
+      </figure>
+    {{ end }}
+    <div class="article-body">
+      {{ with .Params.summary }}
+        <p class="lead">{{ . }}</p>
+      {{ end }}{{ .Content }}{{ with .Params.doi }}
+        <div class="paper-reference">
+          <span class="eyebrow">JOURNAL ARTICLE · {{ $.Params.role }}</span>
+          <a href="https://doi.org/{{ . }}">
+            Read the paper ↗
+            <small>DOI {{ . }}</small>
+          </a>
+        </div>
+      {{ end }}
+    </div>
+    {{ $slug := .File.Dir | path.Clean | path.Base }}{{ range (partial "labs-data.html" .) }}
+      {{ if eq .paper $slug }}
+        <section class="paper-lab">
+          <div>
+            <span class="eyebrow">INTERACTIVE COMPANION</span>
+            <h2>Explore the ideas in {{ .name }}.</h2>
+          </div>
+          {{ partial "lab-card.html" . }}
+        </section>
+      {{ end }}
+    {{ end }}
+  </article>
+{{ end }}

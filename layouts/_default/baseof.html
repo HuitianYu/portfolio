@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>
+      {{ if .IsHome }}Huitian Yu{{ else }}{{ printf "%s · Huitian Yu" .Title }}{{ end }}
+    </title>
+    {{ $description := .Description | default .Params.summary | default site.Params.description }}
+    <meta name="description" content="{{ $description }}" />
+    <meta property="og:title" content="{{ .Title }}" />
+    <meta property="og:description" content="{{ $description }}" />
+    <meta property="og:url" content="{{ .Permalink }}" />
+    <meta property="og:site_name" content="{{ site.Title }}" />
+    <meta
+      property="og:type"
+      content="{{ if and .IsPage (in (slice "papers" "news") .Section) }}
+        article
+      {{ else }}
+        website
+      {{ end }}"
+    />
+    {{ $shareImage := .Params.image | default site.Params.portrait }}
+    <meta property="og:image" content="{{ $shareImage | absURL }}" />
+    <meta property="og:image:alt" content="{{ .Params.alt | default "Huitian Yu" }}" />
+    <meta name="twitter:card" content="summary_large_image" />
+    <link rel="icon" href="{{ "icons/curvature.svg" | relURL }}" type="image/svg+xml" />
+    <link
+      rel="stylesheet"
+      href="{{ "css/site.css" | relURL }}?v={{ readFile "static/css/site.css" | md5 }}"
+    />
+    <link
+      rel="stylesheet"
+      href="{{ "css/design-system.css" | relURL }}?v={{ readFile "static/css/design-system.css" | md5 }}"
+    />
+    {{ partial "photo-theme.html" . }}
+    <link rel="canonical" href="{{ .Permalink }}" />
+    <script
+      defer
+      src="{{ "js/site.js" | relURL }}?v={{ readFile "static/js/site.js" | md5 }}"
+    ></script>
+    {{ block "head" . }}{{ end }}
+  </head>
+  {{ $bodyClasses := slice }}
+  {{ if eq .Section "labs" }}
+    {{ $bodyClasses = $bodyClasses | append "lab-route" }}
+    {{ if .IsPage }}{{ $bodyClasses = $bodyClasses | append "lab-workspace" }}{{ end }}
+  {{ end }}
+  <body class="{{ delimit $bodyClasses " " }}">
+    <a class="skip" href="#main">Skip to content</a>
+    <header class="site-header" id="site-header">
+      <div class="header-inner">
+        <a class="wordmark" href="{{ "/" | relURL }}">
+          Huitian Yu
+          <span>RESEARCH & COMPUTATION</span>
+        </a>
+        <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
+          Menu
+          <span>☰</span>
+        </button>
+        <nav id="site-nav" aria-label="Main navigation">
+          {{ $section := .Section }}{{ range site.Menus.main }}
+            <a
+              href="{{ .URL | relURL }}"
+              {{ if or (and (eq .Name "Home") $.IsHome) (eq (lower .Name) $section) }}
+                aria-current="page"
+              {{ end }}
+            >
+              {{ .Name }}
+            </a>
+          {{ end }}
+        </nav>
+      </div>
+    </header>
+    <main id="main">{{ block "main" . }}{{ end }}</main>
+    <footer class="site-footer">
+      <a class="footer-name" href="{{ "/" | relURL }}">Huitian Yu</a>
+      <span>Crystallization · Control · Scientific computing</span>
+      <div>
+        <a href="mailto:{{ site.Params.email }}">Email ↗</a>
+        {{ partial "contact-links.html" (slice "orcid" "github") }}
+        <a href="{{ "contact/" | relURL }}">Contact →</a>
+      </div>
+    </footer>
+  </body>
+</html>

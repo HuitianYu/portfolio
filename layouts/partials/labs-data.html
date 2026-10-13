@@ -1,0 +1,16 @@
+{{ $labs := slice }}
+{{ range where site.RegularPages "Section" "labs" }}
+  {{ $page := . }}{{ $cfg := .Params }}
+  {{ $icon := .Resources.GetMatch (printf "ui/%s-icon.svg" .Params.id) }}
+  {{ $source := .Resources.GetMatch "ui/workspace.txt" }}
+  {{ if not $source }}{{ errorf "Lab %s is missing ui/workspace.txt" .Params.id }}{{ end }}
+  {{ if not $icon }}{{ errorf "Lab %s is missing its ui icon" .Params.id }}{{ end }}
+  {{ $appURL := partial "lab-app.html" (dict "page" $page "source" $source "icon" $icon) }}
+  {{ $paperURL := "" }}{{ $paperTitle := "" }}{{ with .Params.paper }}
+    {{ with site.GetPage (printf "/papers/%s" .) }}
+      {{ $paperURL = .RelPermalink }}{{ $paperTitle = .Title }}
+    {{ end }}
+  {{ end }}
+  {{ $cfg = merge $cfg (dict "name" .Title "paperurl" $paperURL "papertitle" $paperTitle "iconurl" $icon.RelPermalink "appurl" $appURL "url" .RelPermalink) }}
+  {{ $labs = $labs | append $cfg }}
+{{ end }}{{ return (sort $labs "order") }}

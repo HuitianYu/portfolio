@@ -1,0 +1,5 @@
+{{ $photo := site.Params.portrait | default "images/profile/huitian-yu-portrait.jpeg" }}
+<script
+  src="{{ "js/photo-theme.js" | relURL }}?v={{ readFile "static/js/photo-theme.js" | md5 }}"
+  data-portrait="{{ $photo | relURL }}?v={{ readFile (printf "static/%s" $photo) | md5 }}"
+></script>

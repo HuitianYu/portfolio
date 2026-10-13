@@ -1,0 +1,11 @@
+{{- $items := slice -}}{{- $types := dict "papers" "Paper" "labs" "Lab" "news" "News" "wiki" "Wiki" -}}{{- range site.RegularPages -}}
+  {{- $items = $items | append (dict "title" .Title "url" .RelPermalink "type" (index $types .Section | default (.Section | title)) "summary" (.Params.summary | default .Description | default (.Plain | truncate 200)) "text" (printf "%s %s %s %s %s %s %s %s" .Plain (.Description | default "") (.Params.summary | default "") (.Params.tagline | default "") (.Params.topic | default "") (delimit (.Params.authors | default slice) " ") (.Params.doi | default "") (.Params.journal | default ""))) -}}
+{{- end -}}{{- range site.Sections -}}
+  {{- $items = $items | append (dict "title" .Title "url" .RelPermalink "type" "Page" "text" .Description) -}}
+{{- end -}}{{- range hugo.Data.conferences -}}
+  {{- $items = $items | append (dict "title" .title "url" (printf "%s#%s" ("conferences/" | relURL) .id) "type" "Conference" "summary" (printf "%s · %s · %s" .event .dates .location) "text" (printf "%s %s %s %s" .event .dates .location (delimit .authors " "))) -}}
+{{- end -}}{{- range hugo.Data.cv -}}
+  {{- $section := . -}}{{- range .entries -}}
+    {{- $items = $items | append (dict "title" .title "url" (printf "%s#cv-%s" ("cv/" | relURL) ($section.id | default ($section.title | urlize))) "type" "CV" "summary" .text "text" (printf "%s %s %s %s" .dates (partial "institution-label.html" (dict "entry" . "mode" "full")) .text (delimit (.courses | default slice) " "))) -}}
+  {{- end -}}
+{{- end -}}{{- $items | jsonify -}}

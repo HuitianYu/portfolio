@@ -1,1 +1,13 @@
-.env
+# Generated site and Hugo cache
+/public/
+/resources/
+.hugo_build.lock
+# Local Node.js dependencies
+/node_modules/
+# Local temporary files
+__pycache__/
+*.log
+.DS_Store
+# Legacy generated lab files
+/static/lab-apps/
+/data/labs.json

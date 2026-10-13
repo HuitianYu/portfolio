@@ -1,0 +1,27 @@
+{{/* Render one workspace; metadata and paper relationships stay in labs-data.html. */}}
+{{ $page := .page }}
+{{ $source := .source }}
+{{ $icon := .icon }}
+{{ $document := $source.Content }}
+{{ $document = replace $document (printf "url('%s-icon.svg')" $page.Params.id) (printf "url('%s')" $icon.RelPermalink) }}
+{{ $data := $page.Params.data | default dict }}
+{{ $runtimeData := dict "recordURL" ($data.recordurl | default "") "doi" ($data.doi | default "") "conceptDOI" ($data.conceptdoi | default "") "remoteEnabled" ($data.remoteenabled | default false) "fileBaseURL" ($data.filebaseurl | default "") "archives" ($data.archives | default slice) }}
+{{ $runtime := dict "id" $page.Params.id "name" $page.Title "data" $runtimeData "ui" (index hugo.Data "lab-ui") }}
+{{ $configScript := printf "<script>window.LAB_CONFIG=%s;if(window.parent!==window)document.documentElement.classList.add('embedded-workspace');</script>" ($runtime | jsonify) }}
+{{ $document = replace $document "</head>" (printf "%s</head>" (partial "photo-theme.html" $page)) }}
+{{ $document = replace $document "<script src=\"lab-config.js\"></script>" $configScript }}
+{{ $shared := printf "%s?v=%s" ("css/design-system.css" | relURL) (readFile "static/css/design-system.css" | md5) }}
+{{ $document = replace $document "href=\"design-system.css\"" (printf "href=\"%s\"" $shared) }}
+{{ $script := printf "%s?v=%s" ("js/lab-interface.js" | relURL) (readFile "static/js/lab-interface.js" | md5) }}
+{{ $document = replace $document "src=\"lab-interface.js\"" (printf "src=\"%s\"" $script) }}
+{{ range slice "app.js" "style.css" "engine.js" "schema.js" "data-loader.js" "lab-config.js" }}
+  {{ $file := . }}{{ with $page.Resources.GetMatch (printf "ui/%s" $file) }}
+    {{ $versioned := printf "%s?v=%s" $file (.Content | md5) }}
+    {{ $document = replaceRE (printf "(src|href)=\"%s(?:\\?[^\"]*)?\"" (replace $file "." "\\.")) (printf "${1}=\"%s\"" $versioned) $document }}
+  {{ end }}
+{{ end }}
+{{ $sharedRuntime := printf "%s?v=%s" ("js/lab-runtime.js" | relURL) (readFile "static/js/lab-runtime.js" | md5) }}
+{{ $document = replace $document "src=\"lab-runtime.js\"" (printf "src=\"%s\"" $sharedRuntime) }}
+{{ $app := resources.FromString (printf "labs/%s/ui/index.html" $page.Params.id) $document }}
+
+{{ return $app.RelPermalink }}

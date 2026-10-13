@@ -1,0 +1,41 @@
+{
+  "tum": {
+    "full": "Technical University of Munich",
+    "short": "TUM",
+    "display": "Technical University of Munich",
+    "country": "Germany",
+    "logo": "/images/institutions/tum.png"
+  },
+  "eth": {
+    "full": "Swiss Federal Institute of Technology Zurich",
+    "short": "ETH Zurich",
+    "display": "ETH Zurich",
+    "country": "Switzerland",
+    "logo": "/images/institutions/eth.png"
+  },
+  "kit": {
+    "full": "Karlsruhe Institute of Technology",
+    "short": "KIT",
+    "display": "Karlsruhe Institute of Technology",
+    "country": "Germany",
+    "logo": "/images/institutions/kit-wordmark.png"
+  },
+  "bme": {
+    "full": "Budapest University of Technology and Economics",
+    "short": "BME",
+    "display": "Budapest University of Technology and Economics",
+    "country": "Hungary"
+  },
+  "basf": {
+    "full": "BASF SE",
+    "short": "BASF",
+    "display": "BASF",
+    "fullLabel": "BASF SE"
+  },
+  "fzi": {
+    "full": "FZI Research Center for Information Technology",
+    "short": "FZI",
+    "display": "FZI Research Center for Information Technology",
+    "fullLabel": "FZI Research Center for Information Technology"
+  }
+}

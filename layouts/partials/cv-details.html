@@ -1,0 +1,42 @@
+{{ $seen := slice }}
+<div class="cv-details">
+  {{ range hugo.Data.cv }}
+    {{ $education := eq .id "education" }}
+    <section class="cv-section" id="cv-{{ .id | default (.title | urlize) }}">
+      <h2>{{ .title }}</h2>
+      <div>
+        {{ range .entries }}
+          <article class="cv-entry">
+            {{ if and $education .institutionID }}
+              {{ partial "institution-logo.html" .institutionID }}
+            {{ end }}
+            <span class="eyebrow">{{ .dates }}</span>
+            <h3>{{ .title }}</h3>
+            {{ $mode := "short" }}{{ if and .institutionID (not (in $seen .institutionID)) }}
+              {{ $mode = "full" }}{{ $seen = $seen | append .institutionID }}
+            {{ end }}
+            <p class="cv-institution">
+              {{ partial "institution-label.html" (dict "entry" . "mode" $mode) }}
+            </p>
+            {{ if .grade }}
+              <p class="academic-distinction">
+                Final grade:
+                {{ .grade }}{{ with .rank }}· {{ . }}{{ end }}
+              </p>
+            {{ end }}
+            <p>{{ .text }}</p>
+            {{ with .courses }}
+              <ul class="cv-courses">
+                {{ range . }}<li>{{ . }}</li>{{ end }}
+              </ul>
+            {{ end }}{{ with .note }}<small>{{ . }}</small>{{ end }}
+          </article>
+        {{ end }}
+      </div>
+    </section>
+  {{ end }}
+  <div class="inline-links">
+    <a href="{{ "papers/" | relURL }}">All papers →</a>
+    <a href="{{ "conferences/" | relURL }}">All conferences →</a>
+  </div>
+</div>

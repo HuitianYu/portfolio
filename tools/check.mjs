@@ -1,0 +1,100 @@
+import fs from "node:fs/promises";
+import path from "node:path";
+import { fileURLToPath } from "node:url";
+import vm from "node:vm";
+import assert from "node:assert/strict";
+import { createRequire } from "node:module";
+
+const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
+const require = createRequire(import.meta.url);
+const labs = (await fs.readdir(path.join(root, "content/labs"), { withFileTypes: true }))
+  .filter((entry) => entry.isDirectory())
+  .map((entry) => entry.name);
+const files = (await fs.readdir(path.join(root, "static/js")))
+  .filter((name) => name.endsWith(".js"))
+  .map((name) => path.join(root, "static/js", name));
+for (const lab of labs) {
+  const directory = path.join(root, "content/labs", lab, "ui");
+  const workspace = await fs.readFile(path.join(directory, "workspace.txt"), "utf8");
+  if (/type\s*=\s*["']file["']/i.test(workspace))
+    throw Error(`User file input is disabled: ${lab}`);
+
+  for (const name of await fs.readdir(directory)) {
+    if (name.endsWith(".js") && !["catalog.js", "archive-index.js"].includes(name))
+      files.push(path.join(directory, name));
+  }
+}
+for (const file of files) {
+  new vm.Script(await fs.readFile(file, "utf8"), { filename: file });
+}
+// A stalled local asset must reject and allow a new attempt, rather than stay at 5%.
+const loaderTimers = [],
+  loaderScripts = [];
+const loaderContext = {
+  window: { EMBEDDED_INDEX: { example: "example.js" } },
+  document: {
+    createElement: () => ({ remove() {} }),
+    head: {
+      append(script) {
+        loaderScripts.push(script);
+      },
+    },
+  },
+  setTimeout(callback) {
+    loaderTimers.push(callback);
+    return loaderTimers.length;
+  },
+  clearTimeout() {},
+};
+vm.runInNewContext(
+  await fs.readFile(path.join(root, "content/labs/curvature/ui/data-loader.js"), "utf8"),
+  loaderContext,
+);
+const stalledLoad = loaderContext.window.CrystalData.load("example");
+const timeoutCheck = assert.rejects(stalledLoad, /timed out/);
+loaderTimers[0]();
+await timeoutCheck;
+const retryLoad = loaderContext.window.CrystalData.load("example");
+const retryCheck = assert.rejects(retryLoad, /could not be loaded/);
+assert.equal(loaderScripts.length, 2);
+loaderScripts[1].onerror();
+await retryCheck;
+const mpc = require("../content/labs/mpcrystal/ui/engine.js");
+const schemaContext = { window: {} };
+vm.runInNewContext(
+  await fs.readFile(path.join(root, "content/labs/mpcrystal/ui/schema.js"), "utf8"),
+  schemaContext,
+);
+const fields = schemaContext.window.PARAMETER_GROUPS.flatMap((group) => group.fields);
+const fieldKeys = fields.map((field) => field.key);
+if (new Set(fieldKeys).size !== fieldKeys.length) throw Error("Duplicate MPC parameter fields");
+for (const key of ["params.K_I_T", "params.K_I_T_sigma", "params.K_I_T_G", "params.K_P_T_applied"])
+  if (!fieldKeys.includes(key)) throw Error(`Missing temperature gain: ${key}`);
+for (const target of ["sigma", "G"]) {
+  const derived = mpc.derive(
+    { ...mpc.defaults, "params.K_I_T_sigma": 0.12, "params.K_I_T_G": 0.34 },
+    target,
+  );
+  for (const field of fields) {
+    if (!(field.key in derived)) throw Error(`Unresolved MPC parameter: ${field.key}`);
+    if (typeof derived[field.key] === "number" && !Number.isFinite(derived[field.key]))
+      throw Error(`Non-finite MPC parameter: ${field.key}`);
+  }
+  if (derived["params.K_I_T"] !== (target === "sigma" ? 0.12 : 0.34))
+    throw Error("Temperature integral gain did not follow target");
+}
+for (const mode of ["MPC", "PI"])
+  for (const target of ["sigma", "G"]) {
+    const simulation = new mpc.Simulation(mpc.defaults, { mode, target });
+    while (simulation.step()) {}
+    if (simulation.history.length !== simulation.p.steps) throw Error("Incomplete MPC run");
+  }
+if (labs.includes("orbitalflatness")) {
+  const orbital = require("../content/labs/orbitalflatness/ui/engine.js");
+  for (const dimension of [1, 2, 3]) {
+    orbital.solve({ ...orbital.defaultConfig(dimension), numPoints: 21 });
+  }
+}
+console.log(
+  `${files.length} scripts passed syntax checks; default MPC/PI runs completed${labs.includes("orbitalflatness") ? "; three Orbital dimensions completed" : "; Orbital checks skipped (Lab not present)"}.`,
+);

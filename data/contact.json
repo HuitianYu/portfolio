@@ -1,0 +1,52 @@
+{
+  "intro": "For research questions, collaboration or professional enquiries, please get in touch by email.",
+  "profiles": [
+    {
+      "id": "scholar",
+      "label": "Google Scholar",
+      "url": "https://scholar.google.com/citations?user=X0Qo6yAAAAAJ&hl=en"
+    },
+    {
+      "id": "orcid",
+      "label": "ORCID",
+      "url": "https://orcid.org/0009-0006-1639-8932/"
+    },
+    {
+      "id": "researchgate",
+      "label": "ResearchGate",
+      "url": "https://www.researchgate.net/profile/Huitian-Yu"
+    },
+    {
+      "id": "linkedin",
+      "label": "LinkedIn",
+      "url": "https://www.linkedin.com/in/huitian-yu-8448a2153"
+    },
+    {
+      "id": "github",
+      "label": "GitHub",
+      "url": "https://github.com/huitianyu"
+    },
+    {
+      "id": "tum",
+      "label": "TUM profile",
+      "url": "https://www.lse.ls.tum.de/en/svt/staff/m-sc-huitian-yu/"
+    }
+  ],
+  "additionalEmails": [
+    {
+      "address": "huitian.yu@tum.de",
+      "label": "TUM"
+    }
+  ],
+  "portrait": "/images/profile/huitian-yu-formal.jpg",
+  "address": {
+    "institutionID": "tum",
+    "unit": "Chair of Process Systems Engineering",
+    "street": "Gregor-Mendel-Straße 4",
+    "postalCode": "85354",
+    "city": "Freising",
+    "country": "Germany",
+    "sourceURL": "https://www.lse.ls.tum.de/en/svt/staff/m-sc-huitian-yu/",
+    "unitURL": "https://www.lse.ls.tum.de/en/svt/home/"
+  }
+}

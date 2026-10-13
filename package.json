@@ -1,0 +1,15 @@
+{
+  "name": "research-portfolio",
+  "private": true,
+  "scripts": {
+    "format": "node tools/format.mjs",
+    "format:check": "node tools/format.mjs --check",
+    "sync:shared": "node tools/sync-shared.mjs",
+    "check:shared": "node tools/sync-shared.mjs --check",
+    "check": "node tools/check.mjs"
+  },
+  "devDependencies": {
+    "prettier": "3.6.2",
+    "prettier-plugin-go-template": "0.0.15"
+  }
+}

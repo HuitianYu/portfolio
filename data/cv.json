@@ -1,0 +1,140 @@
+[
+  {
+    "title": "Education",
+    "entries": [
+      {
+        "dates": "June 2023 – expected May 2027",
+        "title": "PhD candidate · Process Systems Engineering",
+        "text": "Research on monitoring and control of batch crystallization.",
+        "institutionID": "tum",
+        "showCountry": true,
+        "current": true
+      },
+      {
+        "dates": "September 2020 – March 2023",
+        "title": "M.Sc. · Process Engineering",
+        "text": "Thesis: discovery of interpretable material models using sparse regression and Bayesian inference, validated on human brain tissue.",
+        "institutionID": "eth",
+        "showCountry": true
+      },
+      {
+        "dates": "February 2019 – May 2023",
+        "title": "M.Sc. · Chemical & Process Engineering",
+        "text": "Thesis: deployment and ongoing validation of machine learning models for machine tools, supported by an industrial data pipeline.",
+        "institutionID": "kit",
+        "showCountry": true,
+        "grade": "Sehr gut"
+      },
+      {
+        "dates": "October 2015 – February 2019",
+        "title": "B.Sc. · Chemical & Process Engineering",
+        "text": "Thesis: modelling the thermal conductivity of porous battery electrodes.",
+        "institutionID": "kit",
+        "showCountry": true,
+        "grade": "Sehr gut",
+        "rank": "Top 1.13%"
+      }
+    ],
+    "navTitle": "Education",
+    "id": "education"
+  },
+  {
+    "title": "Research Visits",
+    "entries": [
+      {
+        "dates": "14–24 September 2026",
+        "title": "Research visit",
+        "text": "Crystallization monitoring and control, with a focus on crystal growth and population balance modelling.",
+        "institutionID": "bme",
+        "showCountry": true
+      }
+    ],
+    "navTitle": "Research visits",
+    "id": "international-research-experience"
+  },
+  {
+    "title": "Research Projects",
+    "entries": [
+      {
+        "dates": "November 2022 – February 2023",
+        "title": "Interpretable constitutive models",
+        "text": "Developed hyperelastic models in terms of invariants and automated symbolic calculations using Python, SymPy and SymEngine.",
+        "institutionID": "eth",
+        "unit": "Computational Mechanics Group",
+        "showCountry": false
+      },
+      {
+        "dates": "May 2020 – March 2021",
+        "title": "Robot inverse kinematics",
+        "text": "Created robot gripper and bottle models in Blender and developed inverse kinematics in Unity to track a moving glass for a cocktail robot.",
+        "institutionID": "fzi"
+      },
+      {
+        "dates": "December 2018 – August 2019",
+        "title": "Thermal conductivity of porous electrodes",
+        "text": "Developed a parameterized model and a graphical interface for calculating effective thermal conductivity of lithium-ion battery electrodes.",
+        "institutionID": "kit",
+        "unit": "Institute for Thermal Process Engineering",
+        "showCountry": false
+      },
+      {
+        "dates": "April 2018 – June 2020",
+        "title": "Photocatalytic micropollutant removal",
+        "text": "Investigated UV-driven degradation with TiO₂-coated membranes, measured RhB concentrations and modelled transient concentration and velocity fields using PDEPE and ADI.",
+        "institutionID": "kit",
+        "unit": "Institute of Micro Process Engineering",
+        "showCountry": false
+      }
+    ],
+    "navTitle": "Research projects",
+    "id": "research-projects"
+  },
+  {
+    "title": "Professional Experience",
+    "entries": [
+      {
+        "dates": "May – October 2021",
+        "title": "Digitalization intern",
+        "text": "Developed and validated models to detect undesired batch production conditions, and integrated them into web applications.",
+        "institutionID": "basf"
+      }
+    ],
+    "navTitle": "Industry",
+    "id": "professional-experience"
+  },
+  {
+    "title": "Teaching Experience",
+    "entries": [
+      {
+        "dates": "October 2024 – September 2026",
+        "title": "Teaching · Industrial Excursions",
+        "text": "Supported teaching for the 2025 and 2026 SVT industrial excursions, connecting process engineering coursework with industrial practice through visits to chemical, pharmaceutical and biotechnology production sites.",
+        "institutionID": "tum",
+        "unit": "Chair of Process Systems Engineering",
+        "showCountry": false
+      },
+      {
+        "dates": "May 2024 – April 2026",
+        "title": "Exercise teaching · Technical Mechanics",
+        "text": "Taught exercise sessions for Technical Mechanics over a two-year period.",
+        "institutionID": "tum",
+        "showCountry": false
+      },
+      {
+        "dates": "October 2016 – September 2018",
+        "title": "Teaching assistant",
+        "text": "Supported teaching through tutorials, questions and answers, and review of programming assignments.",
+        "courses": [
+          "Advanced Mathematics I–III",
+          "C++ programming",
+          "Java programming"
+        ],
+        "institutionID": "kit",
+        "unit": "Institute for Applied and Numerical Mathematics",
+        "showCountry": false
+      }
+    ],
+    "navTitle": "Teaching",
+    "id": "teaching-experience"
+  }
+]

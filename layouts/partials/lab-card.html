@@ -1,0 +1,16 @@
+<article id="lab-{{ .id }}" class="lab-card">
+  <a class="lab-card-main" href="{{ .url }}">
+    <div class="lab-card-top">
+      <span
+        class="lab-icon theme-icon"
+        aria-hidden="true"
+        style="--icon-url:url('{{ .iconurl | relURL }}')"
+      ></span>
+      <span class="arrow" aria-hidden="true">→</span>
+    </div>
+    <span class="eyebrow">{{ .tagline }}</span>
+    <h3>{{ .name }}</h3>
+    <p>{{ .description }}</p>
+  </a>
+  {{ partial "card-actions.html" (dict "primaryURL" .url "primaryLabel" (index hugo.Data "lab-ui").shell.openLab "relatedURL" .paperurl "relatedLabel" "Related paper" "relatedTitle" (printf "Read related paper: %s" .papertitle)) }}
+</article>

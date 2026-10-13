@@ -1,0 +1,479 @@
+<!DOCTYPE html>
+
+<html lang="en">
+  <head>
+    <script src="lab-config.js"></script>
+    <meta charset="utf-8" />
+    <style>
+      html.lab-initializing body {
+        visibility: hidden;
+      }
+    </style>
+    <script>
+      document.documentElement.classList.add("lab-initializing");
+      document.addEventListener(
+        "DOMContentLoaded",
+        () => {
+          document.documentElement.classList.remove("lab-initializing");
+        },
+        { once: true },
+      );
+    </script>
+    <meta content="width=device-width,initial-scale=1" name="viewport" />
+    <title>MPCrystal Lab · Simulation</title>
+    <meta
+      content="Interactive model predictive control simulation for cooling crystallization."
+      name="description"
+    />
+    <link href="style.css?v=21dc08f2e8" rel="stylesheet" />
+    <script>
+      window.MathJax = {
+        tex: {
+          inlineMath: [
+            ["$", "$"],
+            ["\\(", "\\)"],
+          ],
+        },
+        svg: { fontCache: "local" },
+        options: { enableMenu: false },
+      };
+    </script>
+    <script defer="" src="vendor/mathjax.js"></script>
+    <script defer="" src="vendor/plotly.min.js"></script>
+    <script defer="" src="engine.js"></script>
+    <script defer="" src="schema.js"></script>
+    <script defer="" src="app.js"></script>
+    <link data-design-system="" href="design-system.css" rel="stylesheet" />
+    <script src="lab-runtime.js"></script>
+  </head>
+  <body>
+    <div class="fixed-workspace-header">
+      <header data-header-layout="modules" class="topbar">
+        <a aria-label="MPCrystal Lab home" class="brand" href="#">
+          <span
+            aria-hidden="true"
+            class="control-mark theme-icon"
+            style="--icon-url: url(&quot;mpcrystal-icon.svg&quot;)"
+          ></span>
+          <span>
+            MPCrystal
+            <em>Lab</em>
+            <small>CRYSTAL GROWTH CONTROL</small>
+          </span>
+        </a>
+        <div class="top-actions">
+          <span class="local-badge">
+            <i></i>
+            Simulation · Browser computation
+          </span>
+          <button
+            aria-controls="simulation-controls"
+            aria-expanded="false"
+            class="button"
+            data-ui-action="true"
+            id="toggle-controls"
+          >
+            Control
+          </button>
+          <div class="header-file-actions">
+            <details class="toolbar-options export-options">
+              <summary>Export ↓</summary>
+              <div class="export-options-list">
+                <button class="button subtle" data-ui-action="true" id="save-data">
+                  Export data ↓
+                </button>
+                <button class="button" data-ui-action="true" id="export-csv">
+                  Export results ↓
+                </button>
+              </div>
+            </details>
+
+            <button class="button" data-ui-action="true" id="reset">Reset all</button>
+          </div>
+        </div>
+      </header>
+      <nav aria-label="Workspace" class="workspace-tabs">
+        <button data-section="overview">Overview</button>
+        <button class="active" data-section="operations">Operation</button>
+        <button data-section="parameters">Parameters</button>
+        <button data-section="display">Display</button>
+      </nav>
+    </div>
+    <main>
+      <section class="workspace-page" id="operations">
+        <section aria-label="Simulation controls" class="common-controls" id="simulation-controls">
+          <div class="control-row playback-row">
+            <div class="playback-actions">
+              <button class="button" data-ui-action="true" disabled="" id="pause">Pause</button>
+              <button
+                class="button"
+                data-ui-action="true"
+                id="step"
+                title="While paused, advance the simulation by one physical time step Δt."
+              >
+                Advance one step
+              </button>
+            </div>
+            <div aria-label="Simulation status" class="status-strip">
+              <div aria-live="polite" class="status" role="status">
+                <i id="status-dot"></i>
+                <span id="status-text">Controller · Ready</span>
+              </div>
+              <small id="sensor-note">Growth measurement stopped</small>
+              <small id="adapt-note">Requires growth-rate measurement</small>
+              <small id="seed-note">No seed added</small>
+            </div>
+            <div class="right-controls">
+              <label>
+                Step interval
+                <select aria-label="Playback interval" id="interval">
+                  <option value="0">As fast as possible</option>
+                  <option value="50">0.05 s</option>
+                  <option value="100">0.1 s</option>
+                  <option value="250">0.25 s</option>
+                  <option selected="" value="500">0.5 s</option>
+                  <option value="1000">1 s</option>
+                  <option value="2000">2 s</option>
+                </select>
+              </label>
+              <button class="button subtle" data-ui-action="true" id="save-data-operation">
+                Export data ↓
+              </button>
+            </div>
+          </div>
+          <div class="operation-groups strategy-row aligned-operations">
+            <div class="operation-band">
+              <section
+                aria-labelledby="controller-heading"
+                class="operation-group controller-group"
+              >
+                <h2 id="controller-heading">Controller</h2>
+                <button class="button primary" data-ui-action="true" id="start">
+                  Start controller
+                </button>
+                <fieldset class="target-choice">
+                  <legend class="control-target-label">
+                    Control target:
+                    <strong id="active-target"></strong>
+                    <button class="text-button" data-ui-action="true" id="edit-target">
+                      Edit →
+                    </button>
+                  </legend>
+                  <div class="choice-options">
+                    <label>
+                      <input checked="" name="control-target" type="radio" value="sigma" />
+                      <span>Supersaturation $\sigma$</span>
+                    </label>
+                    <label>
+                      <input name="control-target" type="radio" value="G" />
+                      <span>Growth rate $G$</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <select aria-hidden="true" hidden="" id="target">
+                  <option value="sigma">sigma</option>
+                  <option value="G">G</option>
+                </select>
+                <button class="button subtle" data-ui-action="true" id="refresh">
+                  Refresh controller
+                </button>
+              </section>
+              <section aria-labelledby="growth-heading" class="operation-group">
+                <h2 id="growth-heading">Growth measurement</h2>
+                <button
+                  aria-pressed="false"
+                  class="button primary"
+                  data-ui-action="true"
+                  id="sensor"
+                >
+                  Start GSensor
+                </button>
+                <button class="button subtle" data-ui-action="true" id="refresh-sensor">
+                  Refresh GSensor
+                </button>
+              </section>
+            </div>
+            <div class="operation-band">
+              <section aria-labelledby="adaptation-heading" class="operation-group">
+                <h2 id="adaptation-heading">Adapter</h2>
+                <button
+                  aria-pressed="false"
+                  class="button primary"
+                  data-ui-action="true"
+                  id="adaptive"
+                >
+                  Start adapter
+                </button>
+                <fieldset class="adapt-choice">
+                  <legend>Adaptive parameters</legend>
+                  <div class="choice-options">
+                    <label>
+                      <input checked="" data-adapt="E_A" type="checkbox" />
+                      <span>$E_{\mathrm{A}}$</span>
+                    </label>
+                    <label>
+                      <input checked="" data-adapt="k_0" type="checkbox" />
+                      <span>$k_0$</span>
+                    </label>
+                    <label>
+                      <input checked="" data-adapt="n" type="checkbox" />
+                      <span>$n$</span>
+                    </label>
+                  </div>
+                </fieldset>
+                <select aria-hidden="true" hidden="" id="adaptive-mode">
+                  <option value="all">all</option>
+                  <option value="E_A">E_A</option>
+                  <option value="k_0">k_0</option>
+                  <option value="n">n</option>
+                  <option value="E_A_and_k_0">E_A_and_k_0</option>
+                  <option value="E_A_and_n">E_A_and_n</option>
+                  <option value="k_0_and_n">k_0_and_n</option>
+                  <option value="none">none</option>
+                </select>
+              </section>
+              <section aria-labelledby="seed-heading" class="operation-group">
+                <h2 id="seed-heading">Seed</h2>
+                <button class="button primary" data-ui-action="true" id="seed">Add seed</button>
+              </section>
+            </div>
+          </div>
+        </section>
+        <div class="run-summary">
+          <div>
+            <span class="eyebrow">CURRENT RUN</span>
+            <strong id="run-time">0.00 min</strong>
+          </div>
+          <div>
+            <span>Controller</span>
+            <strong id="run-mode">MPC → σ</strong>
+          </div>
+          <div>
+            <span>Progress</span>
+            <strong id="run-progress">0 / 900 steps</strong>
+          </div>
+          <button class="button" data-ui-action="true" id="view-display">
+            View live display →
+          </button>
+        </div>
+      </section>
+      <section class="workspace-page" hidden="" id="overview">
+        <div class="page-introduction">
+          <div>
+            <span class="eyebrow">CONTROL OVERVIEW</span>
+            <h1>
+              Control crystal growth.
+              <br />
+              <em>Watch the process evolve.</em>
+            </h1>
+            <p>
+              Choose the control target in Operation and tune the model in Parameters. Start the
+              controller, add seed, and follow the simulated process in Display.
+            </p>
+          </div>
+        </div>
+        <div class="overview-layout">
+          <section class="overview-description">
+            <span class="eyebrow">HOW THE LOOP WORKS</span>
+            <h2>
+              From the target
+              <br />
+              to crystal growth.
+            </h2>
+            <div>
+              <h3>Primary controller</h3>
+              <p>
+                Tracks the selected supersaturation $\sigma$ or growth rate $G$. MPC predicts the
+                process response and accounts for time lag; PI uses the tracking error to determine
+                the temperature gradient $\dot T_{\mathrm{set}}$.
+              </p>
+            </div>
+            <div>
+              <h3>Secondary controller</h3>
+              <p>
+                Combines the heat-transfer model with jacket feedback to calculate the jacket
+                temperature setpoint $T_{\mathrm{j},\mathrm{set}}$.
+              </p>
+            </div>
+            <div>
+              <h3>GSensor &amp; adapter</h3>
+              <p>
+                Simulated growth measurements feed the parameter adapter. When enabled, it updates
+                the selected parameters $E_{\mathrm{A}}$, $k_0$ and $n$ used by the control model.
+              </p>
+            </div>
+            <p class="overview-note">
+              The diagram shows the complete experimental architecture. This page runs the
+              simulation path: temperature, concentration and growth measurements come from the
+              process model.
+            </p>
+          </section>
+          <figure class="structure-figure">
+            <img
+              alt="MPC structure: state filtering, prediction, time-lag correction, objective minimization, jacket control, growth-rate sensor and parameter adaptation"
+              src="assets/mpcrystal-control-structure.png"
+            />
+            <figcaption>
+              Model predictive control with growth-rate sensing and parameter adaptation
+            </figcaption>
+          </figure>
+        </div>
+        <details class="input-guide">
+          <summary>How does this simulation work?</summary>
+          <p>
+            Each step advances the physical model by $\Delta t$, updates the extended Kalman filter,
+            computes the primary control action, and updates the jacket temperature setpoint.
+            Growth-rate measurements and adaptation run when enabled. Start controller begins a new
+            run; Pause preserves the current state; Refresh controller resets the filters and
+            controller integrals while keeping process history.
+          </p>
+          <p>
+            The top-right step interval controls playback only. Add seed adds a new batch to the
+            existing crystal population. Advance one step calculates one physical time step $\Delta
+            t$ while playback is paused. Initial conditions apply on the next run.
+          </p>
+        </details>
+        <section class="lab-reference">
+          <span class="eyebrow">RELATED PAPER</span>
+          <h2>
+            Model Predictive Control with Inline Parameter Adaptation for Direct Crystal Growth Rate
+            Regulation
+          </h2>
+          <p>
+            <a href="https://doi.org/10.1002/aic.70648" rel="noopener" target="_blank">
+              DOI 10.1002/aic.70648 ↗
+            </a>
+            ·
+            <a href="../../../papers/growth-rate-control/" target="_top">Paper details →</a>
+          </p>
+        </section>
+      </section>
+      <section class="workspace-page" hidden="" id="parameters">
+        <div class="page-introduction workspace-introduction">
+          <div>
+            <span class="eyebrow">MODEL PARAMETERS</span>
+            <h1>Model parameters</h1>
+            <p>
+              Set the targets, material models, control parameters, and simulation conditions.
+              Derived quantities update with their dependencies.
+            </p>
+          </div>
+          <div class="theory-note">
+            <span class="eyebrow">GROWTH KINETICS</span>
+            <div>$G=k_0\exp\!\left(-\frac{E_{\mathrm{A}}}{RT}\right)\sigma^n$</div>
+            <p>$\sigma=(c-c_{\mathrm{sat}})/c_{\mathrm{sat}}$</p>
+          </div>
+        </div>
+        <section class="controller-settings card">
+          <span>Controller mode</span>
+          <div class="controller-mode-switch" role="group" aria-label="Controller mode">
+            <button type="button" data-controller-mode="MPC" aria-pressed="true" class="active">
+              MPC
+            </button>
+            <button type="button" data-controller-mode="PI" aria-pressed="false">PI</button>
+          </div>
+          <select id="mode" hidden="" aria-hidden="true">
+            <option>MPC</option>
+            <option>PI</option>
+          </select>
+
+          <details class="input-guide parameter-help">
+            <summary>Input guide</summary>
+            <p>
+              Use numbers, scientific notation or scalar expressions, for example
+              <code>3e-8</code>
+              or
+              <code>np.pi/6</code>
+              . Enter temperatures in kelvin; plots use °C. Shaded inputs are calculated.
+            </p>
+          </details>
+        </section>
+        <div class="parameter-toolbar">
+          <nav aria-label="Parameter categories" class="parameter-tabs" id="parameter-tabs"></nav>
+          <label class="search-label">
+            Find parameter
+            <input id="search" placeholder="Name or symbol…" type="search" />
+          </label>
+        </div>
+        <nav
+          aria-label="Parameter subcategories"
+          class="parameter-subtabs"
+          id="parameter-subtabs"
+        ></nav>
+
+        <div id="parameter-groups"></div>
+        <p hidden="" id="no-results">No matching parameters.</p>
+      </section>
+      <section class="workspace-page" hidden="" id="display">
+        <div class="page-introduction workspace-introduction">
+          <div>
+            <span class="eyebrow">LIVE SIMULATION</span>
+            <h1>Simulation results</h1>
+            <p>
+              Inspect the process states, target tracking, simulated growth measurements, and
+              parameter adaptation as each step is calculated.
+            </p>
+          </div>
+          <div class="display-summary">
+            <span class="eyebrow">SIMULATION TIME</span>
+            <strong id="display-time">0.00 min</strong>
+            <span id="display-step">0 / 900 steps</span>
+          </div>
+        </div>
+        <section class="headline-metrics" id="headline-metrics"></section>
+        <div class="display-toolbar">
+          <nav aria-label="Chart views" class="result-tabs" id="view-tabs">
+            <button class="active" data-view="all">All</button>
+            <button data-view="states">States</button>
+            <button data-view="targets">Targets</button>
+            <button data-view="lag">Lag</button>
+            <button data-view="growth">Growth</button>
+          </nav>
+          <div>
+            <div aria-label="Display mode" class="panel-view-switch" id="display-mode" role="group">
+              <button aria-pressed="true" class="active" data-display-mode="diagram">
+                Diagram
+              </button>
+              <button aria-pressed="false" data-display-mode="values">Values</button>
+            </div>
+            <label>
+              Layout
+              <select id="columns">
+                <option value="auto">Responsive</option>
+                <option value="4">4 columns</option>
+                <option value="2">2 columns</option>
+                <option value="1">1 column</option>
+              </select>
+            </label>
+          </div>
+        </div>
+        <details class="input-guide display-settings">
+          <summary>Panels &amp; curve colours</summary>
+          <div class="settings-grid">
+            <div>
+              <h3>Visible panels</h3>
+              <div id="panel-switches"></div>
+            </div>
+            <div>
+              <h3>Curve colours</h3>
+              <p class="small muted">
+                The selected colour is shared by every panel containing that curve.
+              </p>
+              <div id="colour-controls"></div>
+              <button class="text-button" data-ui-action="true" id="restore-colours">
+                Restore default colours
+              </button>
+            </div>
+          </div>
+        </details>
+        <div class="plot-grid" id="plot-grid"></div>
+      </section>
+      <div aria-live="polite" hidden="" id="message" role="status"></div>
+      <footer>
+        <span>MPCRYSTAL LAB / SIMULATION</span>
+        <p>Growth kinetics · State estimation · Predictive control</p>
+      </footer>
+    </main>
+    <script data-lab-interface="" defer="" src="lab-interface.js"></script>
+  </body>
+</html>

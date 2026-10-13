@@ -1,121 +1,34 @@
 baseURL: "https://huitianyu.netlify.app/"
-languageCode: en-us
+locale: en-us
 title: Huitian Yu
-theme: PaperMod
-
+enableRobotsTXT: true
+disableKinds: [taxonomy, term]
+params:
+  portrait: "images/profile/huitian-yu-portrait.jpeg"
+  portraitLocation: "Paris, France"
+  description: "Crystallization, control and scientific computing — research and interactive labs by Huitian Yu."
+  email: "martin.huitian.yu@gmail.com"
+  cvURL: "https://drive.google.com/file/d/1Y_QN1DArzY0SakEJqA6-pp44uDHgU2tA/view?usp=sharing"
+  wikiURL: "https://huitianyu.github.io/"
 menu:
   main:
-    - identifier: home
-      name: Home
-      url: /
-    - identifier: research
-      name: Research
-      url: /research
-      weight: 30
-      weight: 10
-    - identifier: blog
-      name: Blog
-      url: /blog
-      weight: 20
-    - identifier: wiki
-      name: Wiki
-      url: /wiki
-      weight: 30
-    - identifier: projects
-      name: Projects
-      url: /projects
-      weight: 40
-    - identifier: experience
-      name: Experience
-      url: /experience
-      weight: 50
-    - identifier: search
-      name: Search
-      url: /search
-      weight: 60
-    # - identifier: notes
-    #   name: Notes
-    #   url: https://notes.arkalim.org
-    #   weight: 70
-    # - identifier: notes2
-    #   name: Notes2
-    #   url: https://notes2.arkalim.org
-    #   weight: 80
-
-params:
-  # theme
-  showToc: true
-  TocOpen: false
-  ShowBreadCrumbs: true
-  ShowCodeCopyButtons: true
-  hideMeta: false
-
-  # for enchanced SEO
-  env: production
-
-  # enable google crawl
-  analytics:
-    googlesiteVerificationTag: GXrsA5lpHza31N3wPVm59lmJtx2P5I23MUp3jB7vNE8
-
-  # Home Page
-  profileMode:
-    enabled: true
-    title: "Huitian Yu"
-    subtitle: \| PhD candidate in crystallization control @ [SVT (TUM)](https://www.lse.ls.tum.de/en/svt/home/) \| <br /> \| M.Sc. in Process Engineering @ [ETHz](https://ethz.ch/en.html) \| <br /> \| M.Sc. & B.Sc. in Chemical Process Engineering @ [KIT](https://www.kit.edu/) both with "sehr gut" \|
-    imageUrl: "home/formal-pic-small.jpeg"
-    imageWidth: 220
-    imageHeight: 220
-    buttons:
-      - name: "Résumé"
-        url: "https://drive.google.com/file/d/1Qqe740-izGZLRWTwRfmHGGQaIeT9DL6W/view?usp=drive_link"
-      - name: "Pulication"
-        url: "research/publication"
-
-  # List View
-  hideDescriptionInList: false
-
-  # cover image for posts
-  cover:
-    hiddenInList: false # hide on list pages and home
-    hiddenInSingle: false # hide on single page
-
-  socialIcons:
-    - name: "email"
-      url: "mailto:martin.huitian.yu@gmail.com"
-    - name: "linkedin"
-      url: "https://www.linkedin.com/in/huitian-yu-8448a2153"
-    - name: "github"
-      url: "https://github.com/huitianyu"
-    - name: "researchgate"
-      url: "https://www.researchgate.net/profile/Huitian-Yu"
-    - name: "googlescholar"
-      url: "https://scholar.google.com/citations?user=X0Qo6yAAAAAJ&hl=en"
-    - name: "orcid"
-      url: "https://orcid.org/0009-0006-1639-8932/"
-    - name: "svt"
-      url: "https://www.lse.ls.tum.de/en/svt/staff/m-sc-huitian-yu/"
-    # - name: "cv"
-    #   url: "https://drive.google.com/file/d/1AjRPyzCSuZa_jRmooEE9hd9hwuqbLYai/view?usp=sharing"
-
-  # text search
-  fuseOpts:
-    isCaseSensitive: false
-    shouldSort: true
-    location: 0
-    distance: 1000
-    threshold: 0.4
-    minMatchCharLength: 0
-    keys: ["title", "permalink", "summary", "content"]
-
-# for search using Fuse.js
+    - {name: Home, url: /, weight: 10}
+    - {name: Papers, url: /papers/, weight: 20}
+    - {name: Conferences, url: /conferences/, weight: 30}
+    - {name: Labs, url: /labs/, weight: 40}
+    - {name: Wiki, url: /wiki/, weight: 50}
+    - {name: News, url: /news/, weight: 60}
+    - {name: CV, url: /cv/, weight: 70}
+    - {name: Contact, url: /contact/, weight: 80}
+    - {name: Search, url: /search/, weight: 90}
 outputs:
-  home:
-    - HTML
-    - RSS
-    - JSON
-
-# allow HTML in MD
+  home: [HTML, RSS, JSON]
 markup:
   goldmark:
     renderer:
-      unsafe: true
+      unsafe: false
+
+# Remove obsolete output files when a Lab bundle is moved away.
+build:
+  cleanDestinationDir:
+    enable: true

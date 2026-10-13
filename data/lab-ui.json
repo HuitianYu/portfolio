@@ -1,0 +1,35 @@
+{
+  "dataSources": {
+    "local": {
+      "label": "Local",
+      "description": "Data supplied with this lab; no external data service is required."
+    },
+    "cloud": {
+      "label": "Cloud",
+      "description": "Data retrieved from the external dataset; a network connection is required."
+    }
+  },
+  "sections": {
+    "overview": "Overview",
+    "operations": "Operation",
+    "operation": "Operation",
+    "parameters": "Parameters",
+    "display": "Display",
+    "library": "Crystal library",
+    "design": "Design",
+    "results": "Display"
+  },
+  "shell": {
+    "focus": "Focus mode",
+    "exitFocus": "Exit focus",
+    "focusHint": "Expand this workspace while keeping the current run. Press Escape to exit.",
+    "newInstance": "Open new instance",
+    "newInstanceHint": "Open an independent workspace in a new tab. Current settings, progress and results are not transferred.",
+    "reload": "Restart lab",
+    "reloadHint": "Restart this workspace and discard its current settings and results.",
+    "openLab": "Open lab",
+    "hideHeaders": "Hide lab controls",
+    "showHeaders": "Show lab controls",
+    "headerHint": "Hide the fixed controls and tabs inside this lab. Website navigation stays visible. Press Escape to restore."
+  }
+}

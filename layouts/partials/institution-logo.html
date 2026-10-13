@@ -1,0 +1,7 @@
+{{ with index hugo.Data.institutions . }}
+  {{ with .logo }}
+    <span class="school-mark" aria-hidden="true">
+      <img src="{{ . | relURL }}" alt="" width="600" height="600" loading="lazy" />
+    </span>
+  {{ end }}
+{{ end }}

@@ -1,102 +1,159 @@
-{{- define "main" }}
-
-{{- if (and site.Params.profileMode.enabled .IsHome) }}
-{{- partial "index_profile.html" . }}
-{{- else }} {{/* if not profileMode */}}
-
-{{- if not .IsHome | and .Title }}
-<header class="page-header">
-  {{- partial "breadcrumbs.html" . }}
-  <h1>
-    {{ .Title }}
-    {{- if and (or (eq .Kind `term`) (eq .Kind `section`)) (.Param "ShowRssButtonInSectionTermList") }}
-    <a href="index.xml" title="RSS" aria-label="RSS">
-      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-        stroke-linecap="round" stroke-linejoin="round" height="23">
-        <path d="M4 11a9 9 0 0 1 9 9" />
-        <path d="M4 4a16 16 0 0 1 16 16" />
-        <circle cx="5" cy="19" r="1" />
-      </svg>
-    </a>
-    {{- end }}
-  </h1>
-  {{- if .Description }}
-  <div class="post-description">
-    {{ .Description | markdownify }}
+{{ define "main" }}
+  <div class="container page-container with-page-outline">
+    {{ partial "page-outline.html" . }}
+    <div class="page-content">
+      <header id="page-overview" class="page-heading">
+        <span class="eyebrow">HUITIAN YU / {{ .Title }}</span>
+        <h1>
+          {{ .Title }}
+          <em>.</em>
+        </h1>
+        <p>{{ .Description }}</p>
+      </header>
+      {{ if eq .Section "papers" }}
+        <div class="listing-meta">
+          <span>{{ len .RegularPages }} papers</span>
+          <span>Newest first</span>
+        </div>
+        <div class="paper-list">
+          {{ range .RegularPages.ByDate.Reverse }}{{ partial "paper-card.html" . }}{{ end }}
+        </div>
+      {{ else if eq .Section "labs" }}
+        <div class="listing-meta">
+          <span>{{ len (partial "labs-data.html" .) }} labs</span>
+          <span>Interactive research tools</span>
+        </div>
+        <div class="lab-grid">
+          {{ range partial "labs-data.html" . }}{{ partial "lab-card.html" . }}{{ end }}
+        </div>
+        <div class="quiet-note">
+          These browser-based tools support the research papers. Related paper links are added as
+          the papers become available on this site.
+        </div>
+      {{ else if eq .Section "conferences" }}
+        <div class="listing-meta">
+          <span>{{ len hugo.Data.conferences }} conferences</span>
+          <span>Newest first</span>
+        </div>
+        <div class="conference-list">
+          {{ range sort hugo.Data.conferences "date" "desc" }}
+            <article class="conference-card" id="{{ .id }}">
+              <div class="conference-date">
+                <strong>{{ substr .date 0 4 }}</strong>
+                <span>{{ .dates }}</span>
+                <span>{{ .location }}</span>
+              </div>
+              <div class="conference-copy">
+                <div class="eyebrow">
+                  {{ .acronym }}
+                  <span>· {{ .format }}</span>
+                </div>
+                <h2>{{ .title }}</h2>
+                <p class="authors">{{ delimit .authors ", " }}</p>
+                <p class="event-name">{{ .event }}</p>
+                <a class="text-link" href="{{ .url }}" target="_blank" rel="noopener">
+                  Conference website ↗
+                </a>
+              </div>
+            </article>
+          {{ end }}
+        </div>
+      {{ else if eq .Section "wiki" }}
+        <a class="wiki-entry" href="{{ site.Params.wikiURL }}">
+          <span class="wiki-symbol" aria-hidden="true">W</span>
+          <div>
+            <span class="eyebrow">NOTES & KNOWLEDGE</span>
+            <h2>
+              Open the Wiki
+              <span>↗</span>
+            </h2>
+            <p>Research notes and references, all in one place.</p>
+            <span class="wiki-url">{{ site.Params.wikiURL }}</span>
+            <span class="wiki-open">Open Wiki ↗</span>
+          </div>
+        </a>
+      {{ else if eq .Section "news" }}
+        {{ if .RegularPages }}
+          <div class="news-grid">
+            {{ range .RegularPages.ByDate.Reverse }}
+              <article class="news-card">
+                <a class="news-image" href="{{ .RelPermalink }}">
+                  <img src="{{ .Params.image | relURL }}" alt="{{ .Params.alt }}" loading="lazy" />
+                </a>
+                <div class="news-copy">
+                  <div class="eyebrow">
+                    {{ .Params.topic }} ·
+                    <time datetime="{{ .Date.Format "2006-01-02" }}">
+                      {{ .Date.Format "2 January 2006" }}
+                    </time>
+                  </div>
+                  <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+                  <p>{{ .Params.summary }}</p>
+                  <a class="text-link" href="{{ .RelPermalink }}">Read update →</a>
+                </div>
+              </article>
+            {{ end }}
+          </div>
+        {{ else }}
+          <div class="empty-state">
+            <span class="empty-icon" aria-hidden="true">✳</span>
+            <h2>A little quiet here, for now.</h2>
+            <p>Research updates will appear here.</p>
+            <a class="text-link" href="{{ "papers/" | relURL }}">Explore the papers →</a>
+          </div>
+        {{ end }}
+      {{ else if eq .Section "cv" }}
+        <div class="cv-layout">
+          <section class="cv-download">
+            <img
+              class="cv-background-photo"
+              src="{{ site.Params.portrait | relURL }}"
+              alt=""
+              aria-hidden="true"
+              loading="lazy"
+            />
+            <span class="eyebrow">CURRICULUM VITAE</span>
+            <h2>
+              A closer look
+              <br />
+              <em>at my background.</em>
+            </h2>
+            <p>Explore the sections below, or open the downloadable CV.</p>
+            <a class="button primary" href="{{ site.Params.cvURL }}" target="_blank" rel="noopener">
+              Open CV
+              <span>↗</span>
+            </a>
+          </section>
+          <div>{{ partial "cv-overview.html" . }}</div>
+        </div>
+        {{ partial "cv-details.html" . }}
+      {{ else if eq .Section "search" }}
+        <div class="search-box">
+          <label for="site-search">Search this site</label>
+          <div>
+            <input
+              type="search"
+              id="site-search"
+              placeholder="Try curvature, control, or a conference…"
+              autocomplete="off"
+            />
+            <span aria-hidden="true">⌕</span>
+          </div>
+        </div>
+        <p id="search-status" role="status" aria-live="polite" aria-atomic="true">
+          Search across papers, conferences, labs and pages.
+        </p>
+        <div id="search-results" class="search-results"></div>
+        <script
+          defer
+          src="{{ "js/search.js" | relURL }}?v={{ readFile "static/js/search.js" | md5 }}"
+          data-index="{{ "index.json" | relURL }}?v={{ readFile "layouts/index.json" | md5 }}"
+        ></script>
+      {{ else }}
+        {{ .Content }}{{ range .RegularPages }}
+          <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
+        {{ end }}
+      {{ end }}
+    </div>
   </div>
-  {{- end }}
-</header>
-{{- end }}
-
-{{- if .Content }}
-<div class="post-content">
-  {{- if not (.Param "disableAnchoredHeadings") }}
-  {{- partial "anchored_headings.html" .Content -}}
-  {{- else }}{{ .Content }}{{ end }}
-</div>
-{{- end }}
-
-{{- $pages := union .RegularPages .Sections }}
-
-{{- if .IsHome }}
-{{- $pages = where site.RegularPages "Type" "in" site.Params.mainSections }}
-{{- end }}
-
-{{- $paginator := .Paginate $pages }}
-
-{{- if and .IsHome site.Params.homeInfoParams (eq $paginator.PageNumber 1) }}
-{{- partial "home_info.html" . }}
-{{- end }}
-
-{{- $term := .Data.Term }}
-{{- range $index, $page := $paginator.Pages }}
-
-{{- $class := "post-entry" }}
-
-{{- $user_preferred := or site.Params.disableSpecial1stPost site.Params.homeInfoParams }}
-{{- if (and $.IsHome (eq $paginator.PageNumber 1) (eq $index 0) (not $user_preferred)) }}
-{{- $class = "first-entry" }}
-{{- else if $term }}
-{{- $class = "post-entry tag-entry" }}
-{{- end }}
-
-<article class="{{ $class }}">
-  {{- $isHidden := (site.Params.cover.hidden | default site.Params.cover.hiddenInList) }}
-  {{- partial "cover.html" (dict "cxt" . "IsHome" true "isHidden" $isHidden) }}
-  <header class="entry-header">
-    <h2>
-      {{- .Title }}
-      {{- if .Draft }}<sup><span class="entry-isdraft">&nbsp;&nbsp;[draft]</span></sup>{{- end }}
-    </h2>
-  </header>
-  <!-- Added a custom param hideDescriptionInList  -->
-  {{- if (ne (.Param "hideDescriptionInList") true) }}
-  <div class="entry-content">
-    <p>{{ .Description }}</p>
-  </div>
-  {{- end }}
-  {{- if not (.Param "hideMeta") }}
-  <footer class="entry-footer">
-    {{- partial "post_meta.html" . -}}
-  </footer>
-  {{- end }}
-  <a class="entry-link" aria-label="post link to {{ .Title | plainify }}" href="{{ .Permalink }}"></a>
-</article>
-{{- end }}
-
-{{- if gt $paginator.TotalPages 1 }}
-<footer class="page-footer">
-  <nav class="pagination">
-    {{- if $paginator.HasPrev }}
-    <a class="prev" href="{{ $paginator.Prev.URL | absURL }}">« {{ i18n "prev_page" }}</a>
-    {{- end }}
-    {{- if $paginator.HasNext }}
-    <a class="next" href="{{ $paginator.Next.URL | absURL }}">{{ i18n "next_page" }} »</a>
-    {{- end }}
-  </nav>
-</footer>
-{{- end }}
-
-{{- end }}{{/* end profileMode */}}
-
-{{- end }}{{- /* end main */ -}}
+{{ end }}
