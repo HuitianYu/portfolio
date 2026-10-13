@@ -54,8 +54,7 @@
     T_j_init: 315.15,
     T_j_set_init: 315.15,
     c_init: 0.32,
-    steps_sigma: 900,
-    steps_G: 1620,
+    steps: 1620,
     m_seed: 0.001,
     d_mean_seed: 250e-6,
     d_std_seed: 25e-6,
@@ -78,7 +77,6 @@
     d["params.PI_mode"] = "Ziegler_Nichols";
     for (const k of [
       "T_init",
-      "steps",
       "dT_dt_min",
       "dT_dt_max",
       "t_lag_threshold_perc",
@@ -361,8 +359,8 @@
       "params.w_dT_dt",
     ])
       if (p[k] < 0) throw Error(k + " must be nonnegative.");
-    for (const k of ["steps_sigma", "steps_G", "min_num_adapt", "max_num_adapt"]) {
-      const limit = k.startsWith("steps_") ? 10000 : 200;
+    for (const k of ["steps", "min_num_adapt", "max_num_adapt"]) {
+      const limit = k === "steps" ? 10000 : 200;
       if (!Number.isInteger(p[k]) || p[k] < 1 || p[k] > limit)
         throw Error(k + " must be an integer between 1 and " + limit + " for this browser lab.");
     }
