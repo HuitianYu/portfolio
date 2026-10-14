@@ -52,6 +52,7 @@
     <script src="data-loader.js"></script>
     <link data-design-system="" href="design-system.css" rel="stylesheet" />
     <script src="lab-runtime.js"></script>
+    <script src="ui-controls.js"></script>
   </head>
   <body>
     <div class="fixed-workspace-header">

@@ -6,6 +6,7 @@ import * as prettier from "prettier";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const check = process.argv.includes("--check");
 const shared = [
+  ["static/js/ui-controls.js", "ui-controls.js"],
   ["static/js/lab-interface.js", "lab-interface.js"],
   ["static/js/lab-runtime.js", "lab-runtime.js"],
   ["static/css/design-system.css", "design-system.css"],

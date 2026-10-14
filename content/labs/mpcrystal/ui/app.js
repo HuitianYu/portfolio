@@ -301,7 +301,7 @@
     },
     {
       id: "population",
-      title: "Simulated crystal population",
+      title: "Crystal population",
       unit: "N\\;[\\#]",
       keys: [],
       group: "growth",
@@ -819,14 +819,15 @@
         label.className = "module-label";
         b.replaceChildren(label);
       }
-      label.textContent = {
+      let nextLabel = {
         start: "Controller",
         sensor: "GSensor",
         adaptive: "Adapter",
         seed: "Seed",
       }[b.dataset.action];
       if (b.dataset.action === "seed" && acceptedSeedBatches)
-        label.textContent += " · " + acceptedSeedBatches;
+        nextLabel += " · " + acceptedSeedBatches;
+      if (label.textContent !== nextLabel) label.textContent = nextLabel;
       b.setAttribute("aria-label", main.textContent.trim());
       b.classList.toggle("primary", main.classList.contains("primary"));
       b.classList.toggle("on", main.classList.contains("on"));
@@ -957,7 +958,7 @@
   async function render(force = false) {
     if (tab !== "display") return;
     if (busy) {
-      queued = true;
+      queued ||= force;
       return;
     }
     const now = performance.now();
@@ -978,8 +979,10 @@
             : p.t_base === 1
               ? "\\mathrm s"
               : `${p.t_base}\\,\\mathrm s`;
-      const jobs = [];
+      const mathUpdates = [];
+      let drawn = 0;
       for (const panel of panels) {
+        if (tab !== "display") break;
         const card = $("card-" + panel.id),
           show = visiblePanels.has(panel.id) && (view === "all" || panel.group === view);
         card.hidden = !show;
@@ -1046,7 +1049,7 @@
                         : ["sigma", "sigmaSet", "f", "n", "lnk", "EA"].includes(k)
                           ? "-"
                           : String.raw`\mathrm{m}\,\mathrm{s}^{-1}`;
-        legend.innerHTML = traces
+        const legendMarkup = traces
           .map((trace, i) => {
             const key = panel.population ? "population" : panel.keys[i] || "Seed";
             const latest = key === "Seed" ? sim.seedEvents.length : trace.y.at(-1);
@@ -1059,18 +1062,33 @@
               ? trace.name.slice(1, -1)
               : String.raw`\mathrm{Seed}`;
             trace.name = "$" + symbol + " = " + value + "$";
-            return `<button class="legend-value" data-trace="${i}" title="Show or hide curve"><i style="--curve:${trace.line?.color || trace.marker?.color};border-top-style:${trace.line?.dash === "dot" ? "dotted" : trace.line?.dash === "dash" ? "dashed" : "solid"}"></i><span class="legend-symbol">$${symbol}$</span><span class="legend-equals">=</span><span class="legend-number">$${value}$</span><span class="legend-unit">$${unitFor(key)}$</span></button>`;
+            return `<button class="legend-value" data-trace="${i}" title="Show or hide curve"><i style="--curve:${trace.line?.color || trace.marker?.color};border-top-style:${trace.line?.dash === "dot" ? "dotted" : trace.line?.dash === "dash" ? "dashed" : "solid"}"></i><span class="legend-symbol">$${symbol}$</span><span class="legend-equals">=</span><span class="legend-number"></span><span class="legend-unit">$${unitFor(key)}$</span></button>`;
           })
           .join("");
-        legend.querySelectorAll("button").forEach(
-          (button) =>
-            (button.onclick = () => {
-              const hidden = button.classList.toggle("curve-hidden");
-              Plotly.restyle($("plot-" + panel.id), { visible: hidden ? "legendonly" : true }, [
-                Number(button.dataset.trace),
-              ]);
-            }),
-        );
+        if (legend.dataset.markup !== legendMarkup) {
+          legend.dataset.markup = legendMarkup;
+          legend.innerHTML = legendMarkup;
+          mathUpdates.push(legend);
+          legend.querySelectorAll("button").forEach(
+            (button) =>
+              (button.onclick = () => {
+                const hidden = button.classList.toggle("curve-hidden");
+                Plotly.restyle($("plot-" + panel.id), { visible: hidden ? "legendonly" : true }, [
+                  Number(button.dataset.trace),
+                ]);
+              }),
+          );
+        }
+        legend.querySelectorAll(".legend-number").forEach((node, i) => {
+          const key = panel.population ? "population" : panel.keys[i] || "Seed";
+          const latest = key === "Seed" ? sim.seedEvents.length : traces[i].y.at(-1);
+          const value = Number.isFinite(latest) ? Number(latest.toPrecision(4)).toString() : "—";
+          const html = value.replace(
+            /e([+-]?)(\d+)/,
+            (_, sign, exp) => " × 10<sup>" + (sign === "-" ? "−" : "") + Number(exp) + "</sup>",
+          );
+          if (node.innerHTML !== html) node.innerHTML = html;
+        });
         const layout = {
           paper_bgcolor: "#fff",
           plot_bgcolor: "#fff",
@@ -1144,11 +1162,7 @@
           card.classList.toggle("tracking-inactive", !active);
           card.classList.toggle("tracking-good", !!good);
           card.classList.toggle("tracking-bad", !!active && !good);
-          badge.textContent = active
-            ? good
-              ? "Within tolerance"
-              : "Outside tolerance"
-            : "Inactive";
+          badge.textContent = active ? (good ? "Good" : "Bad") : "Inactive";
           badge.className = "tracking-state " + (active ? (good ? "good" : "bad") : "");
           badge.title =
             "Within tolerance when |error| ≤ " +
@@ -1173,15 +1187,11 @@
           card.classList.toggle("tracking-inactive", !enabled);
           card.classList.toggle("tracking-good", !!adjusting);
           card.classList.remove("tracking-bad");
-          badge.textContent =
-            (enabled ? (adjusting ? "Adjusting" : "Waiting") : "Inactive") +
-            " · " +
-            count +
-            " / " +
-            p.min_num_adapt;
+          badge.textContent = count + " / " + p.min_num_adapt;
           badge.className =
             "tracking-state adaptation-state " + (enabled ? (adjusting ? "good" : "pending") : "");
           badge.title =
+            (enabled ? (adjusting ? "Adjusting. " : "Waiting. ") : "Inactive. ") +
             "Valid points: " +
             count +
             "; minimum: " +
@@ -1198,17 +1208,15 @@
             showgrid: false,
             zeroline: false,
           };
-        jobs.push(
-          Plotly.react($("plot-" + panel.id), traces, layout, {
-            responsive: true,
-            displaylogo: false,
-            modeBarButtonsToRemove: ["lasso2d", "select2d"],
-            toImageButtonOptions: { format: "png", filename: "mpcrystal-" + panel.id, scale: 2 },
-          }),
-        );
+        await Plotly.react($("plot-" + panel.id), traces, layout, {
+          responsive: true,
+          displaylogo: false,
+          modeBarButtonsToRemove: ["lasso2d", "select2d"],
+          toImageButtonOptions: { format: "png", filename: "mpcrystal-" + panel.id, scale: 2 },
+        });
+        if (++drawn % 2 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
       }
-      await Promise.all(jobs);
-      await typeset([$("plot-grid")]);
+      if (mathUpdates.length) await typeset(mathUpdates);
     } catch (e) {
       notify("Chart update failed: " + e.message, true);
     } finally {

@@ -22,6 +22,8 @@
 {{ end }}
 {{ $sharedRuntime := printf "%s?v=%s" ("js/lab-runtime.js" | relURL) (readFile "static/js/lab-runtime.js" | md5) }}
 {{ $document = replace $document "src=\"lab-runtime.js\"" (printf "src=\"%s\"" $sharedRuntime) }}
+{{ $controls := printf "%s?v=%s" ("js/ui-controls.js" | relURL) (readFile "static/js/ui-controls.js" | md5) }}
+{{ $document = replace $document "src=\"ui-controls.js\"" (printf "src=\"%s\"" $controls) }}
 {{ $app := resources.FromString (printf "labs/%s/ui/index.html" $page.Params.id) $document }}
 
 {{ return $app.RelPermalink }}

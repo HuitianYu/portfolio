@@ -3615,7 +3615,9 @@ body.controls-away.controls-open .common-controls {
 
 .plot-head {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto minmax(18px, 1fr);
+  grid-template-columns: minmax(0, 1fr) auto 18px;
+  min-height: 54px;
+  box-sizing: border-box;
   gap: 8px;
 }
 .plot-head h3 {

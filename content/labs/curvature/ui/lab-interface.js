@@ -105,71 +105,30 @@
 
   function initializeToolbarMenus() {
     const entries = [];
-    let lastTouch = -Infinity;
-    const mouseHover = matchMedia("(hover:hover) and (pointer:fine)");
     function register(owner, trigger, panel, readOpen, writeOpen) {
-      let openTimer, closeTimer;
-      const cancel = () => {
-        clearTimeout(openTimer);
-        clearTimeout(closeTimer);
-      };
-      const entry = {
+      const controller = window.UIControls.disclosure({
         owner,
         trigger,
         readOpen,
-        close() {
-          cancel();
-          writeOpen(false);
-          trigger.setAttribute("aria-expanded", "false");
+        writeOpen,
+        escape: false,
+        onOpen: () => {
+          entries.forEach((other) => {
+            if (other.owner !== owner) other.close();
+          });
         },
-      };
-      function open() {
-        cancel();
-        entries.forEach((other) => {
-          if (other !== entry) other.close();
-        });
-        writeOpen(true);
-        trigger.setAttribute("aria-expanded", "true");
-        position();
-      }
-      function enter(event) {
-        if (
-          event.pointerType !== "mouse" ||
-          !mouseHover.matches ||
-          performance.now() - lastTouch < 1000
-        )
-          return;
-        cancel();
-        if (!readOpen()) openTimer = setTimeout(open, 100);
-      }
-      function leave(event) {
-        if (event.pointerType !== "mouse" || !mouseHover.matches) return;
-        cancel();
-        closeTimer = setTimeout(entry.close, 220);
-      }
-      owner.addEventListener("pointerenter", enter);
-      owner.addEventListener("pointerleave", leave);
-      owner.addEventListener("pointerdown", (event) => {
-        cancel();
-        if (event.pointerType !== "mouse") lastTouch = performance.now();
       });
-      owner.addEventListener("focusin", cancel);
-      owner.addEventListener("focusout", (event) => {
-        if (
-          !owner.contains(event.relatedTarget) &&
-          (!mouseHover.matches || !owner.matches(":hover"))
-        )
-          entry.close();
-      });
-      trigger.addEventListener("click", (event) => {
-        event.preventDefault();
-        event.stopPropagation();
-        cancel();
-        if (readOpen()) entry.close();
-        else open();
-      });
+      trigger.addEventListener("click", (event) => event.stopPropagation());
+      const entry = { owner, trigger, readOpen, close: controller.close };
       entries.push(entry);
-      entry.close();
+      // Position after opening, once the panel has measurable dimensions.
+      const reposition = () => {
+        if (readOpen()) position();
+      };
+      new MutationObserver(reposition).observe(owner, {
+        attributes: true,
+        attributeFilter: ["open", "class"],
+      });
     }
     const menus = [...document.querySelectorAll(".toolbar-options")];
     const modules = [...document.querySelectorAll(".header-module")];

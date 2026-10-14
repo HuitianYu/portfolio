@@ -37,6 +37,10 @@
     <link rel="canonical" href="{{ .Permalink }}" />
     <script
       defer
+      src="{{ "js/ui-controls.js" | relURL }}?v={{ readFile "static/js/ui-controls.js" | md5 }}"
+    ></script>
+    <script
+      defer
       src="{{ "js/site.js" | relURL }}?v={{ readFile "static/js/site.js" | md5 }}"
     ></script>
     {{ block "head" . }}{{ end }}

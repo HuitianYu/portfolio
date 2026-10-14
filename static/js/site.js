@@ -2,16 +2,20 @@ function initializeSiteControls() {
   const toggle = document.querySelector(".menu-toggle"),
     nav = document.querySelector("#site-nav"),
     header = document.querySelector(".header-inner"),
-    brand = header?.querySelector(".wordmark"),
-    hover = matchMedia("(hover:hover) and (pointer:fine)");
+    brand = header?.querySelector(".wordmark");
   if (!toggle || !nav || !header || !brand) return;
-  let closeTimer;
-  function setOpen(open) {
-    clearTimeout(closeTimer);
-    open = open && header.classList.contains("nav-compact");
-    toggle.setAttribute("aria-expanded", String(open));
-    nav.classList.toggle("open", open);
-  }
+  const menu = window.UIControls.disclosure({
+    owner: header,
+    trigger: toggle,
+    hoverTargets: [toggle, nav],
+    readOpen: () => nav.classList.contains("open"),
+    writeOpen: (open) => nav.classList.toggle("open", open),
+    canOpen: () => header.classList.contains("nav-compact"),
+    mouseClick: false,
+    openDelay: 0,
+    closeDelay: 180,
+  });
+  const setOpen = menu.setOpen;
   function measure() {
     const previous = nav.getAttribute("style");
     for (const [name, value] of Object.entries({
@@ -40,30 +44,6 @@ function initializeSiteControls() {
     header.classList.toggle("nav-compact", compact);
     if (!compact) setOpen(false);
   }
-  const closeSoon = () => {
-    clearTimeout(closeTimer);
-    closeTimer = setTimeout(() => setOpen(false), 180);
-  };
-  toggle.addEventListener("pointerenter", (e) => {
-    if (e.pointerType === "mouse" && hover.matches) setOpen(true);
-  });
-  toggle.addEventListener("pointerleave", (e) => {
-    if (e.pointerType === "mouse" && hover.matches) closeSoon();
-  });
-  nav.addEventListener("pointerenter", () => clearTimeout(closeTimer));
-  nav.addEventListener("pointerleave", (e) => {
-    if (e.pointerType === "mouse" && hover.matches) closeSoon();
-  });
-  toggle.addEventListener("click", (e) => {
-    if (!hover.matches || e.detail === 0 || e.pointerType === "touch" || e.pointerType === "pen")
-      setOpen(toggle.getAttribute("aria-expanded") !== "true");
-  });
-  header.addEventListener("focusout", (event) => {
-    if (!header.contains(event.relatedTarget)) setOpen(false);
-  });
-  document.addEventListener("pointerdown", (e) => {
-    if (!header.contains(e.target)) setOpen(false);
-  });
   nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setOpen(false)));
   new ResizeObserver(measure).observe(header);
   addEventListener("resize", measure);
@@ -232,43 +212,21 @@ function initializePageOutline() {
     toggle = document.querySelector("#outline-toggle");
   if (!layout || !toggle) return;
   const links = [...document.querySelectorAll("#page-outline-links a")];
-  function setOpen(open) {
-    layout.classList.toggle("outline-collapsed", !open);
-    toggle.setAttribute("aria-expanded", String(open));
-    toggle.title = open ? "Collapse contents" : "Expand contents";
-  }
-  setOpen(false);
-  const outline = layout.querySelector(".page-outline"),
-    hoverDevice = matchMedia("(hover:hover) and (pointer:fine)");
-  outline.addEventListener("mouseenter", () => {
-    if (hoverDevice.matches) setOpen(true);
+  const outline = layout.querySelector(".page-outline");
+  const menu = window.UIControls.disclosure({
+    owner: outline,
+    trigger: toggle,
+    readOpen: () => !layout.classList.contains("outline-collapsed"),
+    writeOpen: (open) => {
+      layout.classList.toggle("outline-collapsed", !open);
+      toggle.title = open ? "Collapse contents" : "Expand contents";
+    },
+    focusOpen: true,
+    mouseClick: false,
+    openDelay: 0,
+    closeDelay: 0,
   });
-  outline.addEventListener("mouseleave", () => {
-    if (hoverDevice.matches) setOpen(false);
-  });
-  outline.addEventListener("focusin", () => setOpen(true));
-  outline.addEventListener("focusout", (event) => {
-    if (!outline.contains(event.relatedTarget) && !outline.matches(":hover")) setOpen(false);
-  });
-  toggle.addEventListener("click", (event) => {
-    if (
-      !hoverDevice.matches ||
-      event.detail === 0 ||
-      event.pointerType === "touch" ||
-      event.pointerType === "pen"
-    )
-      setOpen(toggle.getAttribute("aria-expanded") !== "true");
-  });
-  outline.addEventListener("keydown", (event) => {
-    if (event.key === "Escape") {
-      event.preventDefault();
-      toggle.focus();
-      setOpen(false);
-    }
-  });
-  document.addEventListener("pointerdown", (event) => {
-    if (!outline.contains(event.target)) setOpen(false);
-  });
+  const setOpen = menu.setOpen;
   const sections = links
     .map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
     .filter(Boolean);
