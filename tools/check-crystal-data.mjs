@@ -3,7 +3,10 @@ import vm from "node:vm";
 import { readFileSync } from "node:fs";
 import { gzipSync } from "node:zlib";
 import { randomBytes } from "node:crypto";
-const source = readFileSync(new URL("../content/labs/curvature/ui/data-loader.js", import.meta.url), "utf8");
+const source = readFileSync(
+  new URL("../content/labs/curvature/ui/data-loader.js", import.meta.url),
+  "utf8",
+);
 const mesh = {
   vertices: [
     [0, 0, 0],
