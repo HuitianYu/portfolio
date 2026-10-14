@@ -367,17 +367,13 @@
     const scroll = window.UIControls.frameTask(() => {
       parent.postMessage({ type: "lab:scroll", y: scrollPosition }, location.origin);
     });
-    document.addEventListener(
+    addEventListener(
       "scroll",
-      (event) => {
-        // Only page scrolling may hide or reveal the host header.
-        if (event.target !== document) return;
-        const position = scrollY;
-        if (!Number.isFinite(position)) return;
-        scrollPosition = position;
+      () => {
+        scrollPosition = scrollY;
         scroll.schedule();
       },
-      { passive: true, capture: true },
+      { passive: true },
     );
   }
   initializeCompactControls();

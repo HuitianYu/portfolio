@@ -120,6 +120,8 @@ let filtered = [],
   rotating = !matchMedia("(prefers-reduced-motion: reduce)").matches,
   theta = 0,
   loadToken = 0;
+let loadingData = false,
+  operationBusy = false;
 const groups = [...new Set(catalog.map((c) => c.group))];
 renderRotationButton();
 $("rotate").setAttribute("aria-label", rotating ? "Pause rotation" : "Start rotation");
@@ -280,6 +282,7 @@ function clearSurface() {
 async function select(c) {
   if (!c) return;
   const token = ++loadToken;
+  loadingData = true;
   selected = c;
   const source = crystalSourceKey(c);
   $("data-source").dataset.source = source;
@@ -288,23 +291,36 @@ async function select(c) {
   clearSurface();
   $("viewgroup").value = c.group;
   crystalOptions(c.group, c.id);
-  setProgress(5, "Loading crystal data…");
+  setProgress(
+    0,
+    source === "cloud" ? "Connecting to Zenodo…" : "Loading Local crystal…",
+    "running",
+  );
   $("data-error").hidden = true;
+  let downloadPercent = -1;
   try {
     const loaded = await window.CrystalData.load(c.id, (fraction) => {
-      if (token === loadToken)
-        setProgress(5 + fraction * 10, `Downloading crystal data · ${Math.round(fraction * 100)}%`);
+      const percent = Math.round(fraction * 100);
+      if (token !== loadToken || percent <= downloadPercent) return;
+      downloadPercent = percent;
+      setProgress(
+        percent,
+        percent >= 100 ? "Unpacking crystal data…" : "Downloading crystal data…",
+        "running",
+      );
     });
     if (token !== loadToken) return;
     if (!loaded?.single) throw Error("The crystal data does not contain a single-crystal mesh.");
+    loadingData = false;
     shapes = loaded;
     for (const o of $("geometry").options) o.disabled = !shapes[o.value];
     if (!shapes[$("geometry").value]) $("geometry").value = "single";
     setMesh();
   } catch (e) {
     if (token !== loadToken) return;
+    loadingData = false;
     clearSurface();
-    setProgress(0, "Unable to load crystal data");
+    setProgress(0, "Unable to load crystal data", "error");
     $("data-error").textContent = e.message;
     $("data-error").hidden = false;
     $("data-error").dataset.error = "true";
@@ -450,8 +466,7 @@ function curvature(m) {
 let calculationTask = 0;
 async function calculate() {
   if (!mesh) return;
-  const task = ++calculationTask,
-    requestedField = $("field").value;
+  const task = ++calculationTask;
   $("status").textContent = "Calculating curvature…";
   await new Promise((r) => setTimeout(r, 30));
   if (task !== calculationTask || !mesh) return;
@@ -466,8 +481,7 @@ async function calculate() {
     setProgress(100, "Ready");
     showMathMethod();
   } catch (e) {
-    if (e.name !== "AbortError") setProgress(0, e.message);
-  } finally {
+    if (e.name !== "AbortError") setProgress(0, e.message, "error");
   }
 }
 $("field").onchange = () => {
@@ -580,14 +594,14 @@ async function computeInWorker(operation, m, options = {}) {
       finish();
       setProgress(
         0,
-        "Calculation stopped after 30 seconds. Reduce smoothing iterations and retry, or use Reset all.",
+        "Calculation stopped after 120 seconds. Reduce smoothing iterations and retry, or use Reset all.",
       );
       reject(
         Error(
           "Calculation time limit reached. Reduce smoothing iterations and retry, or use Reset all.",
         ),
       );
-    }, 30000);
+    }, 120000);
     worker.onmessage = (e) => {
       if (e.data.progress !== undefined) {
         if (workerID === progressSerial) setProgress(e.data.progress, e.data.message);
@@ -655,10 +669,7 @@ async function applySmoothing() {
       strength +
       "). Curvature is recalculated on the smoothed geometry. Original data and reference roundness are preserved.";
   } catch (e) {
-    if (e.name !== "AbortError") setProgress(0, e.message);
-  } finally {
-    if (task === smoothTask) {
-    }
+    if (e.name !== "AbortError") setProgress(0, e.message, "error");
   }
 }
 $("smooth-enabled").onchange = () => {
@@ -674,7 +685,10 @@ for (const id of ["smooth-iterations", "smooth-final", "smooth-strength"])
     markAnalysisPending(true);
     clearTimeout(smoothTimer);
     if ($("smooth-enabled").checked)
-      smoothTimer = setTimeout(() => applySmoothing().catch((e) => setProgress(0, e.message)), 300);
+      smoothTimer = setTimeout(
+        () => applySmoothing().catch((e) => setProgress(0, e.message, "error")),
+        300,
+      );
   };
 const CLASS_COLOURS = [
   "#1e90ff",
@@ -811,7 +825,7 @@ function classificationForCurrent() {
     })
     .catch((error) => {
       if (state === classificationState && error.name !== "AbortError")
-        setProgress(0, error.message);
+        setProgress(0, error.message, "error");
     });
   return null;
 }
@@ -1394,7 +1408,7 @@ for (const id of ["surface-smooth", "surface-preset", "surface-iterations", "sur
       surfaceTimer = setTimeout(
         () =>
           updateSurfaceProcessing().catch((e) => {
-            if (e.name !== "AbortError") setProgress(0, e.message);
+            if (e.name !== "AbortError") setProgress(0, e.message, "error");
           }),
         200,
       );
@@ -1402,7 +1416,8 @@ for (const id of ["surface-smooth", "surface-preset", "surface-iterations", "sur
   );
 $("smooth-preset").onchange = () => {
   updateIterationControls();
-  if ($("smooth-enabled").checked) applySmoothing().catch((e) => setProgress(0, e.message));
+  if ($("smooth-enabled").checked)
+    applySmoothing().catch((e) => setProgress(0, e.message, "error"));
 };
 $("positive-only").onchange = () => {
   classificationState = null;
@@ -1420,7 +1435,8 @@ async function renderFormula(element, tex) {
     if (element.dataset.tex !== tex) return;
     element.replaceChildren(node.cloneNode(true));
   } catch (e) {
-    element.textContent = tex;
+    element.textContent = "Formula unavailable";
+    element.title = "Formula rendering could not be loaded. Reload the page to retry.";
   }
 }
 let mathFieldKey = "";
@@ -1534,22 +1550,53 @@ $("field-menu").onkeydown = (e) => {
   }
 };
 
-function setProgress(value, message) {
+function setProgress(
+  value,
+  message,
+  state = value >= 100 ? "complete" : value > 0 ? "running" : "ready",
+) {
   $("status").textContent = message;
-  $("recalculate").textContent = "Calculate";
-  $("recalculate").dataset.state =
-    value >= 100 ? "complete" : value > 0 ? "running" : !mesh && selected ? "error" : "ready";
+  $("analysis-progress").hidden = state !== "running" && state !== "cancelled";
+  $("progress-track").hidden = state !== "running";
+  $("progress-percent").hidden = state !== "running";
+  $("data-error").hidden = state !== "error";
+  if (state === "error") $("data-error").textContent = message;
+  operationBusy = state === "running";
+  $("recalculate").textContent = operationBusy ? "Cancel" : mesh ? "Calculate" : "Download";
+  $("recalculate").setAttribute(
+    "aria-label",
+    operationBusy
+      ? loadingData
+        ? "Cancel download"
+        : "Cancel calculation"
+      : mesh
+        ? "Calculate curvature"
+        : "Download crystal data",
+  );
+  $("recalculate").dataset.state = state;
   $("recalculate").style.setProperty("--run-progress", Math.max(0, Math.min(100, value)) + "%");
-  $("recalculate").setAttribute("aria-busy", String(value > 0 && value < 100));
+  $("recalculate").setAttribute("aria-busy", String(operationBusy));
   $("recalculate").title = message;
   $("progress-fill").style.width = Math.max(0, Math.min(100, value)) + "%";
   $("progress-percent").textContent = Math.round(value) + "%";
   $("progress-track").setAttribute("aria-valuenow", String(Math.round(value)));
-  $("recalculate").disabled = (!mesh && !selected) || (value < 100 && value > 0);
+  $("recalculate").disabled = !mesh && !selected;
   $("progress-track").setAttribute("aria-valuetext", message);
-  $("progress-track").setAttribute("aria-busy", String(value > 0 && value < 100));
+  $("progress-track").setAttribute("aria-busy", String(operationBusy));
 }
 $("recalculate").onclick = () => {
+  if (operationBusy) {
+    loadToken++;
+    loadingData = false;
+    window.CrystalData.cancel();
+    clearTimeout(smoothTimer);
+    clearTimeout(surfaceTimer);
+    smoothTask++;
+    calculationTask++;
+    cancelComputations();
+    setProgress(0, "Cancelled · ready to retry", "cancelled");
+    return;
+  }
   if (!mesh && selected) {
     select(selected);
     return;
@@ -1708,7 +1755,7 @@ function syncCalculationMode() {
   updateMathField();
   if (curves)
     updateSurfaceProcessing().catch((e) => {
-      if (e.name !== "AbortError") setProgress(0, e.message);
+      if (e.name !== "AbortError") setProgress(0, e.message, "error");
     });
   else draw();
 }

@@ -74,6 +74,10 @@ const retryCheck = assert.rejects(retryLoad, /could not be loaded/);
 assert.equal(loaderScripts.length, 2);
 loaderScripts[1].onerror();
 await retryCheck;
+const cancelledLocal = loaderContext.window.CrystalData.load("example");
+const cancelCheck = assert.rejects(cancelledLocal, { name: "AbortError" });
+loaderContext.window.CrystalData.cancel();
+await cancelCheck;
 const mpc = require("../content/labs/mpcrystal/ui/engine.js");
 const schemaContext = { window: {} };
 vm.runInNewContext(

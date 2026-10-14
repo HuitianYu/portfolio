@@ -81,22 +81,6 @@
               >
                 Calculate
               </button>
-              <div class="progress-status">
-                <div class="progress-caption">
-                  <span id="status" role="status">Ready</span>
-                  <span id="progress-percent">0%</span>
-                </div>
-                <div
-                  aria-valuemax="100"
-                  aria-valuemin="0"
-                  aria-valuenow="0"
-                  class="progress-track"
-                  id="progress-track"
-                  role="progressbar"
-                >
-                  <div id="progress-fill"></div>
-                </div>
-              </div>
             </div>
           </div>
           <div aria-label="Crystal and rendering selection" class="crystal-toolbar" role="group">
@@ -254,7 +238,7 @@
         </div>
         <div class="filter">
           <label>
-            <span class="label-with-unit">Original size group \([\mu\mathrm{m}]\)</span>
+            <span class="label-with-unit">Original size group [µm]</span>
             <select id="group">
               <option value="all">All size groups</option>
             </select>
@@ -279,7 +263,7 @@
               <tr>
                 <th>Crystal</th>
                 <th>Geometry</th>
-                <th>Size group \([\mu\mathrm{m}]\)</th>
+                <th>Size group [µm]</th>
                 <th>Roundness</th>
                 <th>Source</th>
                 <th></th>
@@ -318,7 +302,7 @@
             <h3>Voxel size</h3>
             <div class="curvature-parameter-fields">
               <label>
-                <span class="label-with-unit">Voxel size \([\mu\mathrm{m}/\mathrm{voxel}]\)</span>
+                <span class="label-with-unit">Voxel size [µm/voxel]</span>
                 <input
                   id="voxel-size"
                   inputmode="text"
@@ -562,7 +546,10 @@
             <h3>Weighting</h3>
             <div id="weight-settings">
               <label>
-                <span class="label-with-unit">Sigma ratio \(r\)</span>
+                <span class="label-with-unit">
+                  Sigma ratio
+                  <i>r</i>
+                </span>
                 <input
                   id="sigma-ratio"
                   inputmode="text"
@@ -572,7 +559,10 @@
                 />
               </label>
               <label>
-                <span class="label-with-unit">Exponent \(n\)</span>
+                <span class="label-with-unit">
+                  Exponent
+                  <i>n</i>
+                </span>
                 <input
                   id="weight-order"
                   inputmode="text"
@@ -597,17 +587,42 @@
             </p>
           </div>
         </div>
+        <div class="progress-status analysis-progress" id="analysis-progress" hidden>
+          <div class="progress-caption">
+            <span id="status" role="status">Ready</span>
+            <span id="progress-percent">0%</span>
+          </div>
+          <div
+            aria-valuemax="100"
+            aria-valuemin="0"
+            aria-valuenow="0"
+            class="progress-track"
+            id="progress-track"
+            role="progressbar"
+          >
+            <div id="progress-fill"></div>
+          </div>
+        </div>
         <div hidden="" id="data-error" role="alert"></div>
         <div class="curvature-results">
           <div>
             <div class="metrics">
               <div>
-                <span>Rheinhold roundness \(r_{\mathrm{ref}}\;[-]\)</span>
+                <span>
+                  Rheinhold roundness
+                  <i>r</i>
+                  <sub>ref</sub>
+                  [−]
+                </span>
                 <strong id="roundness">—</strong>
                 <small>Parent single crystal</small>
               </div>
               <div>
-                <span>Roundness \(r\;[-]\)</span>
+                <span>
+                  Roundness
+                  <i>r</i>
+                  [−]
+                </span>
                 <strong id="calculated-roundness">—</strong>
                 <small id="roundness-difference">Paper weight estimator</small>
               </div>
@@ -617,12 +632,22 @@
                 <small id="diameter-unit">—</small>
               </div>
               <div>
-                <span>Vertices \(N_{\mathrm{v}}\;[\#]\)</span>
+                <span>
+                  Vertices
+                  <i>N</i>
+                  <sub>v</sub>
+                  [#]
+                </span>
                 <strong id="vertices">—</strong>
                 <small>Original surface</small>
               </div>
               <div>
-                <span>Triangles \(N_{\mathrm{f}}\;[\#]\)</span>
+                <span>
+                  Triangles
+                  <i>N</i>
+                  <sub>f</sub>
+                  [#]
+                </span>
                 <strong id="faces">—</strong>
                 <small>No decimation</small>
               </div>

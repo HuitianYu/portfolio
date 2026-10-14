@@ -1,5 +1,5 @@
 [build]
-  command = "npm run format:check && npm run check:shared && npm run check && hugo --minify --cleanDestinationDir"
+  command = "npm run build"
   publish = "public"
 [build.environment]
   HUGO_VERSION = "0.167.0"

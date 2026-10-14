@@ -2,6 +2,7 @@
   "name": "research-portfolio",
   "private": true,
   "scripts": {
+    "build": "npm run sync:shared && npm run format:check && npm run check:shared && npm run check && hugo --minify --cleanDestinationDir",
     "build:styles": "node tools/build-styles.mjs",
     "check:styles": "node tools/build-styles.mjs --check",
     "format": "node tools/format.mjs",

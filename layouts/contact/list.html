@@ -28,7 +28,10 @@
       <section class="contact-panel" aria-labelledby="address-title">
         <h2 id="address-title">Work address</h2>
         <address>
-          {{ (index hugo.Data.institutions .institutionID).display }}
+          <a href="https://www.tum.de/en/" target="_blank" rel="noopener">
+            {{ (index hugo.Data.institutions .institutionID).display }}
+            {{ partial "external-link-mark.html" . }}
+          </a>
           <br />
           <a href="{{ .unitURL }}" target="_blank" rel="noopener">
             {{ .unit }} (SVT)
@@ -42,12 +45,6 @@
           <br />
           {{ .country }}
         </address>
-        <p>
-          <a class="text-link" href="{{ .sourceURL }}" target="_blank" rel="noopener">
-            Institutional profile
-            {{ partial "external-link-mark.html" . }}
-          </a>
-        </p>
       </section>
     {{ end }}
     <section class="contact-panel" aria-labelledby="profiles-title">

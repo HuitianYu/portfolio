@@ -1270,3 +1270,24 @@ input[readonly] {
   background: #e3f0f3;
   color: #28677a;
 }
+
+/* Visible operation feedback belongs to Display, not the compact toolbar. */
+.analysis-progress {
+  max-width: none;
+  margin-bottom: 20px;
+}
+.analysis-progress .progress-caption {
+  font-size: 12px;
+  gap: 12px;
+  line-height: 1.5;
+}
+.analysis-progress #progress-percent {
+  flex: none;
+  font-variant-numeric: tabular-nums;
+}
+.analysis-progress .progress-track {
+  background: var(--line);
+}
+.analysis-progress #progress-fill {
+  background: var(--teal);
+}

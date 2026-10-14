@@ -2940,7 +2940,7 @@ body.lab-workspace {
   background-size: cover;
   background-repeat: no-repeat;
   background-position: center 70%;
-  mask-image: linear-gradient(to right, #000 70%, transparent);
+  --contact-edge-fade: 70%;
   opacity: 0.52;
   pointer-events: none;
 }
@@ -2964,7 +2964,7 @@ body.lab-workspace {
     right: 0;
     background-size: cover;
     background-position: 65% 72%;
-    mask-image: linear-gradient(to right, #000 65%, transparent);
+    --contact-edge-fade: 65%;
     opacity: 0.34;
   }
   .contact-backdrop::after {
@@ -3010,14 +3010,14 @@ body.lab-workspace {
 .contact-backdrop::before,
 .contact-backdrop::after {
   mask-image:
-    linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 24px), transparent),
+    linear-gradient(
+      to right,
+      transparent,
+      #000 16px,
+      #000 var(--contact-edge-fade, calc(100% - 24px)),
+      transparent
+    ),
     linear-gradient(to bottom, transparent, #000 18px, #000 calc(100% - 24px), transparent);
   mask-composite: intersect;
   -webkit-mask-composite: source-in;
-}
-
-.contact-backdrop::before {
-  mask-image:
-    linear-gradient(to right, transparent, #000 16px, #000 70%, transparent),
-    linear-gradient(to bottom, transparent, #000 18px, #000 calc(100% - 24px), transparent);
 }

@@ -74,6 +74,17 @@ await assert.rejects(
   setup(async () => new Response(bytes.subarray(0, 10), { status: 206 })).load("test"),
   /incomplete/,
 );
+const cancellable = setup(
+  (_, options) =>
+    new Promise((resolve, reject) => {
+      options.signal.addEventListener("abort", () => reject(options.signal.reason), { once: true });
+    }),
+);
+const cancelled = cancellable.load("test");
+const cancellation = assert.rejects(cancelled, { name: "AbortError" });
+await Promise.resolve();
+cancellable.cancel();
+await cancellation;
 console.log(
   "Cloud ranges, interrupted-part retry, decoded cache, progress, full-archive rejection and incomplete response passed.",
 );
