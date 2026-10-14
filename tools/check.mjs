@@ -1,3 +1,6 @@
+import "./check-crystal-data.mjs";
+import { checkUIControls } from "./check-ui-controls.mjs";
+import { checkLabRuntime } from "./check-lab-runtime.mjs";
 import fs from "node:fs/promises";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
@@ -36,10 +39,13 @@ for (const lab of labs) {
 for (const file of files) {
   new vm.Script(await fs.readFile(file, "utf8"), { filename: file });
 }
+await checkUIControls(new URL("../", import.meta.url));
+await checkLabRuntime(new URL("../", import.meta.url));
 // A stalled local asset must reject and allow a new attempt, rather than stay at 5%.
 const loaderTimers = [],
   loaderScripts = [];
 const loaderContext = {
+  AbortController,
   window: { EMBEDDED_INDEX: { example: "example.js" } },
   document: {
     createElement: () => ({ remove() {} }),

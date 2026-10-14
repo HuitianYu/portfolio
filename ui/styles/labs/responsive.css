@@ -1,0 +1,403 @@
+/* Responsive foundation for all four Labs. Width controls columns; height controls chrome. */
+:root {
+  --lab-action-size: var(--ui-control-compact);
+  --lab-field-size: var(--ui-field);
+  --lab-space: 16px;
+  --lab-text-small: var(--ui-label);
+}
+html:root body .fixed-workspace-header > :is(header, .topbar) {
+  padding-block: 8px !important;
+}
+html:root body .fixed-workspace-header > :is(nav.tabs, nav.workspace-tabs) {
+  min-height: var(--ui-control-standard) !important;
+  padding-block: 0 !important;
+}
+html:root body .fixed-workspace-header > :is(nav.tabs, nav.workspace-tabs) > button {
+  height: var(--ui-control-standard) !important;
+  min-height: var(--ui-control-standard) !important;
+  padding-block: 0 !important;
+  white-space: nowrap;
+}
+html:root body .fixed-workspace-header .mobile-controls-toggle {
+  width: 32px !important;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+}
+html:root body .fixed-workspace-header :is(button, summary, select) {
+  box-sizing: border-box;
+}
+html:root
+  body
+  .fixed-workspace-header
+  :is(.header-action, .header-playback-action, #play, #restart, #resolution) {
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  padding-block: 0 !important;
+}
+html:root body :is(nav.parameter-tabs, nav.parameter-subtabs, nav.result-tabs) {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-padding-inline: 8px;
+  overscroll-behavior-x: contain;
+}
+html:root body :is(nav.parameter-tabs, nav.parameter-subtabs, nav.result-tabs) > button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: var(--ui-control-compact);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+html:root body .toolbar-options > :is(.selection, .crystal-picker, .mode-menu),
+html:root body .module-popover {
+  max-height: var(--lab-menu-room, calc(100dvh - 120px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+html:root body .fixed-workspace-header .toolbar-options > summary {
+  white-space: nowrap;
+}
+@media (max-width: 650px) {
+  html:root body .fixed-workspace-header ~ main {
+    padding-inline: 14px;
+  }
+  html:root body :is(.card, .plotcard, .plot-card, .subsystem-card) {
+    --lab-panel-padding: 14px;
+  }
+  html:root body .fixed-workspace-header > :is(header, .topbar) {
+    padding-block: 6px !important;
+  }
+  html:root body :is(nav.parameter-tabs, nav.result-tabs) {
+    padding: 5px;
+    gap: 3px;
+  }
+  html:root body :is(nav.parameter-tabs, nav.parameter-subtabs, nav.result-tabs) > button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  html:root body .workspace-introduction h1 {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+  html:root body .workspace-introduction p {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+}
+/* Landscape phones need screen height for the experiment, not expanded vertical spacing. */
+@media (max-height: 480px) and (orientation: landscape) {
+  html:root body .fixed-workspace-header > :is(header, .topbar) {
+    padding-block: 5px !important;
+  }
+  html:root body .fixed-workspace-header > :is(nav.tabs, nav.workspace-tabs) {
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+  html:root body .fixed-workspace-header > :is(nav.tabs, nav.workspace-tabs) > button {
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+  html:root body .workspace-introduction {
+    padding-block: 14px !important;
+    margin-block: 0 16px !important;
+  }
+  html:root body .workspace-introduction h1 {
+    font-size: 26px;
+  }
+  html:root body .plothead {
+    padding-block: 8px;
+  }
+  html:root body .fixed-workspace-header .mobile-controls-toggle {
+    top: auto;
+    bottom: 1px;
+  }
+}
+@media (min-width: 700px) and (max-height: 480px) and (orientation: landscape) {
+  html:root.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"] {
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    grid-template-rows: auto !important;
+    gap: 8px !important;
+  }
+  html:root.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    .header-status-hub {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+  html:root.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    .header-playback {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+  html:root.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    > .top-actions {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+  }
+}
+/* Comparison columns remain readable: extra methods scroll together instead of shrinking to slivers. */
+html:root body .comparison-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+html:root body .comparison-scroll .method-grid {
+  min-width: calc(var(--cols) * 220px + (var(--cols) - 1) * 12px);
+}
+@media (max-width: 650px) {
+  html:root body .comparison-scroll .method-grid {
+    min-width: calc(var(--cols) * 160px + (var(--cols) - 1) * 6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root body *,
+  html:root body *::before,
+  html:root body *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+html:root body .fixed-workspace-header .headright:has(.header-case) > .header-playback {
+  min-width: max-content !important;
+}
+html:root body #parameters .parameter-card {
+  padding: var(--lab-panel-padding, 20px) !important;
+}
+
+@media (max-width: 380px) {
+  html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
+    width: 90px !important;
+    flex-basis: 90px !important;
+  }
+  html:root body .fixed-workspace-header .crystal-toolbar .crystal-options > summary {
+    padding-inline: 8px !important;
+  }
+}
+
+/* The retained tab-row control works at every width, including landscape. */
+html:root
+  body
+  .fixed-workspace-header.mobile-controls-collapsed.mobile-controls-collapsed
+  > :is(header, .topbar)[data-header-layout] {
+  display: none !important;
+}
+
+/* Text-only action labels share the established action silhouette. */
+html:root body button[data-ui-action],
+html:root body .button {
+  font-family: var(--sans);
+  border-radius: 6px;
+}
+html:root body .fixed-workspace-header .export-options > summary::after {
+  content: none !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  :is(.secondary-controls, .header-file-actions, .grid-reset-controls) {
+  gap: 6px !important;
+}
+
+/* Related controls stay adjacent; utilities align to the row they actually occupy. */
+html:root body .fixed-workspace-header .headright {
+  justify-content: flex-start !important;
+}
+html:root body .fixed-workspace-header .headright:has(.header-case) .playback-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px !important;
+}
+html:root body .fixed-workspace-header .header-playback .header-case {
+  margin: 0 !important;
+  flex: 0 0 auto;
+}
+html:root body .fixed-workspace-header :is(#play, #restart, #recalculate) {
+  width: 88px !important;
+  min-width: 88px !important;
+  max-width: 88px !important;
+  flex: 0 0 88px !important;
+}
+html:root body .fixed-workspace-header .header-case select {
+  width: 96px !important;
+  min-width: 96px !important;
+}
+html:root body .fixed-workspace-header :is(#export, #export-results),
+html:root body .fixed-workspace-header .export-options > summary {
+  width: 72px !important;
+  min-width: 72px !important;
+  justify-content: center;
+}
+html:root
+  body
+  .fixed-workspace-header
+  :is(.secondary-controls, .header-file-actions, .grid-reset-controls)
+  > button:is(#reset, #reset-all) {
+  width: 88px !important;
+  min-width: 88px !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  header.utilities-wrapped.utilities-wrapped[data-header-layout]
+  .headright
+  > .secondary-controls,
+html:root
+  body
+  .fixed-workspace-header
+  header.utilities-wrapped.utilities-wrapped[data-header-layout]
+  > .top-actions {
+  margin-left: 0 !important;
+  justify-self: start !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  header.utilities-wrapped.utilities-wrapped[data-header-layout]
+  :is(.secondary-controls, .header-file-actions, .grid-reset-controls) {
+  justify-content: flex-start !important;
+  margin-left: 0 !important;
+}
+
+html:root body .fixed-workspace-header .headright:has(.header-case) > .header-playback {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  max-width: 100%;
+}
+html:root body .fixed-workspace-header .headright:has(.header-case) .playback-actions {
+  flex-wrap: wrap;
+}
+
+/* Library shortcuts keep identity and geometry together at the left of the table. */
+html:root body #library table {
+  min-width: 690px;
+  table-layout: fixed;
+}
+html:root body #library th:nth-child(1) {
+  width: 154px;
+}
+html:root body #library th:nth-child(2) {
+  width: 170px;
+}
+html:root body #library th:nth-child(3) {
+  width: 100px;
+}
+html:root body #library th:nth-child(4) {
+  width: 100px;
+}
+html:root body #library th:nth-child(5) {
+  width: 70px;
+}
+html:root body #library th:nth-child(6) {
+  width: 84px;
+}
+html:root body #library :is(td, th) {
+  box-sizing: border-box;
+  padding: 10px 8px;
+}
+html:root body #library td:nth-child(4) {
+  font-size: 12px;
+  color: var(--ink);
+}
+html:root body #library .library-link {
+  display: inline;
+  width: auto;
+  min-height: var(--ui-control-compact);
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--teal);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  font: 12px var(--sans);
+}
+html:root body #library td:first-child .library-link {
+  font:
+    11px/1.6 Consolas,
+    monospace;
+}
+html:root body .library-geometries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+html:root body #library .library-geometry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  min-height: 30px;
+  padding: 0 6px;
+  font: 11px var(--sans);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--teal);
+  white-space: nowrap;
+}
+html:root body #library .library-geometry:hover {
+  background: var(--pale);
+  border-color: var(--teal);
+}
+html:root body #library .library-inspect {
+  min-height: var(--ui-control-compact);
+  padding: 0 9px;
+  font: 12px var(--sans);
+  border-radius: 6px;
+}
+html:root body #library .tablewrap {
+  overscroll-behavior-x: contain;
+}
+@media (max-width: 650px) {
+  html:root body #library th:nth-child(1) {
+    width: 142px;
+  }
+  html:root body #library th:nth-child(2) {
+    width: 160px;
+  }
+}
+
+@media (max-width: 650px) {
+  html:root body #library .intro .summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex: none;
+    width: auto;
+    border: 0;
+    padding: 0;
+    margin: 12px 0 0;
+  }
+  html:root body #library .intro .summary strong {
+    font: 500 16px var(--sans);
+  }
+  html:root body #library .intro .summary span {
+    font: 12px var(--sans);
+  }
+}
+
+html:root body #library td:first-child {
+  overflow-wrap: anywhere;
+  font:
+    11px/1.6 Consolas,
+    monospace;
+}

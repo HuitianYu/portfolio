@@ -76,8 +76,8 @@
     "acronym": "AMLD 2022",
     "location": "Lausanne, Switzerland",
     "format": "Pitch",
-    "url": "https://appliedmldays.org/events/amld-epfl-2022",
-    "verified": "Author-supplied title, date, authors and format; historical talk URL not accessible during verification."
+    "url": "https://memento.epfl.ch/event/applied-machine-learning-days-2022/",
+    "verified": "EPFL historical event page; individual contribution details are author supplied."
   },
   {
     "id": "battery-2019",
@@ -97,7 +97,8 @@
     "acronym": "Kraftwerk Batterie 2019",
     "location": "Aachen, Germany",
     "format": "Poster",
-    "url": "https://www.tvt.kit.edu/21_2163.php"
+    "url": "https://www.isea.rwth-aachen.de/cms/isea/die-organisationseinheit/aktuelle-veranstaltungen/~rtou/kraftwerk-batterie/",
+    "verified": "RWTH ISEA historical event page opened in browser: Kraftwerk Batterie 2019, April 3-4, 2019 in Aachen. Contribution details are author supplied."
   },
   {
     "id": "processnet-2019",

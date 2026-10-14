@@ -159,7 +159,7 @@
       <section id="overview">
         <div class="intro">
           <div>
-            <div class="eyebrow">SURFACE GEOMETRY</div>
+            <div class="eyebrow">Geometry</div>
             <h1>
               Explore crystal shape.
               <br />
@@ -174,7 +174,7 @@
         </div>
         <div class="overview-grid">
           <article>
-            <div class="eyebrow">FROM SHAPE TO SURFACE</div>
+            <div class="eyebrow">Crystal shape</div>
             <h2>
               A closer look at
               <br />
@@ -226,7 +226,7 @@
           reference calculation.
         </div>
         <section class="lab-reference">
-          <span class="eyebrow">RELATED PAPER</span>
+          <span class="eyebrow">Related paper</span>
           <h2>
             Curvature-Based Quantification of Abrasion-Induced Shape Evolution in Stirred
             Crystallization
@@ -243,7 +243,7 @@
       <section hidden="" id="library">
         <div class="intro workspace-introduction">
           <div>
-            <div class="eyebrow">SIMULATED CRYSTALS</div>
+            <div class="eyebrow">Crystals</div>
             <h1>Crystal library</h1>
             <p>Choose a crystal or geometry to open Display.</p>
           </div>
@@ -298,7 +298,7 @@
       <section hidden="" id="parameters">
         <div class="page-introduction workspace-introduction">
           <div>
-            <div class="eyebrow">CALCULATION &amp; PROCESSING</div>
+            <div class="eyebrow">Calculation</div>
             <h1>Parameters</h1>
             <p>
               Choose the roundness estimator and smoothing rules here. Display controls change
@@ -589,7 +589,7 @@
       <section hidden="" id="display">
         <div class="intro workspace-introduction">
           <div>
-            <div class="eyebrow">MESH &amp; CURVATURE</div>
+            <div class="eyebrow">Surface</div>
             <h1>Surface analysis</h1>
             <p>
               Original triangular surfaces with interactive rotation and vertex curvature. The
@@ -669,38 +669,45 @@
                     </button>
                   </div>
                 </label>
-              </div>
-              <div class="plothead">
-                <h3 id="plottitle">Crystal surface</h3>
-                <span id="fieldtitle">SOLID SURFACE</span>
                 <div
                   aria-label="3D view controls"
                   class="rotation-controls plot-rotation-controls"
                   role="group"
                 >
-                  <button
-                    aria-label="Pause rotation"
-                    data-ui-action="true"
-                    id="rotate"
-                    title="Toggle crystal rotation"
-                  >
-                    Pause
-                  </button>
+                  <div class="view-control-group">
+                    <span>Rotation</span>
+                    <button
+                      aria-label="Pause rotation"
+                      data-ui-action="true"
+                      id="rotate"
+                      title="Toggle crystal rotation"
+                    >
+                      Pause
+                    </button>
+                  </div>
                   <label>
+                    Speed
                     <select aria-label="Rotation speed" id="speed" title="Rotation speed">
                       <option value="0.15">Slow</option>
                       <option selected="" value="0.4">Normal</option>
                       <option value="0.9">Fast</option>
                     </select>
                   </label>
-                  <button
-                    data-ui-action="true"
-                    id="reset"
-                    title="Restore the camera position without changing the crystal or analysis."
-                  >
-                    Reset view
-                  </button>
+                  <div class="view-control-group">
+                    <span>View</span>
+                    <button
+                      data-ui-action="true"
+                      id="reset"
+                      title="Restore the camera position without changing the crystal or analysis."
+                    >
+                      Reset view
+                    </button>
+                  </div>
                 </div>
+              </div>
+              <div class="plothead">
+                <h3 id="plottitle">Crystal surface</h3>
+                <span id="fieldtitle">SOLID SURFACE</span>
               </div>
               <div id="plot"></div>
               <div class="math-colorbar-title" hidden="" id="colorbar-title"></div>

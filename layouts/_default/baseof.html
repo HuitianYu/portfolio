@@ -79,14 +79,18 @@
           {{ end }}
         </nav>
       </div>
-      {{ if and (eq .Section "labs") .IsPage }}{{ partial "lab-toolbar.html" . }}{{ end }}
+      {{ if and (eq .Section "labs") .IsPage }}
+        {{ partial "lab-toolbar.html" . }}
+      {{ else if and .IsPage .Section }}
+        {{ partial "article-toolbar.html" . }}
+      {{ end }}
     </header>
     <main id="main">{{ block "main" . }}{{ end }}</main>
     <footer class="site-footer">
       <a class="footer-name" href="{{ "/" | relURL }}">Huitian Yu</a>
       <span>Crystallization · Control · Scientific computing</span>
       <div>
-        <a href="mailto:{{ site.Params.email }}">Email ↗</a>
+        <a href="mailto:{{ site.Params.email }}">Email {{ partial "external-link-mark.html" . }}</a>
         {{ partial "contact-links.html" (slice "orcid" "github") }}
         <a href="{{ "contact/" | relURL }}">Contact</a>
       </div>

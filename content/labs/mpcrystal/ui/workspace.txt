@@ -233,7 +233,7 @@
         </section>
         <div class="run-summary">
           <div>
-            <span class="eyebrow">CURRENT RUN</span>
+            <span class="eyebrow">Run</span>
             <strong id="run-time">0.00 min</strong>
           </div>
           <div>
@@ -250,7 +250,7 @@
       <section class="workspace-page" hidden="" id="overview">
         <div class="page-introduction">
           <div>
-            <span class="eyebrow">CONTROL OVERVIEW</span>
+            <span class="eyebrow">Control</span>
             <h1>
               Control crystal growth.
               <br />
@@ -264,7 +264,7 @@
         </div>
         <div class="overview-layout">
           <section class="overview-description">
-            <span class="eyebrow">HOW THE LOOP WORKS</span>
+            <span class="eyebrow">Control loop</span>
             <h2>
               From the target
               <br />
@@ -324,7 +324,7 @@
           </p>
         </details>
         <section class="lab-reference">
-          <span class="eyebrow">RELATED PAPER</span>
+          <span class="eyebrow">Related paper</span>
           <h2>
             Model Predictive Control with Inline Parameter Adaptation for Direct Crystal Growth Rate
             Regulation
@@ -341,7 +341,7 @@
       <section class="workspace-page" hidden="" id="parameters">
         <div class="page-introduction workspace-introduction">
           <div>
-            <span class="eyebrow">MODEL PARAMETERS</span>
+            <span class="eyebrow">Model</span>
             <h1>Model parameters</h1>
             <p>
               Set the targets, material models, control parameters, and simulation conditions.
@@ -349,7 +349,7 @@
             </p>
           </div>
           <div class="theory-note">
-            <span class="eyebrow">GROWTH KINETICS</span>
+            <span class="eyebrow">Growth kinetics</span>
             <div>$G=k_0\exp\!\left(-\frac{E_{\mathrm{A}}}{RT}\right)\sigma^n$</div>
             <p>$\sigma=(c-c_{\mathrm{sat}})/c_{\mathrm{sat}}$</p>
           </div>
@@ -395,7 +395,7 @@
       <section class="workspace-page" hidden="" id="display">
         <div class="page-introduction workspace-introduction">
           <div>
-            <span class="eyebrow">LIVE SIMULATION</span>
+            <span class="eyebrow">Simulation</span>
             <h1>Simulation results</h1>
             <p>
               Inspect the process states, target tracking, simulated growth measurements, and
@@ -403,7 +403,7 @@
             </p>
           </div>
           <div class="display-summary">
-            <span class="eyebrow">SIMULATION TIME</span>
+            <span class="eyebrow">Time</span>
             <strong id="display-time">0.00 min</strong>
             <span id="display-step">0 / 900 steps</span>
           </div>

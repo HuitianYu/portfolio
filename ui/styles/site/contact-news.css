@@ -1,0 +1,127 @@
+/* The previous conference photo becomes a quiet, lower-frame contact banner. */
+.contact-heading.contact-backdrop {
+  --contact-backdrop-top: 28px;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  max-width: none;
+  min-height: 300px;
+  display: block;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+}
+.contact-backdrop .contact-portrait {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+.contact-backdrop > div {
+  padding-right: 180px;
+}
+.contact-backdrop > div p {
+  max-width: min(520px, calc(100% - 340px));
+}
+.contact-backdrop::after {
+  content: "";
+  position: absolute;
+  inset: var(--contact-backdrop-top) 0 0;
+  z-index: -2;
+  background: linear-gradient(
+    to right,
+    #e3e0d6 0,
+    #e3e0d6 calc(100% - 338px),
+    transparent calc(100% - 140px)
+  );
+  pointer-events: none;
+}
+.contact-backdrop::before {
+  content: "";
+  position: absolute;
+  inset: var(--contact-backdrop-top) 160px 0 0;
+  z-index: -1;
+  background-image: linear-gradient(to right, #e3e0d6, transparent 62%), var(--contact-backdrop);
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center 70%;
+  mask-image: linear-gradient(to right, #000 70%, transparent);
+  opacity: 0.52;
+  pointer-events: none;
+}
+@media (max-width: 1000px) {
+  .contact-heading.contact-backdrop {
+    padding: 0;
+    min-height: 300px;
+  }
+  .contact-backdrop > div {
+    padding-right: 0;
+  }
+  .contact-backdrop > div p {
+    max-width: 100%;
+  }
+  .contact-backdrop .eyebrow,
+  .contact-backdrop h1 {
+    max-width: calc(100% - 108px);
+  }
+  .contact-backdrop::before {
+    top: var(--contact-backdrop-top);
+    right: 0;
+    background-size: cover;
+    background-position: 65% 72%;
+    mask-image: linear-gradient(to right, #000 65%, transparent);
+    opacity: 0.34;
+  }
+  .contact-backdrop::after {
+    background: linear-gradient(to right, #e3e0d6, #e3e0d6 35%, transparent);
+  }
+}
+
+@media (min-width: 761px) and (max-width: 1000px) {
+  .contact-backdrop > div p {
+    max-width: calc(100% - 180px);
+  }
+}
+
+/* News galleries preserve the whole photograph rather than crop the venue. */
+.article-gallery {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 320px), 1fr));
+  gap: 24px;
+  margin-block: 36px;
+}
+.article-gallery figure {
+  margin: 0;
+  min-width: 0;
+}
+.article-gallery a {
+  display: block;
+  background: var(--pale);
+}
+.article-gallery img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-height: 680px;
+  object-fit: contain;
+}
+.article-gallery figcaption {
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+
+/* Feather the photograph and its colour extension together. */
+.contact-backdrop::before,
+.contact-backdrop::after {
+  mask-image:
+    linear-gradient(to right, transparent, #000 16px, #000 calc(100% - 24px), transparent),
+    linear-gradient(to bottom, transparent, #000 18px, #000 calc(100% - 24px), transparent);
+  mask-composite: intersect;
+  -webkit-mask-composite: source-in;
+}
+
+.contact-backdrop::before {
+  mask-image:
+    linear-gradient(to right, transparent, #000 16px, #000 70%, transparent),
+    linear-gradient(to bottom, transparent, #000 18px, #000 calc(100% - 24px), transparent);
+}

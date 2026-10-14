@@ -1,0 +1,832 @@
+/* Controls remain above section tabs; the fold action owns a fixed right-hand column. */
+@media (max-width: 650px) {
+  .fixed-workspace-header {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+  .fixed-workspace-header > header,
+  .fixed-workspace-header > .topbar {
+    order: 0;
+    min-height: var(--ui-field);
+    padding-right: 56px !important;
+  }
+  .fixed-workspace-header > nav {
+    order: 1;
+    padding-inline: 8px !important;
+    min-height: var(--ui-field);
+    position: relative;
+    z-index: 1;
+  }
+  .fixed-workspace-header.mobile-controls-collapsed {
+    padding-top: 44px;
+  }
+  .fixed-workspace-header > .mobile-controls-toggle {
+    position: absolute;
+    top: 4px;
+    right: 12px;
+    bottom: auto;
+    width: 36px;
+    height: var(--ui-control-standard);
+    min-height: var(--ui-control-standard);
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--teal);
+    font: 12px/1 var(--sans);
+    box-shadow: none;
+    z-index: 5;
+  }
+  .fixed-workspace-header > .mobile-controls-toggle:is(:hover, :active, [aria-expanded="true"]) {
+    background: var(--paper);
+    color: var(--teal);
+    border-color: var(--line);
+    box-shadow: none;
+  }
+  /* Put playback and utilities on the same final row. */
+  .embedded-workspace .fixed-workspace-header > .topbar[data-header-layout="modules"] {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+  }
+  .fixed-workspace-header .topbar .primary-toolbar {
+    display: contents !important;
+  }
+  .fixed-workspace-header .topbar .header-status-hub {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .fixed-workspace-header .topbar .header-playback {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+  .fixed-workspace-header .topbar .top-actions {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    margin: 0;
+  }
+  .fixed-workspace-header .topbar .header-file-actions {
+    padding-left: 8px;
+  }
+  .embedded-workspace
+    .fixed-workspace-header.mobile-controls-collapsed
+    > .topbar[data-header-layout="modules"] {
+    display: none !important;
+  }
+}
+/* Text buttons, icon buttons and selects use a common action-row baseline. */
+.fixed-workspace-header
+  :is(.primary-toolbar, .headright, .common-controls, .top-actions, .playback-actions) {
+  align-items: center;
+}
+.fixed-workspace-header :is(.headright, .common-controls, .top-actions) > :is(button, select),
+.fixed-workspace-header .toolbar-options > summary {
+  box-sizing: border-box;
+  height: var(--control-height);
+  min-height: var(--control-height);
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+@media (max-width: 650px) {
+  .fixed-workspace-header .header-computation {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .fixed-workspace-header .header-computation .computation-controls {
+    min-width: 0;
+    flex: none;
+  }
+  .fixed-workspace-header .header-computation .rotation-controls {
+    gap: 6px;
+    min-width: 0;
+  }
+  .fixed-workspace-header .header-computation :is(button, select) {
+    font-size: var(--ui-label) !important;
+    padding-inline: 8px !important;
+  }
+}
+
+/* One controls fold action for both desktop and mobile; section tabs always stay visible. */
+.fixed-workspace-header {
+  padding-bottom: 0;
+}
+.fixed-workspace-header > header,
+.fixed-workspace-header > .topbar {
+  padding-right: 60px !important;
+}
+.fixed-workspace-header > .mobile-controls-toggle {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  bottom: auto;
+  display: inline-flex;
+  width: 36px;
+  height: var(--ui-control-standard);
+  min-height: var(--ui-control-standard);
+  padding: 0;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--teal);
+  background: var(--paper);
+  font: 12px/1 var(--sans);
+  box-shadow: none;
+  z-index: 5;
+}
+.embedded-workspace .fixed-workspace-header.mobile-controls-collapsed > header[data-header-layout],
+.embedded-workspace .fixed-workspace-header.mobile-controls-collapsed > .topbar[data-header-layout],
+.fixed-workspace-header.mobile-controls-collapsed > header,
+.fixed-workspace-header.mobile-controls-collapsed > .topbar {
+  display: none !important;
+}
+.fixed-workspace-header.mobile-controls-collapsed {
+  padding-top: 56px;
+}
+
+/* Folding removes the action row completely; recovery lives at the edge of the tabs. */
+.fixed-workspace-header.mobile-controls-collapsed {
+  padding-top: 0;
+}
+.fixed-workspace-header.mobile-controls-collapsed > nav {
+  padding-right: 56px !important;
+}
+.fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle {
+  top: 8px;
+  right: 18px;
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+}
+
+@media (max-width: 650px) {
+  .fixed-workspace-header .header-computation .rotation-controls {
+    flex-wrap: nowrap !important;
+  }
+  .fixed-workspace-header .header-computation .rotation-controls select {
+    width: 110px !important;
+    min-width: 0 !important;
+    max-width: 110px !important;
+  }
+}
+
+/* Both fold states use the same icon size, button surface and edge alignment. */
+.fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle {
+  top: 4px;
+  right: 12px;
+  width: 36px;
+  height: var(--ui-control-standard);
+  min-height: var(--ui-control-standard);
+}
+.fixed-workspace-header > .mobile-controls-toggle svg {
+  display: block;
+}
+
+html
+  body.keyboard-navigation
+  .fixed-workspace-header
+  .header-module.popover-dismissed
+  > .module-popover,
+.fixed-workspace-header .header-module.popover-dismissed > .module-popover {
+  display: none !important;
+}
+:is(.module-popover, .export-options-list, .math-menu, .toolbar-options > .selection) {
+  border-color: var(--line);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+.fixed-workspace-header > .mobile-controls-toggle {
+  z-index: 110;
+}
+
+/* Narrow action rows wrap as left-aligned groups, with a compact shared height. */
+@media (max-width: 650px) {
+  :root {
+    --control-height: var(--ui-control-compact);
+  }
+  .fixed-workspace-header :is(.headright, .secondary-controls, .top-actions, .header-file-actions) {
+    justify-content: flex-start !important;
+    justify-self: start !important;
+    margin-left: 0 !important;
+  }
+  .fixed-workspace-header .headright > .secondary-controls {
+    padding-left: 0 !important;
+    border-left: 0;
+  }
+  .fixed-workspace-header .topbar .header-file-actions {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .fixed-workspace-header
+    :is(
+      .header-action,
+      .header-playback > button,
+      .headright button,
+      .top-actions button,
+      .toolbar-options > summary,
+      header select,
+      .calculation-control,
+      .calculation-control button,
+      .calculation-control select
+    ) {
+    height: var(--ui-control-compact) !important;
+    min-height: var(--ui-control-compact) !important;
+    line-height: 1 !important;
+  }
+  .fixed-workspace-header .header-status-hub {
+    gap: 8px !important;
+  }
+  .fixed-workspace-header .header-computation {
+    align-items: center;
+  }
+  .fixed-workspace-header > header,
+  .fixed-workspace-header > .topbar {
+    padding-block: 8px !important;
+  }
+}
+
+/* Compact narrow headers: reduce spacing before introducing another action row. */
+@media (max-width: 650px) {
+  .fixed-workspace-header > header,
+  .fixed-workspace-header > .topbar {
+    padding: 6px 48px 6px 12px !important;
+    row-gap: 6px !important;
+  }
+  .fixed-workspace-header .headright {
+    gap: 6px !important;
+  }
+  .fixed-workspace-header
+    :is(
+      .primary-toolbar,
+      .header-status-hub,
+      .header-file-actions,
+      .inline-header-settings,
+      .inline-header-settings fieldset
+    ) {
+    gap: 6px !important;
+  }
+  .fixed-workspace-header > nav {
+    min-height: 38px;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    gap: 4px !important;
+  }
+  .fixed-workspace-header > nav > button {
+    height: var(--ui-control-standard);
+    min-height: var(--ui-control-standard);
+    padding: 0 10px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    flex-shrink: 0;
+  }
+  .fixed-workspace-header > .mobile-controls-toggle {
+    top: 6px;
+    right: 14px;
+    width: 32px;
+    height: var(--ui-control-compact);
+    min-height: var(--ui-control-compact);
+  }
+  .fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle {
+    top: 3px;
+    right: 14px;
+    width: 32px;
+    height: var(--ui-control-compact);
+    min-height: var(--ui-control-compact);
+  }
+  .fixed-workspace-header.mobile-controls-collapsed > nav {
+    padding-right: 52px !important;
+  }
+  .fixed-workspace-header .header-computation {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 650px) {
+  html.embedded-workspace .fixed-workspace-header > header[data-header-layout],
+  html.embedded-workspace .fixed-workspace-header > .topbar[data-header-layout] {
+    padding-block: 6px !important;
+  }
+  html .fixed-workspace-header > :is(.tabs, .workspace-tabs, nav) > button {
+    height: var(--ui-control-standard) !important;
+    min-height: var(--ui-control-standard) !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+  }
+}
+
+/* MPC playback and export occupy distinct cells at every narrow breakpoint. */
+@media (max-width: 650px) {
+  html.embedded-workspace body .fixed-workspace-header > .topbar[data-header-layout="modules"] {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    column-gap: 6px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    > .top-actions {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-playback {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+}
+
+/* MPC has one explicit grid contract across narrow and intermediate widths. */
+@media (max-width: 1000px) {
+  html.embedded-workspace body .fixed-workspace-header > .topbar[data-header-layout="modules"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 8px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    > .primary-toolbar {
+    display: contents !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-status-hub {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    gap: 6px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-action {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-inline: 8px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-playback {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: start;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    > .top-actions {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+  }
+}
+@media (max-width: 520px) {
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-status-hub {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+/* Module choices open below the entire header, leaving section tabs unobscured. */
+html body .fixed-workspace-header .header-module > .module-popover {
+  top: var(--module-menu-top, 100%) !important;
+  left: 0 !important;
+  transform: none !important;
+  width: max(100%, 150px) !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 24px) !important;
+  padding: 6px !important;
+  z-index: 120;
+}
+html body .fixed-workspace-header .module-popover .adapt-choice .choice-options {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+}
+html body .fixed-workspace-header .module-popover .adapt-choice .choice-options label {
+  min-width: 0 !important;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  padding: 0 4px !important;
+}
+@media (max-width: 900px) {
+  #display > .workspace-introduction {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+  #display > .workspace-introduction > div:first-child {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  #display > .workspace-introduction p {
+    width: 100%;
+    max-width: 100%;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+  #display > .workspace-introduction > .display-summary {
+    flex: none !important;
+    min-width: 0 !important;
+    width: min(220px, 100%) !important;
+    max-width: 100% !important;
+    align-self: flex-start;
+  }
+}
+
+/* Fold switches sit beside the always-visible section tabs, never inside what they hide. */
+html body .fixed-workspace-header > .mobile-controls-toggle,
+html body .fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle,
+html body .fixed-workspace-header > .workspace-site-toggle {
+  position: absolute;
+  top: auto !important;
+  bottom: 6px !important;
+  right: 12px !important;
+  width: 32px !important;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--teal);
+  z-index: 110;
+}
+html body .fixed-workspace-header > .workspace-site-toggle {
+  right: 50px !important;
+}
+html body .fixed-workspace-header.has-site-toggle > nav {
+  padding-right: 92px !important;
+}
+html body .fixed-workspace-header:not(.has-site-toggle) > nav {
+  padding-right: 52px !important;
+}
+html body .fixed-workspace-header > header,
+html body .fixed-workspace-header > .topbar {
+  padding-right: 12px !important;
+}
+/* Scientific actions remain distinct from their explicit settings toggles. */
+.header-module.has-module-menu > .header-action {
+  padding-right: 26px !important;
+}
+.header-module > .module-menu-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  min-width: 24px;
+  height: var(--control-height);
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: transparent;
+  color: var(--teal);
+  z-index: 2;
+}
+html
+  body.keyboard-navigation
+  .fixed-workspace-header
+  .header-module:not(.popover-open)
+  > .module-popover,
+html body .fixed-workspace-header .header-module:not(.popover-open) > .module-popover {
+  display: none !important;
+}
+html body.keyboard-navigation .fixed-workspace-header .header-module.popover-open > .module-popover,
+html body .fixed-workspace-header .header-module.popover-open > .module-popover {
+  display: block !important;
+}
+@media (max-width: 650px) {
+  html body .fixed-workspace-header > .mobile-controls-toggle,
+  html body .fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle,
+  html body .fixed-workspace-header > .workspace-site-toggle {
+    bottom: 3px !important;
+  }
+}
+
+html body .fixed-workspace-header .header-module > .module-menu-toggle {
+  width: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  right: 0 !important;
+  left: auto !important;
+  top: 0 !important;
+  padding: 0 !important;
+  z-index: 20;
+  background: var(--paper);
+  color: var(--teal);
+}
+
+/* Only the Lab controls fold switch belongs in the workspace. */
+html body .fixed-workspace-header > nav {
+  padding-right: 52px !important;
+  scroll-padding-right: 52px;
+}
+
+/* Native selects need their text line, rather than legacy vertical padding, inside the height. */
+html body .fixed-workspace-header select {
+  box-sizing: border-box !important;
+  padding-block: 0 !important;
+  padding-left: 8px !important;
+  padding-right: 26px !important;
+  line-height: normal !important;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+#surface-display {
+  margin: 0 0 var(--lab-panel-gap);
+}
+/* Curvature reads in the same order in two columns and in mobile document flow. */
+.workgrid > :last-child {
+  min-width: 0;
+}
+@media (max-width: 1100px) {
+  html.embedded-workspace body .fixed-workspace-header > .topbar[data-header-layout="calculation"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    gap: 8px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    > .common-controls {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: block !important;
+    width: 100%;
+    min-width: 0;
+    height: auto !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    .common-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    > .top-actions {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    position: static !important;
+    justify-self: start !important;
+    margin: 0 !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    .grid-reset-controls {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    height: auto !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    .grid-control {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    height: var(--control-height) !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    .calculation-control {
+    display: inline-flex !important;
+    flex: none !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    height: var(--control-height) !important;
+    margin: 0 !important;
+  }
+}
+
+/* Curvature wraps by available content width, not by an arbitrary viewport breakpoint. */
+html body .fixed-workspace-header .headright:has(.header-computation) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  gap: 8px 16px !important;
+}
+html body .fixed-workspace-header .headright .header-computation {
+  display: flex !important;
+  flex: none !important;
+  flex-basis: auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 8px !important;
+}
+html body .fixed-workspace-header .header-computation .computation-controls {
+  min-width: 0 !important;
+  flex: none !important;
+}
+html body .fixed-workspace-header .header-computation .rotation-controls {
+  flex-wrap: nowrap !important;
+}
+html body .fixed-workspace-header .headright:has(.header-computation) > .secondary-controls {
+  flex: none !important;
+  width: auto !important;
+  margin-left: auto !important;
+}
+@media (max-width: 650px) {
+  html body .fixed-workspace-header .headright:has(.header-computation) > .secondary-controls {
+    margin-left: 0 !important;
+  }
+}
+
+/* Comparison choices are a single disclosure; playback stays immediately available. */
+html body .fixed-workspace-header .headright:has(.compare-options) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+}
+html body .fixed-workspace-header .compare-options {
+  position: relative;
+  flex: none;
+}
+html body .fixed-workspace-header .compare-options > .selection {
+  position: absolute;
+  top: var(--toolbar-menu-top, calc(100% + 8px));
+  left: 0;
+  right: auto;
+  width: 320px !important;
+  max-width: calc(100vw - 24px) !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 14px !important;
+  padding: 14px !important;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  z-index: 200;
+}
+html body .fixed-workspace-header .compare-options:not([open]) > .selection {
+  display: none !important;
+}
+html body .fixed-workspace-header .compare-settings > label {
+  display: block;
+  margin: 0;
+}
+html body .fixed-workspace-header .compare-settings #case {
+  width: 120px !important;
+  min-width: 120px !important;
+}
+html body .fixed-workspace-header .compare-settings fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+html body .fixed-workspace-header .compare-settings legend {
+  margin-bottom: 6px;
+}
+html body .fixed-workspace-header .compare-settings .mode {
+  display: inline-flex;
+  width: auto;
+  justify-self: start;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #header-playback {
+  flex: 0 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  gap: 8px;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #header-playback > .controls {
+  flex: none !important;
+  width: auto !important;
+  gap: 8px;
+  justify-content: flex-start;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #frame {
+  min-width: 0 !important;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #timeline {
+  flex: none !important;
+  width: 80px !important;
+  min-width: 80px !important;
+  margin: 0 !important;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #speed {
+  width: 70px !important;
+  min-width: 70px !important;
+}
+html body .fixed-workspace-header #resolution {
+  width: 150px !important;
+  min-width: 150px !important;
+}
+
+/* One nearby hover/click disclosure style, without a full-height arrow segment. */
+html body .fixed-workspace-header .header-module > .module-menu-toggle {
+  width: 22px !important;
+  min-width: 22px !important;
+  max-width: 22px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  top: calc((var(--control-height) - 24px) / 2) !important;
+  right: 3px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--white);
+  border-radius: 4px;
+}
+html
+  body
+  .fixed-workspace-header
+  .header-module:has(.header-action:not(.primary))
+  > .module-menu-toggle {
+  color: var(--teal);
+}
+@media (hover: hover) and (pointer: fine) {
+  html body .fixed-workspace-header .header-module > .module-menu-toggle {
+    width: 1px !important;
+    min-width: 1px !important;
+    max-width: 1px !important;
+    height: 1px !important;
+    min-height: 1px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  html body .fixed-workspace-header .header-module.has-module-menu > .header-action {
+    padding-inline: 8px !important;
+  }
+  html body .fixed-workspace-header .header-module > .module-menu-toggle:focus-visible {
+    clip-path: none;
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+  }
+}
+html
+  body
+  .fixed-workspace-header
+  :is(.module-popover, .compare-options > .selection, .export-options-list) {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: none;
+}

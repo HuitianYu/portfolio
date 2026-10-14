@@ -45,9 +45,10 @@ function initializeSiteControls() {
     if (!compact) setOpen(false);
   }
   nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setOpen(false)));
-  new ResizeObserver(measure).observe(header);
-  addEventListener("resize", measure);
-  document.fonts?.ready.then(measure);
+  const measurement = window.UIControls.frameTask(measure);
+  new ResizeObserver(measurement.schedule).observe(header);
+  addEventListener("resize", measurement.schedule);
+  document.fonts?.ready.then(measurement.schedule);
   measure();
 }
 
@@ -82,9 +83,10 @@ function initializeContextLabel() {
       40;
     toolbar.classList.toggle("context-name-hidden", required > available);
   }
-  new ResizeObserver(fit).observe(toolbar);
-  addEventListener("resize", fit);
-  document.fonts?.ready.then(fit);
+  const measurement = window.UIControls.frameTask(fit);
+  new ResizeObserver(measurement.schedule).observe(toolbar);
+  addEventListener("resize", measurement.schedule);
+  document.fonts?.ready.then(measurement.schedule);
   fit();
 }
 
@@ -307,6 +309,7 @@ function updateHostHeaderSize() {
   );
 }
 function initializeResponsiveHeader() {
+  const headerSize = window.UIControls.frameTask(updateHostHeaderSize);
   let previousY = 0,
     travel = 0,
     transitionUntil = 0;
@@ -339,14 +342,24 @@ function initializeResponsiveHeader() {
       travel = 0;
     }
   }
-  addEventListener("scroll", () => followScroll(scrollY), { passive: true });
+  addEventListener(
+    "scroll",
+    () => {
+      if (!document.body.classList.contains("lab-workspace")) followScroll(scrollY);
+    },
+    { passive: true },
+  );
   addEventListener("message", (event) => {
     if (
       event.origin === location.origin &&
       event.source === document.querySelector("#lab-frame")?.contentWindow &&
-      event.data?.type === "lab:scroll"
-    )
-      followScroll(event.data.y);
+      ["lab:scroll", "lab:layout"].includes(event.data?.type)
+    ) {
+      if (event.data.type === "lab:layout") {
+        transitionUntil = performance.now() + 350;
+        travel = 0;
+      } else followScroll(event.data.y);
+    }
   });
   addEventListener("message", (event) => {
     if (
@@ -369,15 +382,15 @@ function initializeResponsiveHeader() {
     if (!matchMedia("(max-width:760px), (max-height:480px) and (orientation:landscape)").matches)
       revealNavigation(false);
   });
-  new ResizeObserver(updateHostHeaderSize).observe(document.querySelector(".site-header"));
+  new ResizeObserver(headerSize.schedule).observe(document.querySelector(".site-header"));
   document.addEventListener(
     "load",
     (event) => {
-      if (event.target.id === "lab-frame") updateHostHeaderSize();
+      if (event.target.id === "lab-frame") headerSize.schedule();
     },
     true,
   );
-  addEventListener("resize", updateHostHeaderSize);
+  addEventListener("resize", headerSize.schedule);
   updateHostHeaderSize();
 }
 initializeResponsiveHeader();

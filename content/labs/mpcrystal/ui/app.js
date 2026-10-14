@@ -15,6 +15,7 @@
     lastDraw = 0,
     busy = false,
     queued = false,
+    renderRevision = 0,
     toastTimer;
   const header = document.querySelector(".topbar"),
     controls = document.querySelector(".common-controls");
@@ -22,7 +23,6 @@
   statusHub.className = "header-status-hub";
   statusHub.append(document.querySelector(".status-strip"));
   header.insertBefore(statusHub, document.querySelector(".top-actions"));
-  const moduleMoves = [];
   let lastSelectedTarget = $("target").value;
   function markControllerRefresh(needed) {
     $("refresh").classList.toggle("refresh-needed", needed);
@@ -395,6 +395,7 @@
     if (!window.LabWorkspace.selectSection(next)) return;
     tab = next;
     if (next === "display") render(true);
+    else invalidateRender();
     typeset([$(next)]);
   }
   // A small arithmetic parser: no eval, Function, property access, or executable imports.
@@ -752,12 +753,15 @@
       typeset([$("run-mode")]);
     }
     $("start").classList.toggle("stop-action", running);
+    $("start").setAttribute("aria-pressed", String(running));
     $("sensor").classList.toggle("stop-action", sensor);
     $("adaptive").classList.toggle("stop-action", adaptive);
-    $("start").innerHTML = running ? "Stop controller" : "Start controller";
-    $("pause").disabled = !running;
-    $("pause").textContent = paused ? "Resume" : "Pause";
-    $("pause").dataset.playbackState = running && !paused ? "playing" : "paused";
+    window.LabUI.text($("start"), running ? "Stop controller" : "Start controller");
+    window.LabUI.playback($("pause"), {
+      active: running && !paused,
+      label: paused ? "Resume" : "Pause",
+      disabled: !running,
+    });
     $("step").disabled = !sim || !paused;
     $("sensor").disabled = !running;
     $("seed").disabled = !running;
@@ -772,7 +776,7 @@
     document
       .querySelectorAll("[name=control-target]")
       .forEach((r) => (r.checked = r.value === $("target").value));
-    $("sensor-note").textContent = moduleLabel("GSensor", sensor);
+    window.LabUI.text($("sensor-note"), moduleLabel("GSensor", sensor));
     $("sensor-note").classList.toggle("active-status", sensor);
     $("sensor-note").dataset.state = moduleState(sensor);
     $("adapt-note").dataset.state = moduleState(adaptive);
@@ -789,7 +793,7 @@
     $("adaptive").textContent = adaptive ? "Stop adapter" : "Start adapter";
     $("adaptive").classList.toggle("on", adaptive);
     $("adaptive").setAttribute("aria-pressed", adaptive);
-    $("adapt-note").textContent = moduleLabel("Adapter", adaptive);
+    window.LabUI.text($("adapt-note"), moduleLabel("Adapter", adaptive));
     const acceptedSeedBatches =
       sim?.runEvents.filter((event) => event.kind === "seed-queued").length || 0;
     const pendingSeedBatches = sim?.seedPending || 0;
@@ -804,12 +808,18 @@
     if (running) $("seed").title = "Each click adds one seed batch.";
     document.querySelectorAll(".header-playback-action[data-action]").forEach((b) => {
       const main = $(b.dataset.action);
-      b.innerHTML = b.dataset.action === "step" ? stepIcon() : playbackIcon(paused);
+      const icon = b.dataset.action === "step" ? stepIcon() : playbackIcon(paused);
+      if (b.dataset.icon !== icon) {
+        b.innerHTML = icon;
+        b.dataset.icon = icon;
+      }
       b.setAttribute("aria-label", main.textContent);
       b.title = main.textContent;
       b.disabled = main.disabled;
-      if (b.dataset.action === "pause")
+      if (b.dataset.action === "pause") {
         b.dataset.playbackState = running && !paused ? "playing" : "paused";
+        b.setAttribute("aria-pressed", String(running && !paused));
+      }
     });
     document.querySelectorAll(".header-action").forEach((b) => {
       const main = $(b.dataset.action);
@@ -836,7 +846,8 @@
       const note = b.closest(".header-module")?.querySelector("small,.status");
       b.dataset.state = note?.dataset.state || "ready";
       b.title = [main.title, note?.textContent.trim()].filter(Boolean).join(" · ");
-      b.setAttribute("aria-pressed", main.getAttribute("aria-pressed") || "false");
+      if (b.dataset.action === "seed") b.removeAttribute("aria-pressed");
+      else b.setAttribute("aria-pressed", main.getAttribute("aria-pressed") || "false");
     });
     const r = sim?.history.at(-1);
     const metrics = [
@@ -884,21 +895,12 @@
       lastMetricDraw = performance.now();
       metrics.forEach((m, i) => {
         const strong = $("headline-metrics").children[i].querySelector("strong");
-        const math =
-          m[1] === "—"
-            ? String.raw`\text{—}`
-            : m[1]
-                .replace(/^-/, String.raw`\text{-}`)
-                .replace(/e([+-]?\d+)/, String.raw`\times 10^{$1}`)
-                .replace(" °C", String.raw`\,{}^\circ\mathrm{C}`);
-        const next = "$" + math + "$";
-        if (strong.dataset.value !== next) {
-          clearMath(strong);
-          strong.innerHTML = next;
-          strong.dataset.value = next;
-        }
+        const next = m[1].replace(
+          /e([+-]?)(\d+)/,
+          (_, sign, exp) => " × 10<sup>" + (sign === "-" ? "−" : "") + Number(exp) + "</sup>",
+        );
+        if (strong.innerHTML !== next) strong.innerHTML = next;
       });
-      typeset([$("headline-metrics")]);
     }
   }
   function buildPanels() {
@@ -955,8 +957,24 @@
     if (k === "lnk") return r.lnk * 10;
     return r[k] ?? null;
   }
+  function invalidateRender() {
+    renderRevision++;
+    if (busy) queued = true;
+  }
+  function panelVisible(panel) {
+    return visiblePanels.has(panel.id) && (view === "all" || panel.group === view);
+  }
+  function syncPanelVisibility() {
+    for (const panel of panels) {
+      const card = $("card-" + panel.id);
+      const hidden = !panelVisible(panel);
+      if (card.hidden !== hidden) card.hidden = hidden;
+    }
+  }
   async function render(force = false) {
+    if (force) invalidateRender();
     if (tab !== "display") return;
+    if (force) syncPanelVisibility();
     if (busy) {
       queued ||= force;
       return;
@@ -965,6 +983,7 @@
     if (!force && now - lastDraw < 350) return;
     busy = true;
     lastDraw = now;
+    const revision = renderRevision;
     try {
       const p = sim?.p || E.derive(values, $("target").value),
         history = sim?.history || [],
@@ -982,11 +1001,9 @@
       const mathUpdates = [];
       let drawn = 0;
       for (const panel of panels) {
-        if (tab !== "display") break;
-        const card = $("card-" + panel.id),
-          show = visiblePanels.has(panel.id) && (view === "all" || panel.group === view);
-        card.hidden = !show;
-        if (!show) continue;
+        if (tab !== "display" || revision !== renderRevision) break;
+        const card = $("card-" + panel.id);
+        if (!panelVisible(panel)) continue;
         let traces = [];
         if (panel.population) {
           traces = [
@@ -1030,7 +1047,6 @@
             marker: { symbol: "star", size: 10, color: colours.seed },
           });
         const legend = card.querySelector(".live-legend");
-        clearMath(legend);
         const unitFor = (k) =>
           ["T", "TKF", "Tj", "TjSet"].includes(k)
             ? String.raw`{}^\circ\mathrm{C}`
@@ -1066,6 +1082,7 @@
           })
           .join("");
         if (legend.dataset.markup !== legendMarkup) {
+          clearMath(legend);
           legend.dataset.markup = legendMarkup;
           legend.innerHTML = legendMarkup;
           mathUpdates.push(legend);
@@ -1088,6 +1105,10 @@
             (_, sign, exp) => " × 10<sup>" + (sign === "-" ? "−" : "") + Number(exp) + "</sup>",
           );
           if (node.innerHTML !== html) node.innerHTML = html;
+        });
+        legend.querySelectorAll("button").forEach((button, i) => {
+          if (traces[i])
+            traces[i].visible = button.classList.contains("curve-hidden") ? "legendonly" : true;
         });
         const layout = {
           paper_bgcolor: "#fff",
@@ -1208,15 +1229,18 @@
             showgrid: false,
             zeroline: false,
           };
-        await Plotly.react($("plot-" + panel.id), traces, layout, {
-          responsive: true,
-          displaylogo: false,
-          modeBarButtonsToRemove: ["lasso2d", "select2d"],
-          toImageButtonOptions: { format: "png", filename: "mpcrystal-" + panel.id, scale: 2 },
-        });
+        await Plotly.react(
+          $("plot-" + panel.id),
+          traces,
+          layout,
+          window.LabCharts.config({
+            modeBarButtonsToRemove: ["lasso2d", "select2d"],
+            toImageButtonOptions: { format: "png", filename: "mpcrystal-" + panel.id, scale: 2 },
+          }),
+        );
         if (++drawn % 2 === 0) await new Promise((resolve) => setTimeout(resolve, 0));
       }
-      if (mathUpdates.length) await typeset(mathUpdates);
+      if (mathUpdates.length && revision === renderRevision) await typeset(mathUpdates);
     } catch (e) {
       notify("Chart update failed: " + e.message, true);
     } finally {
@@ -1235,6 +1259,7 @@
     if (hasInvalid()) throw Error("Correct the highlighted parameter before starting.");
     const pending = sim?.seedPending && !sim.history.length;
     sim = new E.Simulation(values, options());
+    invalidateRender();
     if (pending) sim.addSeed();
   }
   function tick() {
@@ -1380,7 +1405,8 @@
     clearTimeout(timer);
     status(paused ? "Paused" : "Running", paused ? "paused" : "");
     summary();
-    if (!paused) tick();
+    if (paused) render(true);
+    else tick();
   };
   $("step").onclick = () => {
     if (!sim || !paused || !running) return;

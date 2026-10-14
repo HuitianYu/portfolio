@@ -6,7 +6,14 @@
   "topic": "AMLD 2022",
   "image": "/images/news/amld-2022.png",
   "alt": "Huitian Yu presenting sparse-regression material modelling at AMLD 2022",
-  "summary": "A look back at a presentation on discovering hyperelastic material models through sparse regression, with an application to human brain tissue."
+  "summary": "A look back at a presentation on discovering hyperelastic material models through sparse regression, with an application to human brain tissue.",
+  "gallery": [
+    {
+      "image": "/images/news/amld-2022-auditorium.png",
+      "alt": "AMLD EPFL 2022 stage and auditorium viewed from the audience",
+      "caption": "The stage and auditorium at AMLD EPFL 2022."
+    }
+  ]
 }
 ---
 

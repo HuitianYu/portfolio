@@ -4,9 +4,21 @@
   "date": "2026-09-09",
   "displayDate": "9 September 2026",
   "topic": "ISIC 2026",
-  "image": "/images/news/isic-2026-presentation.png",
+  "image": "/images/news/isic-2026-presentation-front.jpg",
   "alt": "Huitian Yu presenting growth-rate sensing at ISIC 2026 in Budapest",
-  "summary": "A presentation on robust inline growth-rate sensing for cascaded model-predictive control of crystallization processes."
+  "summary": "A presentation on robust inline growth-rate sensing for cascaded model-predictive control of crystallization processes.",
+  "gallery": [
+    {
+      "image": "/images/news/isic-2026-audience.jpg",
+      "alt": "Huitian Yu presenting at ISIC 2026, with the audience and presentation room visible",
+      "caption": "The presentation room and audience at ISIC 2026 in Budapest."
+    },
+    {
+      "image": "/images/news/isic-2026-presentation.png",
+      "alt": "A view from behind the speaker showing the growth-rate sensing presentation at ISIC 2026",
+      "caption": "A closer view of the growth-rate sensing presentation."
+    }
+  ]
 }
 ---
 

@@ -1,0 +1,409 @@
+/* Working views favour the data; Overview retains the editorial introduction. */
+.workspace-introduction {
+  min-height: 0 !important;
+  padding: 16px 0 22px !important;
+  margin: 0 !important;
+  gap: 20px !important;
+  align-items: center !important;
+}
+.workspace-introduction h1 {
+  font: 400 30px/1.2 var(--serif) !important;
+  letter-spacing: -0.5px !important;
+  margin: 6px 0 10px !important;
+}
+.workspace-introduction p {
+  font: 400 12px/1.7 var(--sans) !important;
+  margin: 0 !important;
+  max-width: 850px;
+}
+.workspace-introduction .eyebrow {
+  font-size: var(--ui-label) !important;
+}
+.workspace-introduction .display-summary {
+  padding: 0 !important;
+  min-width: 130px;
+}
+@media (max-width: 650px) {
+  .workspace-introduction {
+    padding: 12px 0 18px !important;
+  }
+  .workspace-introduction h1 {
+    font-size: 26px !important;
+  }
+}
+
+/* Shared responsive contract: content may shrink; navigation scrolls locally. */
+.fixed-workspace-header .brand,
+.fixed-workspace-header .headright,
+.fixed-workspace-header .top-actions,
+.workspace-introduction > * {
+  min-width: 0;
+}
+.fixed-workspace-header > nav {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+.fixed-workspace-header > nav > button {
+  flex-shrink: 0;
+}
+nav.parameter-tabs,
+nav.parameter-subtabs,
+nav.result-tabs {
+  max-width: 100%;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+nav.parameter-tabs > button,
+nav.parameter-subtabs > button,
+nav.result-tabs > button {
+  flex-shrink: 0;
+}
+.workspace-introduction p {
+  overflow-wrap: break-word;
+}
+@media (max-width: 650px) {
+  .fixed-workspace-header > nav {
+    justify-content: flex-start !important;
+  }
+  .fixed-workspace-header .brand > span {
+    white-space: normal !important;
+    overflow-wrap: break-word;
+  }
+  .fixed-workspace-header .brand small {
+    letter-spacing: 1px !important;
+  }
+  .fixed-workspace-header .headright {
+    flex-wrap: wrap;
+    max-width: 100%;
+  }
+  .fixed-workspace-header > header,
+  .fixed-workspace-header > .topbar {
+    padding-inline: 16px !important;
+  }
+  .fixed-workspace-header > .tabs > button,
+  .fixed-workspace-header > .workspace-tabs > button {
+    padding-inline: 16px !important;
+  }
+}
+
+/* Embedded workspaces borrow the host toolbar identity; standalone apps keep theirs. */
+.embedded-workspace .fixed-workspace-header .brand {
+  display: none !important;
+}
+.embedded-workspace .fixed-workspace-header > [data-header-layout="actions"] {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center;
+  padding-block: 10px !important;
+  gap: 8px !important;
+}
+.embedded-workspace .fixed-workspace-header .headright {
+  width: 100%;
+  margin: 0 !important;
+}
+.embedded-workspace .fixed-workspace-header > .topbar > .common-controls {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* Module controls keep a grid contract; hiding the brand must not convert it to flex. */
+.embedded-workspace .fixed-workspace-header > .topbar[data-header-layout="modules"] {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  padding-bottom: 8px !important;
+  align-items: start !important;
+  column-gap: 12px !important;
+}
+.embedded-workspace .topbar .header-status-hub {
+  grid-column: 1 !important;
+  grid-row: 1 !important;
+  min-width: 0;
+}
+.embedded-workspace .topbar[data-header-layout="modules"] > .top-actions {
+  grid-column: 2 !important;
+  grid-row: 1 !important;
+}
+@media (max-width: 900px) {
+  .embedded-workspace .fixed-workspace-header > .topbar[data-header-layout="modules"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+    row-gap: 12px !important;
+  }
+  .embedded-workspace .topbar .header-status-hub {
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  .embedded-workspace .topbar .header-module {
+    position: relative;
+    display: grid !important;
+    grid-template-rows: 36px 22px;
+    height: auto !important;
+    gap: 4px;
+  }
+  .embedded-workspace .fixed-workspace-header .topbar .header-module > .status,
+  .embedded-workspace .fixed-workspace-header .topbar .header-module > small {
+    position: static !important;
+    transform: none !important;
+    white-space: normal !important;
+  }
+  .embedded-workspace .topbar[data-header-layout="modules"] > .top-actions {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    margin-top: 0 !important;
+    justify-content: flex-start;
+    flex-wrap: wrap !important;
+  }
+}
+
+/* Calculation workspaces use the same action/status rows as module workspaces. */
+.fixed-workspace-header > .topbar[data-header-layout="calculation"] {
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) auto !important;
+  align-items: start !important;
+}
+.fixed-workspace-header > .topbar[data-header-layout="calculation"] > .brand {
+  grid-column: 1/-1 !important;
+  grid-row: 1 !important;
+}
+.fixed-workspace-header > .topbar[data-header-layout="calculation"] > .common-controls {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  grid-template-rows: 36px 22px;
+  gap: 4px !important;
+  align-items: center;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+.fixed-workspace-header .common-controls > .common-actions {
+  grid-column: 1;
+  grid-row: 1;
+  min-width: 0;
+  justify-content: flex-start;
+}
+.fixed-workspace-header .common-controls > .status {
+  grid-column: 1 !important;
+  grid-row: 2 !important;
+  justify-self: start !important;
+
+  padding: 0 !important;
+  min-height: 22px;
+}
+.fixed-workspace-header > .topbar[data-header-layout="calculation"] > .top-actions {
+  grid-column: 2 !important;
+  grid-row: 2 !important;
+  display: flex !important;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: flex-end;
+  gap: 8px !important;
+  margin: 0 !important;
+}
+.fixed-workspace-header .top-actions > .grid-reset-controls {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  margin: 0;
+}
+.fixed-workspace-header .calculation-control,
+.fixed-workspace-header .calculation-control select,
+.fixed-workspace-header .calculation-control .button {
+  height: var(--ui-control-standard);
+  min-height: var(--ui-control-standard);
+}
+.embedded-workspace
+  .fixed-workspace-header
+  > .topbar[data-header-layout="calculation"]
+  > .common-controls,
+.embedded-workspace
+  .fixed-workspace-header
+  > .topbar[data-header-layout="calculation"]
+  > .top-actions {
+  grid-row: 1 !important;
+}
+@media (max-width: 900px) {
+  .fixed-workspace-header > .topbar[data-header-layout="calculation"] {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .fixed-workspace-header > .topbar[data-header-layout="calculation"] > .top-actions {
+    grid-column: 1 !important;
+    grid-row: 3 !important;
+    justify-content: flex-start;
+  }
+  .embedded-workspace
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    > .top-actions {
+    grid-row: 2 !important;
+  }
+  .fixed-workspace-header .top-actions > .grid-reset-controls {
+    flex-wrap: wrap;
+  }
+}
+
+@media (max-width: 900px) {
+  .fixed-workspace-header > .topbar[data-header-layout="calculation"] > .top-actions {
+    justify-self: stretch !important;
+    width: 100%;
+    justify-content: flex-start !important;
+  }
+}
+
+/* Playback is the primary action; reset remains in the secondary zone. */
+.fixed-workspace-header .headright:has(> .header-playback) {
+  width: 100%;
+  justify-content: space-between;
+}
+.fixed-workspace-header .headright > .header-playback {
+  margin-right: auto;
+}
+
+/* Feedback remains readable when a calculation reports a longer explanation. */
+.fixed-workspace-header .progress-caption {
+  align-items: flex-start;
+  gap: 10px;
+}
+.fixed-workspace-header .progress-caption [role="status"] {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  line-height: 1.5;
+}
+.fixed-workspace-header .progress-caption #progress-percent {
+  flex: none;
+  white-space: nowrap;
+}
+.fixed-workspace-header .header-module > .status,
+.fixed-workspace-header .header-module > small {
+  font-size: 10px !important;
+  line-height: 1.4;
+}
+#data-error,
+[role="alert"] {
+  overflow-wrap: anywhere;
+  line-height: 1.6;
+}
+input:invalid:not(:placeholder-shown),
+input.invalid {
+  border-color: var(--danger, #9f4638);
+  outline-color: var(--danger, #9f4638);
+}
+@media (max-width: 650px) {
+  .fixed-workspace-header .progress-caption {
+    font-size: var(--ui-label);
+  }
+}
+
+/* On phones, keep the grid choice and reset together rather than orphaning reset. */
+@media (max-width: 650px) {
+  .fixed-workspace-header
+    .topbar[data-header-layout="calculation"]
+    .top-actions
+    > .grid-reset-controls {
+    display: flex !important;
+    flex: 1 1 100%;
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: nowrap;
+  }
+  .fixed-workspace-header .topbar[data-header-layout="calculation"] .grid-reset-controls > label {
+    min-width: 0;
+  }
+  .fixed-workspace-header .topbar[data-header-layout="calculation"] .grid-reset-controls select {
+    max-width: 160px;
+  }
+}
+
+/* Operational states are independent of the photo-derived brand accent. */
+:root {
+  --state-idle: #72756c;
+}
+.fixed-workspace-header [data-state="inactive"],
+.fixed-workspace-header [data-state="ready"] {
+  --state-colour: var(--state-idle);
+}
+.fixed-workspace-header [data-state="active"],
+.fixed-workspace-header [data-state="complete"] {
+  --state-colour: var(--success);
+}
+.fixed-workspace-header [data-state="paused"] {
+  --state-colour: var(--warning);
+}
+.fixed-workspace-header [data-state="pending"] {
+  --state-colour: var(--info);
+}
+.fixed-workspace-header [data-state="error"] {
+  --state-colour: var(--danger);
+}
+.fixed-workspace-header .header-module > small[data-state]::before,
+.fixed-workspace-header .header-module > .status[data-state] i {
+  width: 7px;
+  height: 7px;
+  box-sizing: border-box;
+  border: 1.5px solid var(--state-colour);
+  background: var(--state-colour);
+  border-radius: 50%;
+}
+.fixed-workspace-header .header-module > small[data-state="inactive"]::before,
+.fixed-workspace-header .header-module > small[data-state="ready"]::before,
+.fixed-workspace-header .header-module > .status[data-state="ready"] i {
+  background: transparent;
+}
+.fixed-workspace-header .header-module > small[data-state="paused"]::before,
+.fixed-workspace-header .header-module > .status[data-state="paused"] i {
+  border-radius: 1px;
+}
+.fixed-workspace-header .header-module > small[data-state="active"],
+.fixed-workspace-header .header-module > .status[data-state="active"] {
+  color: var(--ink);
+  font-weight: 600;
+}
+
+/* Waiting for data is informational; it is not a failed tolerance check. */
+.tracking-state.pending {
+  color: var(--info);
+  background: color-mix(in srgb, var(--info), var(--paper) 92%);
+  border: 1px solid color-mix(in srgb, var(--info), var(--paper) 72%);
+}
+.status[data-state="ready"] .status-dot {
+  background: transparent;
+  border: 1.5px solid var(--state-idle);
+}
+.status[data-state="pending"] .status-dot {
+  background: var(--info);
+}
+.status[data-state="complete"] .status-dot {
+  background: var(--success);
+}
+.status[data-state="error"] .status-dot {
+  background: var(--danger);
+}
+.status[data-state="paused"] .status-dot {
+  background: var(--warning);
+  border-radius: 1px;
+}
+
+/* Header visibility is reversible and never replaces the workspace instance. */
+.lab-header-toggle {
+  position: fixed;
+  right: 14px;
+  bottom: 14px;
+  z-index: 10000;
+  width: 40px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 50%;
+  background: var(--white);
+  color: var(--ink);
+  box-shadow: 0 2px 10px #00000014;
+  cursor: pointer;
+  font-size: 20px;
+}
+html.lab-header-hidden .fixed-workspace-header {
+  display: none !important;
+}

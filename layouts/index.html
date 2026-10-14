@@ -4,7 +4,7 @@
       <div class="hero-copy">
         <span class="eyebrow">
           <i class="status-dot"></i>
-          CRYSTALLIZATION · CONTROL · SCIENTIFIC COMPUTING
+          Crystallization · Control · Scientific computing
         </span>
         <h1>
           Huitian Yu
@@ -25,7 +25,10 @@
           <a class="button" href="{{ "cv/" | relURL }}">View my CV</a>
         </div>
         <div class="personal-links" aria-label="Personal and academic profiles">
-          <a href="mailto:{{ site.Params.email }}">Email ↗</a>
+          <a href="mailto:{{ site.Params.email }}">
+            Email
+            {{ partial "external-link-mark.html" . }}
+          </a>
           {{ partial "contact-links.html" slice }}
         </div>
       </div>
@@ -38,50 +41,23 @@
           />
         </div>
         <figcaption>
-          <span>
-            Huitian Yu
-            <small>Researcher · Process engineering</small>
+          <span class="portrait-name">Huitian Yu</span>
+          <small class="portrait-role">Researcher · Process engineering</small>
+          <span class="portrait-affiliations">
+            <span class="portrait-location">Shot in {{ site.Params.portraitLocation }}</span>
+            <span class="portrait-schools" role="img" aria-label="TUM, ETH Zurich and KIT">
+              {{ range slice "tum" "eth" "kit" }}
+                {{ partial "institution-logo.html" . }}
+              {{ end }}
+            </span>
           </span>
-          <span class="portrait-location">Shot in {{ site.Params.portraitLocation }}</span>
         </figcaption>
       </figure>
-    </section>
-    <section class="education-strip" aria-labelledby="education-title">
-      <div>
-        <span class="eyebrow">THE PATH SO FAR</span>
-        <h2 id="education-title">Education.</h2>
-      </div>
-      <div class="education-item">
-        <div class="education-identity">
-          <span class="education-number">01 / CURRENT</span>
-          {{ partial "institution-logo.html" "tum" }}
-        </div>
-        <h3>{{ hugo.Data.institutions.tum.display }}</h3>
-        <p>PhD candidate · Crystallization & process control</p>
-      </div>
-      <div class="education-item">
-        <div class="education-identity">
-          <span class="education-number">02 / MASTER’S</span>
-          {{ partial "institution-logo.html" "eth" }}
-        </div>
-        <h3>{{ hugo.Data.institutions.eth.display }}</h3>
-        <p>M.Sc. · Process Engineering</p>
-      </div>
-      <div class="education-item">
-        <div class="education-identity">
-          <span class="education-number">03 / MASTER’S & BACHELOR’S</span>
-          {{ partial "institution-logo.html" "kit" }}
-        </div>
-        <h3>{{ hugo.Data.institutions.kit.display }}</h3>
-        <div class="education-details">
-          <p>M.Sc. & B.Sc. · Chemical & Process Engineering</p>
-        </div>
-      </div>
     </section>
     <section class="home-section">
       <div class="section-heading">
         <div>
-          <span class="eyebrow">EXPLORE & EXPERIMENT</span>
+          <span class="eyebrow">Interactive labs</span>
           <h2>Research you can interact with.</h2>
         </div>
         <div class="carousel-heading-actions">
@@ -127,7 +103,7 @@
     <section class="home-section">
       <div class="section-heading">
         <div>
-          <span class="eyebrow">RECENT WORK</span>
+          <span class="eyebrow">Research</span>
           <h2>Selected papers.</h2>
         </div>
         <div class="carousel-heading-actions">
@@ -172,9 +148,10 @@
         {{ end }}
       </div>
     </section>
+    {{ partial "home-education.html" . }}
     <section class="home-contact">
       <div>
-        <span class="eyebrow">CONTACT</span>
+        <span class="eyebrow">Contact</span>
         <h2>
           Questions, ideas
           <br />

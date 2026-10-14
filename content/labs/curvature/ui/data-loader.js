@@ -1,6 +1,7 @@
 (() => {
   const cache = new Map(),
     pending = new Map();
+  let activeDownload;
   async function loadLocal(id) {
     if (window.EMBEDDED?.[id] || !window.EMBEDDED_INDEX?.[id]) return;
     if (!pending.has(id))
@@ -116,8 +117,12 @@
     return data;
   }
   window.CrystalData = {
-    async load(id) {
+    async load(id, onProgress) {
+      activeDownload?.abort();
+      const download = new AbortController();
+      activeDownload = download;
       await loadLocal(id);
+      download.signal.throwIfAborted();
       const key = (window.EMBEDDED?.[id] || window.EMBEDDED_INDEX?.[id] ? "local:" : "cloud:") + id;
       if (cache.has(key)) return cache.get(key);
       let blob;
@@ -144,43 +149,64 @@
             cfg.recordURL.replace("/records/", "/api/records/").replace(/\/$/, "") + "/files/") +
           encodeURIComponent(entry.archive) +
           "/content";
-        let response;
-        try {
-          response = await fetch(url, {
-            headers: { Range: `bytes=${entry.start}-${entry.start + entry.length - 1}` },
-            signal: AbortSignal.timeout(45000),
-          });
-        } catch (e) {
-          throw Error(
-            "Zenodo data could not be loaded (network, timeout or browser access restriction). Retry, or choose a Local example.",
-          );
-        }
-        if (response.status !== 206) {
-          response.body?.cancel();
-          throw Error(
-            "Zenodo did not return a partial data response. Choose a Local example; the full ZIP will not be downloaded automatically.",
-          );
-        }
-        const reader = response.body.getReader(),
-          chunks = [];
-        let received = 0;
-        try {
-          while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            received += value.byteLength;
-            if (received > entry.length) {
-              await reader.cancel();
-              throw Error("The server returned more data than requested. Choose a Local example.");
+        // Fetch bounded ranges so a slow connection can retry one part rather
+        // than discard the complete crystal. Never accept a full archive response.
+        const chunks = [],
+          partSize = 2 * 1024 * 1024;
+        for (let offset = 0; offset < entry.length; offset += partSize) {
+          const length = Math.min(partSize, entry.length - offset);
+          let part;
+          for (let attempt = 0; attempt < 2; attempt++) {
+            try {
+              const start = entry.start + offset,
+                end = start + length - 1;
+              const response = await fetch(url, {
+                headers: { Range: `bytes=${start}-${end}` },
+                signal: AbortSignal.any([download.signal, AbortSignal.timeout(45000)]),
+              });
+              if (response.status !== 206) {
+                await response.body?.cancel();
+                throw Error(
+                  "Zenodo does not currently support this partial download. Choose a Local example.",
+                );
+              }
+              const range = response.headers.get("Content-Range");
+              if (range && !range.startsWith(`bytes ${start}-${end}/`)) {
+                await response.body?.cancel();
+                throw Error("Zenodo returned an unexpected data range. Please retry later.");
+              }
+              const reader = response.body.getReader(),
+                values = [];
+              let received = 0;
+              try {
+                while (true) {
+                  const { done, value } = await reader.read();
+                  if (done) break;
+                  received += value.byteLength;
+                  if (received > length) {
+                    await reader.cancel();
+                    throw Error("The server returned more data than requested.");
+                  }
+                  values.push(value);
+                  onProgress?.((offset + received) / entry.length);
+                }
+              } finally {
+                reader.releaseLock();
+              }
+              if (received !== length) throw Error("The downloaded crystal data is incomplete.");
+              part = new Blob(values);
+              break;
+            } catch (error) {
+              if (download.signal.aborted) throw error;
+              if (attempt === 1)
+                throw Error(
+                  `Cloud download failed at ${Math.round((offset / entry.length) * 100)}%. Retry, or choose a Local example. ${error.name === "TimeoutError" ? "Zenodo timed out." : error.message}`,
+                );
             }
-            chunks.push(value);
           }
-        } finally {
-          reader.releaseLock();
+          chunks.push(part);
         }
         blob = new Blob(chunks);
-        if (blob.size !== entry.length)
-          throw Error("The downloaded crystal data is incomplete. Please retry.");
       }
       const data = await decode(blob);
       cache.set(key, data);

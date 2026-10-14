@@ -1,0 +1,592 @@
+/* Site navigation can be folded from every page, without restarting a Lab. */
+.site-header-toggle {
+  position: fixed;
+  top: 18px;
+  right: 12px;
+  z-index: 45;
+  width: 36px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--teal);
+  padding: 0;
+}
+.header-inner {
+  padding-right: 64px;
+}
+.site-nav-hidden .site-header {
+  display: none;
+}
+
+.lab-workspace #main {
+  height: calc(100dvh - var(--site-header-size, 90px));
+}
+.lab-workspace .lab-shell {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}
+.lab-workspace .lab-toolbar {
+  flex: none;
+  padding-right: 24px;
+}
+.lab-workspace .lab-shell iframe {
+  flex: 1;
+  height: 0;
+  min-height: 0;
+}
+.carousel-arrows button {
+  display: grid;
+  place-items: center;
+}
+.cv-entry-current {
+  border-left: 2px solid var(--teal);
+  padding-left: 18px;
+  background: linear-gradient(90deg, var(--pale), transparent 75%);
+}
+@media (max-width: 760px) {
+  .site-header-toggle {
+    top: 14px;
+    right: 10px;
+  }
+  .header-inner {
+    padding-right: 60px;
+  }
+  .mobile-nav-away .site-header {
+    transform: translateY(-100%);
+  }
+  .mobile-nav-away .site-header-toggle {
+    top: 6px;
+  }
+  .lab-workspace .site-header {
+    position: fixed;
+    width: 100%;
+  }
+  .lab-workspace #main {
+    margin-top: var(--site-header-size, 80px);
+  }
+  .lab-toolbar {
+    gap: 8px;
+    flex-wrap: wrap;
+    padding: 6px 54px 6px 12px;
+  }
+  .lab-toolbar > div {
+    margin-left: 0;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .lab-toolbar-brand {
+    font-size: 18px;
+  }
+  .lab-toolbar > .lab-toolbar-actions {
+    width: 100%;
+  }
+  .lab-toolbar-actions > a {
+    padding: 4px 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header {
+    transition: none;
+  }
+}
+
+.lab-toolbar .lab-icon-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  min-width: 36px;
+  height: 32px;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--white);
+}
+@media (max-width: 760px) {
+  .lab-toolbar {
+    padding-right: 12px;
+  }
+  .lab-toolbar-brand {
+    padding-right: 35px;
+  }
+  .lab-toolbar > .lab-toolbar-actions {
+    flex-wrap: nowrap;
+  }
+}
+
+/* Navigation actions share the same vertical centre and hit area. */
+.site-header-toggle {
+  top: calc(var(--site-header-size, 86px) / 2 - 18px);
+  height: 36px;
+}
+.site-nav-hidden .site-header-toggle,
+.mobile-nav-away .site-header-toggle {
+  top: 6px;
+}
+.carousel-heading-actions > .text-link {
+  display: inline-flex;
+  align-items: center;
+  min-height: 36px;
+}
+.carousel-arrows button {
+  width: 36px;
+  height: 36px;
+  padding: 0;
+  line-height: 1;
+}
+.lab-toolbar .lab-toolbar-actions {
+  align-items: center;
+}
+.lab-toolbar .lab-toolbar-actions > :is(a, button) {
+  height: 36px;
+  min-height: 36px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  line-height: 1;
+  margin-top: 0;
+  margin-bottom: 0;
+}
+
+/* Navigation and Lab controls share one right-hand axis. */
+.lab-workspace .site-header-toggle {
+  right: calc(12px + var(--lab-scrollbar-size, 0px));
+}
+.lab-toolbar {
+  position: relative;
+}
+.lab-workspace.site-nav-hidden::before {
+  content: "";
+  display: block;
+  height: 44px;
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+}
+@media (max-width: 760px) {
+  .lab-toolbar .lab-toolbar-brand {
+    padding-right: calc(48px + var(--lab-scrollbar-size, 0px));
+  }
+  .lab-toolbar .lab-toolbar-actions {
+    padding-right: 0;
+  }
+  .lab-workspace.site-nav-hidden::before {
+    display: none;
+  }
+}
+
+.site-nav-hidden .site-header-toggle {
+  width: 24px;
+  height: 24px;
+
+  right: 18px;
+}
+.lab-workspace.site-nav-hidden .site-header-toggle {
+  right: calc(18px + var(--lab-scrollbar-size, 0px));
+}
+.lab-workspace.site-nav-hidden::before {
+  display: none;
+}
+
+/* Workspace links wrap only when necessary, as intact actions. */
+.lab-toolbar-actions > a {
+  white-space: nowrap;
+}
+@media (max-width: 760px) {
+  .lab-toolbar > .lab-toolbar-actions {
+    width: auto;
+    flex: 0 1 auto;
+    margin-left: auto;
+  }
+  .lab-toolbar > .lab-toolbar-brand {
+    padding-right: 0;
+  }
+  .lab-workspace.site-nav-hidden .lab-toolbar > .lab-toolbar-brand {
+    padding-right: 36px;
+  }
+}
+
+.lab-resource-action {
+  gap: 6px;
+}
+.lab-resource-action > svg {
+  display: none;
+  flex-shrink: 0;
+}
+@media (max-width: 760px) {
+  .lab-toolbar {
+    flex-wrap: nowrap;
+    gap: 10px;
+  }
+  .lab-toolbar > a {
+    flex: none;
+  }
+  .lab-toolbar > .lab-toolbar-brand {
+    flex: none;
+    padding-right: 0 !important;
+  }
+  .lab-toolbar-brand > span:last-child {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .lab-toolbar > .lab-toolbar-actions {
+    flex: none;
+    gap: 8px;
+  }
+  .lab-toolbar .lab-resource-action {
+    width: 36px;
+    min-width: 36px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: 6px;
+    background: var(--white);
+  }
+  .lab-resource-action > svg {
+    display: block;
+  }
+  .lab-resource-action > span {
+    display: none;
+  }
+  .site-nav-hidden .lab-toolbar {
+    padding-right: calc(48px + var(--lab-scrollbar-size, 0px));
+  }
+}
+
+/* A folded navigation always has a visible, recognisable recovery action. */
+.site-nav-hidden .site-header-toggle {
+  width: 36px;
+  height: 36px;
+  right: 12px;
+  top: 6px;
+  font-size: 16px;
+  background: var(--white);
+  border-color: var(--teal);
+}
+.lab-workspace.site-nav-hidden .site-header-toggle {
+  right: calc(12px + var(--lab-scrollbar-size, 0px));
+}
+@media (max-width: 760px) {
+  .lab-toolbar {
+    gap: 6px;
+  }
+  .lab-toolbar > .lab-toolbar-actions {
+    gap: 6px;
+  }
+}
+
+.mobile-nav-away .site-header-toggle {
+  width: 36px;
+  height: 36px;
+  top: 6px;
+  background: var(--white);
+  border-color: var(--teal);
+  font-size: 16px;
+}
+
+.site-header-toggle span,
+.site-header-toggle svg {
+  display: block;
+}
+.site-header-toggle,
+.site-nav-hidden .site-header-toggle,
+.mobile-nav-away .site-header-toggle {
+  background: var(--paper);
+  border-color: var(--line);
+}
+@media (max-width: 760px) {
+  .header-inner {
+    padding-right: calc(82px + var(--lab-scrollbar-size, 0px));
+  }
+  .menu-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    min-height: 36px;
+    padding-inline: 8px;
+  }
+}
+
+@media (max-width: 760px) {
+  .lab-toolbar > .lab-toolbar-actions {
+    margin-left: 0;
+  }
+  .lab-toolbar .lab-toolbar-actions > :is(a, button) {
+    height: 32px;
+    min-height: 32px;
+  }
+
+  /* Scrolling back restores the whole navigation group; avoid two overlapping fold icons. */
+  .mobile-nav-away:not(.site-nav-hidden) .site-header-toggle {
+    opacity: 0;
+    pointer-events: none;
+  }
+}
+
+/* Website navigation and the Lab return/context row form one collapsible header. */
+.site-header-toggle {
+  top: var(--navigation-button-top, 20px);
+}
+.compact-header-label {
+  display: none;
+}
+.site-header .lab-toolbar {
+  border-top: 1px solid var(--line);
+  border-bottom: 0;
+}
+.site-nav-hidden .site-header {
+  display: block;
+  height: 36px;
+}
+.site-nav-hidden .site-header > :is(.header-inner, .lab-toolbar) {
+  display: none;
+}
+.site-nav-hidden .site-header > .compact-header-label {
+  display: block;
+  height: 36px;
+  padding: 0 64px 0 16px;
+  font: 15px/36px var(--serif);
+  color: var(--muted);
+}
+.site-nav-hidden .site-header-toggle {
+  top: 2px;
+  width: 32px;
+  height: 32px;
+}
+.lab-workspace.site-nav-hidden .site-header-toggle {
+  right: calc(14px + var(--lab-scrollbar-size, 0px));
+}
+@media (max-width: 760px) {
+  .site-header .lab-toolbar {
+    padding-right: 12px;
+  }
+  .lab-workspace.site-nav-hidden #main {
+    margin-top: 36px;
+  }
+}
+
+@media (max-width: 760px) and (prefers-reduced-motion: no-preference) {
+  .site-header {
+    transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .site-header-toggle {
+    transition: opacity 180ms ease;
+  }
+  .lab-workspace #main {
+    transition:
+      margin-top 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      height 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+}
+
+/* The retained workspace tab row owns the switches for both upper levels. */
+.lab-workspace.workspace-toggle-ready > .site-header-toggle {
+  display: none;
+}
+.lab-workspace.site-nav-hidden .site-header {
+  display: none;
+  height: 0;
+}
+.lab-workspace.site-nav-hidden #main {
+  margin-top: 0;
+}
+
+/* No manual website fold control: reclaim its former reserved space. */
+.header-inner {
+  padding-right: 52px;
+}
+@media (max-width: 760px) {
+  .header-inner {
+    padding-right: 16px;
+  }
+}
+
+/* Return/context stays left; resource and window actions use the remaining right edge. */
+.lab-toolbar > .lab-toolbar-actions {
+  margin-left: auto !important;
+}
+
+/* Low-height Lab windows use the same automatic website-header behaviour as phones. */
+@media (max-height: 480px) and (orientation: landscape) {
+  .lab-workspace .site-header {
+    position: fixed;
+    width: 100%;
+  }
+  .lab-workspace .header-inner {
+    min-height: 48px;
+    padding-block: 8px;
+  }
+  .lab-workspace .brand small {
+    display: none;
+  }
+  .lab-workspace .lab-toolbar {
+    min-height: 40px;
+    padding-block: 4px;
+  }
+  .lab-workspace #main {
+    margin-top: var(--site-header-size, 88px);
+    height: calc(100dvh - var(--site-header-size, 88px));
+  }
+  .lab-workspace.mobile-nav-away .site-header {
+    transform: translateY(-100%);
+  }
+  .lab-workspace .site-header {
+    transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .lab-workspace #main {
+    transition:
+      margin-top 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
+      height 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .site-header,
+  .lab-workspace #main {
+    transition: none !important;
+  }
+}
+
+@media (max-height: 480px) and (orientation: landscape) {
+  .lab-workspace .header-inner {
+    padding: 8px 20px !important;
+    min-height: 48px !important;
+  }
+  .lab-workspace .wordmark {
+    font-size: 22px;
+  }
+  .lab-workspace .wordmark span {
+    display: none;
+  }
+  .lab-workspace .lab-toolbar {
+    padding: 4px 20px !important;
+  }
+}
+
+/* Text actions carry their label; icon-only actions carry an accessible name. */
+.button {
+  justify-content: center;
+  gap: 0;
+  border-radius: 6px;
+  font-family: var(--sans);
+  font-size: 13px;
+}
+.lab-toolbar-actions .lab-resource-action {
+  width: 36px;
+  min-width: 36px;
+  height: 36px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.menu-toggle {
+  gap: 0;
+  justify-content: center;
+}
+
+/* Navigation switches by measured available width, not a device breakpoint. */
+.header-inner {
+  position: relative;
+  flex-wrap: nowrap !important;
+}
+.header-inner #site-nav {
+  display: flex;
+  flex: 0 0 auto;
+  flex-basis: auto;
+  flex-wrap: nowrap;
+  gap: 20px;
+  padding: 0;
+  width: auto;
+}
+.header-inner #site-nav a {
+  font-size: 12px;
+  white-space: nowrap;
+}
+.header-inner:not(.nav-compact) .menu-toggle {
+  display: none !important;
+}
+.header-inner.nav-compact .menu-toggle {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  margin-left: auto;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  border: 0 !important;
+  border-radius: 0;
+  background: transparent !important;
+  box-shadow: none !important;
+  color: var(--ink);
+  cursor: pointer;
+}
+.header-inner.nav-compact #site-nav {
+  display: none;
+  position: absolute;
+  z-index: 110;
+  top: calc(100% - 1px);
+  right: 16px;
+  left: auto;
+  flex-wrap: wrap;
+  width: min(360px, calc(100vw - 32px));
+  box-sizing: border-box;
+  gap: 8px 20px;
+  padding: 12px 16px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+}
+.header-inner.nav-compact #site-nav.open {
+  display: flex;
+}
+.header-inner.nav-compact #site-nav a {
+  padding: 8px 0;
+}
+
+/* Context identity uses the same space-based rule as the website navigation. */
+.lab-toolbar .lab-toolbar-brand > span:last-child {
+  display: inline;
+  white-space: nowrap;
+}
+.lab-toolbar.context-name-hidden .lab-toolbar-brand > span:last-child {
+  display: none;
+}
+
+/* Resource, restart and independent-window actions share one icon system. */
+.lab-toolbar-actions :is(.lab-icon-action, .lab-resource-action) {
+  box-sizing: border-box;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px !important;
+  min-width: 36px !important;
+  height: 36px !important;
+  min-height: 36px !important;
+  padding: 0 !important;
+  line-height: 1;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: transparent;
+  color: var(--teal);
+}
+.lab-toolbar-actions :is(.lab-icon-action, .lab-resource-action) svg {
+  display: block;
+  width: 16px;
+  height: 16px;
+  flex: none;
+}
+.lab-toolbar-actions :is(.lab-icon-action, .lab-resource-action):hover {
+  background: var(--pale);
+  border-color: var(--teal);
+}

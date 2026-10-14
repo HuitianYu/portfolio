@@ -6,7 +6,7 @@
       href="{{ . }}"
       {{ with $.relatedTitle }}aria-label="{{ . }}"{{ end }}
     >
-      {{ $.relatedLabel }}{{ if $external }}↗{{ end }}
+      {{ $.relatedLabel }}{{ if $external }}{{ partial "external-link-mark.html" . }}{{ end }}
     </a>
   {{ end }}
 </div>

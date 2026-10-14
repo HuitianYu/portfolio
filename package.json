@@ -2,10 +2,12 @@
   "name": "research-portfolio",
   "private": true,
   "scripts": {
+    "build:styles": "node tools/build-styles.mjs",
+    "check:styles": "node tools/build-styles.mjs --check",
     "format": "node tools/format.mjs",
     "format:check": "node tools/format.mjs --check",
-    "sync:shared": "node tools/sync-shared.mjs",
-    "check:shared": "node tools/sync-shared.mjs --check",
+    "sync:shared": "npm run build:styles && node tools/sync-shared.mjs",
+    "check:shared": "npm run check:styles && node tools/sync-shared.mjs --check",
     "check": "node tools/check.mjs"
   },
   "devDependencies": {

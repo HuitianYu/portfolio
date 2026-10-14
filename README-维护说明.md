@@ -1,6 +1,6 @@
 # Hugo 网站维护
 
-运行 `hugo server` 本地预览，运行 `hugo` 生成网站。无需 Python 或额外预处理。
+运行 `preview.ps1` 本地预览，运行 `build.ps1` 校验并生成网站。直接 Hugo 可使用已经生成的界面资源；修改样式模块后先运行 `npm run sync:shared`。无需 Python。
 
 ## Lab：一个文件夹就是一个 Lab
 
@@ -85,7 +85,9 @@ The host owns Restart lab, which replaces the iframe without depending on its sc
 - `layouts/partials/lab-app.html`：生成工作区页面、注入配置与资源版本。
 - `static/js/site.js`：有名称的主站交互初始化函数。
 - `static/js/lab-interface.js`：共用导航、状态可访问性和生命周期；科学算法留在各 Lab。
-- `static/css/design-system.css`：共享视觉与响应式规则，各 Lab 的 `style.css` 维护专属图表和布局。
+- `ui/styles/manifest.json`：主站与 Lab 样式模块的构建顺序；`tokens.css` 集中管理尺寸、文字和颜色。
+- `ui/styles/site/`、`ui/styles/labs/`：样式源文件。`static/css/site.css` 和 `design-system.css` 为生成文件，不手改。
+- `static/js/lab-runtime.js`：主面板、嵌套标签和播放状态呈现。各 Lab 的引擎保留科学状态和计算。
 
 首次运行 `npm ci` 安装锁定版本的开发工具。使用 `npm run format` 整理源代码，随后 `npm run sync:shared` 同步离线副本；检查用 `npm run format:check` 和 `npm run check:shared`。工具跳过第三方库、晶体目录、归档索引和构建产物。网页运行和 Hugo 构建不依赖这些 Node 开发工具。
 
@@ -98,7 +100,7 @@ The host owns Restart lab, which replaces the iframe without depending on its sc
 
 照片主题只控制品牌与界面基调。运行/完成使用 success，待处理/等待样本使用 info，暂停和超出容差使用 warning，真正错误使用 danger；未启用与就绪为中性色。选中的 tab、参数分类和方法按钮表示界面选择，不表示计算成功。科学数值色标保留自己的数据含义。
 
-MPC 模块使用 data-state：inactive、ready、active、paused、pending、complete、error。传感器已启用但控制器未运行时显示 Ready。Adapter 尚未积累足够样本使用信息状态，不标成 Bad。质量提示使用 Within/Outside tolerance，并给出判断阈值。
+MPC 模块使用 data-state：inactive、ready、active、paused、pending、complete、error。传感器已启用但控制器未运行时显示 Ready。Adapter 尚未积累足够样本使用信息状态，不标成 Bad。质量提示使用 Good/Bad，说明中保留判断阈值。
 
 
 ## Lab 导航架构

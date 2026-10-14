@@ -1,6 +1,6 @@
 {{ $id := .Params.id }}{{ $lab := index (where (partial "labs-data.html" .) "id" $id) 0 }}
-<div class="lab-toolbar">
-  <a href="{{ "labs/" | relURL }}">← Labs</a>
+<div class="lab-toolbar context-toolbar">
+  {{ partial "return-link.html" (dict "url" ("labs/" | relURL) "label" "Labs") }}
   <span class="lab-toolbar-brand" title="{{ $lab.name }}">
     <span class="theme-icon" aria-hidden="true" style="--icon-url:url('{{ $lab.iconurl }}')"></span>
     <span>{{ $lab.name }}</span>

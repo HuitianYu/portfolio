@@ -1,12 +1,12 @@
 {{ $education := index (where hugo.Data.cv "id" "education") 0 }}{{ $current := index (where $education.entries "current" true) 0 }}
 <section class="cv-summary">
-  <span class="eyebrow">CURRENT RESEARCH</span>
+  <span class="eyebrow">Current research</span>
   <h3>{{ (index hugo.Data.institutions $current.institutionID).display }}</h3>
   <p>{{ $current.title }}</p>
   <p class="current-location">{{ partial "current-location.html" . }}</p>
 </section>
 <section class="cv-summary">
-  <span class="eyebrow">EDUCATION</span>
+  <span class="eyebrow">Education</span>
   {{ $entries := where $education.entries "current" "ne" true }}{{ $seen := slice }}{{ range $entries }}
     {{ if not (in $seen .institutionID) }}
       {{ $id := .institutionID }}{{ $seen = $seen | append $id }}
@@ -21,7 +21,7 @@
   {{ end }}
 </section>
 <section class="cv-summary">
-  <span class="eyebrow">RESEARCH & PROFILES</span>
+  <span class="eyebrow">Profiles</span>
   <div class="inline-links">
     <a href="{{ "papers/" | relURL }}">Papers</a>
     {{ partial "contact-links.html" (slice "scholar" "orcid") }}

@@ -1,0 +1,3 @@
+<nav class="context-toolbar article-toolbar" aria-label="Return navigation">
+  {{ partial "return-link.html" (dict "url" (printf "%s/" .Section | relURL) "label" (.Section | title)) }}
+</nav>

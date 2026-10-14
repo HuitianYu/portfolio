@@ -1,0 +1,22 @@
+/* Shared design tokens. Photo-derived colours override only colour roles at runtime. */
+:root {
+  --paper: #fdfcf6;
+  --ink: #23251c;
+  --muted: #696a62;
+  --line: #deddd5;
+  --teal: #5c5f3c;
+  --pale: #f0eee7;
+  --white: #fff;
+  --card: #fff;
+  --serif: Georgia, "Times New Roman", serif;
+  --sans: Inter, "Segoe UI", sans-serif;
+  --radius: 6px;
+  --ui-control-compact: 32px;
+  --ui-control-standard: 36px;
+  --ui-field: 44px;
+  --ui-label: 12px;
+  --ui-caption: 13px;
+  --ui-value: 26px;
+  --ui-space: 16px;
+  --control-height: var(--ui-control-standard);
+}

@@ -1,0 +1,37 @@
+<section class="education-strip" aria-labelledby="education-title">
+  <div>
+    <h2 id="education-title">Education.</h2>
+  </div>
+  <div class="education-item">
+    <div class="education-identity">
+      <span class="education-number">Current</span>
+    </div>
+    <div class="institution-title">
+      <h3>{{ hugo.Data.institutions.tum.display }}</h3>
+      {{ partial "institution-logo.html" "tum" }}
+    </div>
+    <p>PhD candidate · Crystallization & process control</p>
+  </div>
+  <div class="education-item">
+    <div class="education-identity">
+      <span class="education-number">Master’s</span>
+    </div>
+    <div class="institution-title">
+      <h3>{{ hugo.Data.institutions.eth.display }}</h3>
+      {{ partial "institution-logo.html" "eth" }}
+    </div>
+    <p>M.Sc. · Process Engineering</p>
+  </div>
+  <div class="education-item">
+    <div class="education-identity">
+      <span class="education-number">Master’s &amp; Bachelor’s</span>
+    </div>
+    <div class="institution-title">
+      <h3>{{ hugo.Data.institutions.kit.display }}</h3>
+      {{ partial "institution-logo.html" "kit" }}
+    </div>
+    <div class="education-details">
+      <p>M.Sc. & B.Sc. · Chemical & Process Engineering</p>
+    </div>
+  </div>
+</section>

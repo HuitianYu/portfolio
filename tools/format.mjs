@@ -15,7 +15,8 @@ async function collect(relative, recursive = true) {
     else if (entry.isFile()) files.push(file);
   }
 }
-for (const directory of ["layouts", "static/js", "static/css", "tools"]) await collect(directory);
+for (const directory of ["layouts", "static/js", "static/css", "tools", "ui/styles"])
+  await collect(directory);
 for (const lab of await fs.readdir(path.join(root, "content/labs"), { withFileTypes: true })) {
   if (lab.isDirectory()) await collect(`content/labs/${lab.name}/ui`, false);
 }

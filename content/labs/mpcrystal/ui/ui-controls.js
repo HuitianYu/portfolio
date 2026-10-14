@@ -1,5 +1,43 @@
 /** DOM-only disclosure behavior shared by the website and scientific workspaces. */
 (() => {
+  /** Coalesce layout work from observers, fonts and resize into a single frame. */
+  function frameTask(task) {
+    let frame = null;
+    return Object.freeze({
+      schedule() {
+        if (frame !== null) return;
+        frame = requestAnimationFrame(() => {
+          frame = null;
+          task();
+        });
+      },
+      cancel() {
+        if (frame !== null) cancelAnimationFrame(frame);
+        frame = null;
+      },
+    });
+  }
+  /** Arrow navigation for a sibling choice row, including rows rebuilt after activation. */
+  function roving({ owner, items, activate = (item) => item.click() }) {
+    owner.addEventListener("keydown", (event) => {
+      if (!["ArrowLeft", "ArrowRight", "Home", "End"].includes(event.key)) return;
+      const available = items().filter((item) => !item.disabled);
+      const current = available.indexOf(owner.ownerDocument.activeElement);
+      if (current < 0) return;
+      event.preventDefault();
+      const next =
+        event.key === "Home"
+          ? 0
+          : event.key === "End"
+            ? available.length - 1
+            : (current + (event.key === "ArrowRight" ? 1 : -1) + available.length) %
+              available.length;
+      const target = available[next];
+      activate(target);
+      const refreshed = items().filter((item) => !item.disabled);
+      (target.isConnected ? target : refreshed[next])?.focus();
+    });
+  }
   function disclosure({
     owner,
     trigger,
@@ -82,5 +120,5 @@
     close();
     return Object.freeze({ setOpen, close, cancel });
   }
-  window.UIControls = Object.freeze({ disclosure });
+  window.UIControls = Object.freeze({ disclosure, roving, frameTask });
 })();

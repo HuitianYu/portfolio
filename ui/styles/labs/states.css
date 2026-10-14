@@ -1,0 +1,256 @@
+/* Calculations share the same real fill; playback uses its dark/light pair. */
+html:root body .fixed-workspace-header .mode-toggle[data-progress-state="running"],
+html:root body .fixed-workspace-header #recalculate[data-state="running"] {
+  animation: none !important;
+  background-position: 0 0 !important;
+  background-size: 100% 100% !important;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 30%) var(--run-progress),
+    var(--teal) var(--run-progress)
+  ) !important;
+}
+html:root body .fixed-workspace-header .mode-toggle[data-progress-state="complete"],
+html:root body .fixed-workspace-header #recalculate[data-state="complete"] {
+  animation: none !important;
+  background-position: 0 0 !important;
+  background-size: 100% 100% !important;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 30%) 100%,
+    var(--teal) 100%
+  ) !important;
+}
+html:root body :is(#play, #rotate)[aria-pressed="false"],
+html:root body [data-playback-state="paused"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+  border-color: var(--teal) !important;
+}
+html:root body :is(#play, #rotate)[aria-pressed="true"],
+html:root body [data-playback-state="playing"] {
+  background: color-mix(in srgb, var(--teal), white 30%) !important;
+  color: var(--paper) !important;
+  border-color: color-mix(in srgb, var(--teal), white 30%) !important;
+}
+
+/* The legacy hover bridge covered the next row of modules; bridge only an open panel. */
+html:root body .fixed-workspace-header .header-module::after {
+  content: none !important;
+  display: none !important;
+  pointer-events: none !important;
+}
+html:root body .fixed-workspace-header .header-action::before {
+  pointer-events: none;
+}
+html:root body .fixed-workspace-header .module-popover::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6px;
+  height: 6px;
+}
+@media (max-width: 650px), (hover: none), (pointer: coarse) {
+  html:root body .fixed-workspace-header .header-module.has-module-menu > .module-menu-toggle {
+    display: inline-flex !important;
+    clip-path: none !important;
+    width: 28px !important;
+    height: var(--ui-control-compact) !important;
+    min-height: var(--ui-control-compact) !important;
+    right: 0 !important;
+    top: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+  html:root body .fixed-workspace-header .header-module.has-module-menu > .header-action {
+    padding-right: 30px !important;
+  }
+}
+
+/* Equal module footprints: centred labels, aligned lights, independent settings target. */
+html:root body .fixed-workspace-header .header-status-hub {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+}
+html:root body .fixed-workspace-header .header-module {
+  min-width: 0;
+  width: 100%;
+  position: relative;
+}
+html:root body .fixed-workspace-header .header-module > .header-action {
+  position: relative;
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  padding: 0 !important;
+  font-size: 12px;
+}
+html:root body .fixed-workspace-header .header-action .module-label {
+  position: absolute;
+  inset: 0 20px;
+  display: block;
+  line-height: 30px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+html:root body .fixed-workspace-header .header-action::before {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0 !important;
+  width: 6px;
+  height: 6px;
+}
+@media (max-width: 520px) {
+  html:root body .fixed-workspace-header .header-status-hub {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+@media (min-width: 1001px) {
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  html:root body .fixed-workspace-header .header-module > .header-action {
+    font-size: var(--ui-label);
+  }
+}
+@keyframes lab-status-breathe {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success), transparent 80%);
+  }
+  50% {
+    opacity: 0.65;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success), transparent 90%);
+  }
+}
+html:root body .fixed-workspace-header .header-action[data-state="active"]::before {
+  animation: lab-status-breathe 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root body .fixed-workspace-header .header-action::before {
+    animation: none !important;
+  }
+}
+
+/* Keep module geometry inside the toolbar's available width. */
+html:root body .fixed-workspace-header .primary-toolbar .header-status-hub {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 488px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  justify-self: start;
+}
+html:root body .fixed-workspace-header .header-module {
+  box-sizing: border-box;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  margin: 0 !important;
+  inset: auto !important;
+}
+html:root body .fixed-workspace-header .header-module > .module-menu-toggle {
+  position: absolute !important;
+  display: inline-flex !important;
+  clip-path: none !important;
+  width: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+@media (min-width: 1001px) {
+  html:root body .fixed-workspace-header .primary-toolbar .header-status-hub {
+    width: 488px !important;
+    flex: 0 1 488px !important;
+  }
+}
+html:root body .fixed-workspace-header .header-module > .header-action {
+  inset: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+html:root body .fixed-workspace-header .header-action .module-label {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  transform: none !important;
+}
+
+/* Operation cards stack actions on narrow screens; compact parameter choices stay together. */
+@media (max-width: 650px) {
+  html:root body .operation-groups.aligned-operations .operation-group {
+    display: flex !important;
+    flex-flow: column nowrap !important;
+    align-items: stretch !important;
+    min-width: 0 !important;
+    height: auto !important;
+  }
+  html:root body .operation-groups.aligned-operations .operation-group > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    align-self: stretch !important;
+  }
+  html:root body .operation-groups.aligned-operations .operation-group > fieldset {
+    display: block !important;
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html:root body .operation-groups.aligned-operations .operation-group .choice-options {
+    box-sizing: border-box;
+    height: auto !important;
+    min-width: 0 !important;
+    max-width: 100%;
+  }
+  html:root body .operation-groups.aligned-operations .adapt-choice .choice-options {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  html:root body .operation-groups.aligned-operations .adapt-choice .choice-options label {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    justify-content: center;
+    margin: 0 !important;
+    padding-inline: 6px !important;
+  }
+}
+@media (min-width: 651px) and (max-width: 1000px) {
+  html:root body .operation-groups.aligned-operations {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* Popovers share viewport clamping, including left-aligned wrapped Export rows. */
+html:root body .fixed-workspace-header .toolbar-options > summary + *,
+html:root body .fixed-workspace-header .header-module > .module-popover {
+  left: var(--lab-menu-left, 0px) !important;
+  right: auto !important;
+  transform: none !important;
+}

@@ -1,6 +1,9 @@
 {{ define "main" }}
   <div class="container page-container contact-page">
-    <header class="page-heading contact-heading">
+    <header
+      class="page-heading contact-heading contact-backdrop"
+      style="--contact-backdrop:url('{{ hugo.Data.contact.backdrop | relURL }}')"
+    >
       <img
         class="contact-portrait"
         src="{{ hugo.Data.contact.portrait | relURL }}"
@@ -9,7 +12,7 @@
         height="144"
       />
       <div>
-        <span class="eyebrow">HUITIAN YU / CONTACT</span>
+        <span class="eyebrow">Huitian Yu / Contact</span>
         <h1>
           Contact
           <em>.</em>
@@ -27,7 +30,10 @@
         <address>
           {{ (index hugo.Data.institutions .institutionID).display }}
           <br />
-          <a href="{{ .unitURL }}" target="_blank" rel="noopener">{{ .unit }} (SVT) ↗</a>
+          <a href="{{ .unitURL }}" target="_blank" rel="noopener">
+            {{ .unit }} (SVT)
+            {{ partial "external-link-mark.html" . }}
+          </a>
           <br />
           {{ .street }}
           <br />
@@ -38,7 +44,8 @@
         </address>
         <p>
           <a class="text-link" href="{{ .sourceURL }}" target="_blank" rel="noopener">
-            Institutional profile ↗
+            Institutional profile
+            {{ partial "external-link-mark.html" . }}
           </a>
         </p>
       </section>

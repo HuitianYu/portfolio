@@ -1,0 +1,505 @@
+/* Education shares the same label, institution and qualification rows. */
+@media (min-width: 1001px) {
+  .education-strip {
+    grid-template-rows: auto auto auto;
+    column-gap: 30px;
+    row-gap: 12px;
+  }
+  .education-strip > div:first-child {
+    grid-column: 1;
+    grid-row: 1 / span 3;
+  }
+  .education-item {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: 1 / span 3;
+    align-content: start;
+  }
+  .education-item h3 {
+    margin: 0;
+    font-size: 22px;
+    line-height: 1.2;
+  }
+  .education-number {
+    align-self: start;
+  }
+  .education-item p {
+    margin: 0;
+    line-height: 1.7;
+    font-size: var(--ui-caption);
+    max-width: 270px;
+  }
+}
+@media (min-width: 761px) and (max-width: 1000px) {
+  .education-strip {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    grid-template-rows: auto auto auto auto;
+    row-gap: 12px;
+  }
+  .education-strip > div:first-child {
+    grid-column: 1/-1;
+    grid-row: 1;
+    margin-bottom: 8px;
+  }
+  .education-item {
+    display: grid;
+    grid-template-rows: subgrid;
+    grid-row: 2 / span 3;
+    padding-left: 18px;
+  }
+  .education-item h3 {
+    margin: 0;
+    font-size: 21px;
+    line-height: 1.2;
+  }
+  .education-item p {
+    margin: 0;
+    font-size: var(--ui-caption);
+    line-height: 1.7;
+  }
+}
+@media (max-width: 760px) {
+  .education-item p {
+    max-width: 320px;
+  }
+}
+
+/* Shared contact content and independent Lab destinations. */
+.lab-card-main {
+  display: block;
+  color: var(--ink);
+}
+.lab-card-main h3 {
+  color: var(--ink);
+}
+.lab-card-bottom {
+  gap: 12px;
+  flex-wrap: wrap;
+}
+.lab-card-bottom a {
+  color: var(--teal);
+}
+.home-contact p {
+  max-width: 480px;
+  margin: 12px 0;
+}
+.contact-page {
+  max-width: 1280px;
+}
+.contact-panel {
+  padding: 30px 0;
+  border-top: 1px solid var(--line);
+}
+.contact-panel h2 {
+  font-size: 28px;
+  margin-bottom: 18px;
+}
+.contact-panel p {
+  margin-top: 18px;
+}
+.contact-profiles {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px 30px;
+}
+.contact-email {
+  overflow-wrap: anywhere;
+}
+@media (min-width: 761px) and (max-width: 1100px) {
+  #site-nav {
+    gap: 15px;
+  }
+  .header-inner {
+    gap: 20px;
+    padding-left: 28px;
+    padding-right: 28px;
+  }
+}
+
+.cv-courses {
+  margin: 14px 0 0;
+  padding-left: 20px;
+  color: var(--muted);
+}
+.cv-courses li + li {
+  margin-top: 5px;
+}
+
+/* One action component for paper and Lab cards, in listings and carousels. */
+.card-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+  border-top: 1px solid var(--line);
+  padding: 18px 0;
+  margin-top: auto;
+  font: 400 12px/1.5 var(--sans);
+}
+.card-actions a {
+  color: var(--teal);
+  font-weight: 400;
+}
+.card-actions a:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.paper-copy > .card-actions {
+  margin-top: 24px;
+  padding-bottom: 0;
+}
+.home-carousel .paper-copy > .card-actions {
+  margin-top: auto;
+  padding-top: 18px;
+  padding-bottom: 0;
+}
+.home-carousel .paper-copy > .journal {
+  margin-bottom: 24px;
+}
+.lab-card > .card-actions {
+  width: 100%;
+}
+
+.contact-emails {
+  display: grid;
+  gap: 16px;
+}
+.contact-email-label {
+  display: block;
+  font: 400 11px/1.5 var(--sans);
+  color: var(--muted);
+  margin-bottom: 3px;
+}
+.contact-emails .contact-email {
+  display: inline-block;
+}
+.page-outline {
+  transition: width 0.18s ease;
+  box-shadow: 0 8px 30px #20332f0b;
+}
+.outline-collapsed .page-outline {
+  box-shadow: none;
+}
+@media (max-width: 760px) {
+  .page-outline {
+    top: 84px;
+    right: 12px;
+    width: min(280px, calc(100vw - 24px));
+    margin: 0;
+  }
+  .outline-collapsed .outline-heading {
+    display: none;
+  }
+  .outline-collapsed .outline-toggle {
+    justify-content: center;
+    padding: 13px 8px;
+  }
+  .page-content [id] {
+    scroll-margin-top: 110px;
+  }
+}
+
+.home-carousel::-webkit-scrollbar {
+  height: 6px;
+}
+.home-carousel::-webkit-scrollbar-track {
+  background: transparent;
+}
+.home-carousel::-webkit-scrollbar-thumb {
+  background: color-mix(in srgb, var(--teal), var(--paper) 55%);
+  border-radius: 6px;
+}
+#page-outline-links {
+  scrollbar-color: color-mix(in srgb, var(--teal), var(--paper) 55%) transparent;
+}
+
+.contribution-note {
+  font-size: 12px;
+  color: var(--muted);
+  margin-top: 10px;
+}
+.article-heading .contribution-note + .journal {
+  margin-top: 12px;
+}
+
+/* Keep CV prose readable at desktop and narrow widths. */
+.cv-entry p {
+  max-width: 65ch;
+  line-height: 1.7;
+  overflow-wrap: break-word;
+}
+.cv-entry .cv-institution {
+  max-width: 58ch;
+  line-height: 1.5;
+}
+
+/* Workspace height follows actual header/toolbar layout, including mobile wrapping. */
+body.lab-workspace {
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+.lab-workspace > .site-header {
+  flex: none;
+}
+.lab-workspace > main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+}
+.lab-workspace .lab-shell {
+  flex: 1;
+  min-height: 0;
+}
+.lab-workspace .lab-toolbar {
+  flex-wrap: wrap;
+}
+.lab-workspace .lab-toolbar > div {
+  flex-wrap: wrap;
+  min-width: 0;
+}
+.lab-workspace .lab-shell iframe {
+  height: 0 !important;
+  min-height: 0 !important;
+  min-width: 0;
+}
+
+.lab-toolbar-brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-width: 0;
+  color: var(--ink);
+  font: 20px/1.2 var(--serif);
+}
+.lab-toolbar-brand .theme-icon {
+  width: 25px;
+  height: 25px;
+}
+.lab-toolbar > span.lab-toolbar-brand {
+  font-weight: 400;
+  display: inline-flex;
+}
+@media (max-width: 650px) {
+  .lab-toolbar {
+    gap: 10px;
+    padding-inline: 16px;
+  }
+  .lab-toolbar-brand {
+    font-size: 18px;
+  }
+  .lab-toolbar > div {
+    gap: 12px;
+    margin-left: 0;
+    width: 100%;
+  }
+}
+
+/* The CV introduction borrows the homepage photo as a quiet, cropped backdrop. */
+.cv-download {
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 420px;
+}
+.cv-download .cv-background-photo {
+  position: absolute;
+  z-index: -1;
+  right: 0;
+  bottom: 0;
+  width: 80%;
+  height: 82%;
+  object-fit: cover;
+  object-position: center 38%;
+  opacity: 0.22;
+  pointer-events: none;
+  mask-image: linear-gradient(135deg, transparent 10%, #000 75%);
+}
+.cv-download > :not(.cv-background-photo) {
+  position: relative;
+}
+@media (max-width: 760px) {
+  .cv-download {
+    min-height: 350px;
+  }
+  .cv-download .cv-background-photo {
+    width: 75%;
+    height: 76%;
+    opacity: 0.18;
+  }
+}
+
+.current-location {
+  font: 13px/1.6 var(--sans);
+  color: var(--muted);
+  margin-block: 12px;
+}
+.contact-heading {
+  display: flex;
+  align-items: center;
+  gap: 32px;
+}
+.contact-portrait {
+  width: 144px;
+  height: 144px;
+  flex: none;
+  object-fit: cover;
+  object-position: 50% 36%;
+  border-radius: 50%;
+}
+.contact-panel address {
+  font-style: normal;
+  line-height: 1.9;
+}
+.news-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 32px;
+}
+.news-card {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  overflow: hidden;
+  background: white;
+}
+.news-image {
+  display: block;
+  overflow: hidden;
+}
+.news-image img {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: 60% center;
+}
+.news-copy {
+  padding: 24px;
+}
+.news-copy h2 {
+  font-size: 28px;
+  margin: 14px 0;
+}
+.news-copy p {
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.8;
+  margin-bottom: 18px;
+}
+@media (max-width: 760px) {
+  .news-grid {
+    grid-template-columns: 1fr;
+  }
+  .contact-heading {
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .contact-portrait {
+    width: 88px;
+    height: 88px;
+  }
+}
+@media (max-width: 420px) {
+  .contact-heading {
+    flex-direction: column;
+  }
+}
+
+/* Original institution images keep their white background in equal square frames. */
+.school-mark {
+  display: inline-flex;
+  flex: none;
+  width: 56px;
+  height: 56px;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  box-sizing: border-box;
+  overflow: hidden;
+}
+.school-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.education-identity {
+  gap: 12px;
+  min-height: 56px;
+  margin-bottom: 12px;
+}
+.academic-distinction {
+  font: 12px/1.8 var(--sans);
+  color: var(--teal);
+}
+.education-item .academic-distinction {
+  margin-top: 8px;
+}
+.cv-entry:has(> .school-mark) {
+  position: relative;
+  padding-right: 80px;
+}
+.cv-entry > .school-mark {
+  position: absolute;
+  top: 26px;
+  right: 0;
+}
+.cv-entry .academic-distinction {
+  color: var(--teal);
+  font-size: 12px;
+}
+@media (max-width: 650px) {
+  .cv-entry:has(> .school-mark) {
+    padding-right: 64px;
+  }
+  .cv-entry > .school-mark {
+    width: 44px;
+    height: 44px;
+  }
+}
+
+/* School identity stays together, with the logo to the right of its name. */
+.institution-title {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  min-width: 0;
+}
+.institution-title h3 {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+.institution-title .school-mark {
+  width: 40px;
+  height: 40px;
+}
+.education-item {
+  position: relative;
+}
+.education-identity {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 40px;
+  margin-bottom: 8px;
+  padding-right: 0;
+}
+.education-identity .school-mark {
+  position: static;
+  width: 40px;
+  height: 40px;
+}
+.education-item h3 {
+  padding-right: 0;
+}
+@media (max-width: 760px) {
+  .education-identity .school-mark {
+    top: 20px;
+  }
+}

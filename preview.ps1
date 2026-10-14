@@ -1,5 +1,7 @@
 $ErrorActionPreference = 'Stop'
 Set-Location -LiteralPath $PSScriptRoot
+npm run sync:shared
+if ($LASTEXITCODE -ne 0) { throw 'Shared UI build failed.' }
 $previewHugo = Join-Path $PSScriptRoot '../hugo-runtime/hugo.exe'
 if (-not (Test-Path -LiteralPath $previewHugo)) { $previewHugo = 'hugo' }
 & $previewHugo server --bind 127.0.0.1 --port 1313 --disableFastRender --disableLiveReload --cleanDestinationDir=false

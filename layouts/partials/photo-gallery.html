@@ -1,0 +1,12 @@
+{{ with .Params.gallery }}
+  <section class="article-gallery" aria-label="Conference photographs">
+    {{ range . }}
+      <figure>
+        <a href="{{ .image | relURL }}" aria-label="View full photograph: {{ .alt }}">
+          <img src="{{ .image | relURL }}" alt="{{ .alt }}" loading="lazy" />
+        </a>
+        {{ with .caption }}<figcaption>{{ . }}</figcaption>{{ end }}
+      </figure>
+    {{ end }}
+  </section>
+{{ end }}

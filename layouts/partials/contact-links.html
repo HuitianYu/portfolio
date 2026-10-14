@@ -1,3 +1,5 @@
 {{ $ids := . }}{{ range hugo.Data.contact.profiles }}
-  {{ if or (not $ids) (in $ids .id) }}<a href="{{ .url }}">{{ .label }} ↗</a>{{ end }}
+  {{ if or (not $ids) (in $ids .id) }}
+    <a href="{{ .url }}">{{ .label }} {{ partial "external-link-mark.html" . }}</a>
+  {{ end }}
 {{ end }}

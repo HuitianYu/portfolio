@@ -291,7 +291,10 @@ async function select(c) {
   setProgress(5, "Loading crystal data…");
   $("data-error").hidden = true;
   try {
-    const loaded = await window.CrystalData.load(c.id);
+    const loaded = await window.CrystalData.load(c.id, (fraction) => {
+      if (token === loadToken)
+        setProgress(5 + fraction * 10, `Downloading crystal data · ${Math.round(fraction * 100)}%`);
+    });
     if (token !== loadToken) return;
     if (!loaded?.single) throw Error("The crystal data does not contain a single-crystal mesh.");
     shapes = loaded;
@@ -952,7 +955,7 @@ function drawHistogram(classified) {
             line: { color: "red", width: 1.5, dash: "dash" },
           })),
     },
-    { responsive: true, displaylogo: false },
+    window.LabCharts.config(),
   );
 }
 
@@ -1195,7 +1198,7 @@ function draw() {
       },
       uirevision: "surface-camera",
     },
-    { responsive: true, displaylogo: false, modeBarButtonsToRemove: ["toImage"] },
+    window.LabCharts.config({ modeBarButtonsToRemove: ["toImage"] }),
   ).then(() => updateColourTitle(classified));
   updateFieldHeading(classified);
   updateRoundnessMetric(classificationData);
@@ -1785,11 +1788,7 @@ window.addEventListener("lab:suspend", (event) => {
 });
 
 function renderRotationButton() {
-  const button = $("rotate");
-  const label = rotating ? "Pause" : "Rotate";
-  button.classList.add("playback-toggle");
-  button.setAttribute("aria-pressed", String(rotating));
-  button.textContent = label;
+  window.LabUI.playback($("rotate"), { active: rotating, idleLabel: "Rotate" });
 }
 
 function syncCoordinateButtons() {
@@ -1807,35 +1806,14 @@ document.querySelectorAll("[data-coordinate]").forEach((button) => {
 });
 syncCoordinateButtons();
 
-document.querySelectorAll("[data-parameter-page]").forEach((button) => {
-  button.onclick = () => {
-    document
-      .querySelectorAll("[data-parameter-page]")
-      .forEach((item) => item.classList.toggle("active", item === button));
-    document.querySelectorAll("[data-parameter-panel]").forEach((panel) => {
-      panel.hidden = panel.dataset.parameterPanel !== button.dataset.parameterPage;
-    });
-  };
-});
-
-document.querySelectorAll("[data-display-parameter]").forEach((button) => {
-  button.onclick = () => {
-    document
-      .querySelectorAll("[data-display-parameter]")
-      .forEach((item) => item.classList.toggle("active", item === button));
-    document.querySelectorAll("[data-display-panel]").forEach((panel) => {
-      panel.hidden = panel.dataset.displayPanel !== button.dataset.displayParameter;
-    });
-  };
-});
-
-document.querySelectorAll("[data-appearance-page]").forEach((button) => {
-  button.onclick = () => {
-    document
-      .querySelectorAll("[data-appearance-page]")
-      .forEach((item) => item.classList.toggle("active", item === button));
-    document.querySelectorAll("[data-appearance-panel]").forEach((panel) => {
-      panel.hidden = panel.dataset.appearancePanel !== button.dataset.appearancePage;
-    });
-  };
-});
+for (const [buttonKey, panelKey, selector] of [
+  ["parameterPage", "parameterPanel", "[data-parameter-page]"],
+  ["displayParameter", "displayPanel", "[data-display-parameter]"],
+  ["appearancePage", "appearancePanel", "[data-appearance-page]"],
+]) {
+  window.LabWorkspace.connectPanels({
+    container: document.querySelector(selector).parentElement,
+    buttonKey,
+    panelKey,
+  });
+}

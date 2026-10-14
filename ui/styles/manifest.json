@@ -1,0 +1,23 @@
+{
+  "static/css/site.css": [
+    "ui/styles/tokens.css",
+    "ui/styles/site/foundation.css",
+    "ui/styles/site/portraits.css",
+    "ui/styles/site/contents.css",
+    "ui/styles/site/content.css",
+    "ui/styles/site/navigation.css",
+    "ui/styles/site/context.css",
+    "ui/styles/site/contact-news.css"
+  ],
+  "static/css/design-system.css": [
+    "ui/styles/tokens.css",
+    "ui/styles/labs/foundation.css",
+    "ui/styles/labs/workspace.css",
+    "ui/styles/labs/toolbar.css",
+    "ui/styles/labs/navigation.css",
+    "ui/styles/labs/view-controls.css",
+    "ui/styles/labs/responsive.css",
+    "ui/styles/labs/states.css",
+    "ui/styles/labs/display.css"
+  ]
+}

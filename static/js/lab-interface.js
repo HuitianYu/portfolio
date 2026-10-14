@@ -6,7 +6,6 @@
 
   const SECTION_SELECTOR = ".fixed-workspace-header > nav";
   const CATEGORY_SELECTOR = "nav.parameter-tabs, nav.parameter-subtabs, nav.result-tabs";
-  const NAVIGATION_KEYS = ["ArrowLeft", "ArrowRight", "Home", "End"];
 
   function initializeSectionLabels() {
     const labels = window.LAB_CONFIG?.ui?.sections;
@@ -21,7 +20,7 @@
   function initializeNavigation(container, { tabs, label }) {
     container.setAttribute("role", tabs ? "tablist" : "toolbar");
     container.setAttribute("aria-label", label);
-    const buttons = () => [...container.querySelectorAll("button")];
+    const buttons = () => [...container.querySelectorAll(":scope > button")];
     const isSelected = (button) =>
       button.classList.contains("active") || (!tabs && button.classList.contains("selected"));
     function synchronize() {
@@ -45,25 +44,7 @@
       attributes: true,
       attributeFilter: ["class", "disabled"],
     });
-    container.addEventListener("keydown", (event) => {
-      if (!NAVIGATION_KEYS.includes(event.key)) return;
-      const available = buttons().filter((button) => !button.disabled);
-      const current = available.indexOf(document.activeElement);
-      if (current < 0) return;
-      event.preventDefault();
-      const next =
-        event.key === "Home"
-          ? 0
-          : event.key === "End"
-            ? available.length - 1
-            : (current + (event.key === "ArrowRight" ? 1 : -1) + available.length) %
-              available.length;
-      const target = available[next];
-      target.click();
-      // A scientific app may rebuild this category row in its click handler.
-      const refreshed = buttons().filter((button) => !button.disabled);
-      (target.isConnected ? target : refreshed[next])?.focus();
-    });
+    window.UIControls.roving({ owner: container, items: buttons });
     synchronize();
   }
 
@@ -123,7 +104,7 @@
       entries.push(entry);
       // Position after opening, once the panel has measurable dimensions.
       const reposition = () => {
-        if (readOpen()) position();
+        if (readOpen()) placement.schedule();
       };
       new MutationObserver(reposition).observe(owner, {
         attributes: true,
@@ -132,33 +113,42 @@
     }
     const menus = [...document.querySelectorAll(".toolbar-options")];
     const modules = [...document.querySelectorAll(".header-module")];
+    const placement = window.UIControls.frameTask(position);
     function position() {
+      const updates = [];
       for (const owner of [...menus, ...modules]) {
+        const module = owner.matches(".header-module");
+        if (!(module ? owner.classList.contains("popover-open") : owner.open)) continue;
         const anchor = owner.querySelector("summary,.header-action");
         if (!anchor) continue;
-        owner.style.setProperty(
+        const bounds = anchor.getBoundingClientRect();
+        updates.push([
+          owner,
           "--lab-menu-room",
-          Math.max(80, innerHeight - anchor.getBoundingClientRect().bottom - 12) + "px",
-        );
-        owner.style.setProperty(
-          owner.matches(".header-module") ? "--module-menu-top" : "--toolbar-menu-top",
+          Math.max(80, innerHeight - bounds.bottom - 12) + "px",
+        ]);
+        updates.push([
+          owner,
+          module ? "--module-menu-top" : "--toolbar-menu-top",
           anchor.offsetHeight + 6 + "px",
-        );
-        const panel = owner.matches(".header-module")
-          ? owner.querySelector(".module-popover")
-          : anchor.nextElementSibling;
-        if (panel && panel.getBoundingClientRect().width) {
-          const width = panel.getBoundingClientRect().width,
-            bounds = anchor.getBoundingClientRect(),
-            preferred = owner.matches(".export-options") ? bounds.right - width : bounds.left,
+        ]);
+        const panel = module ? owner.querySelector(".module-popover") : anchor.nextElementSibling;
+        const width = panel?.getBoundingClientRect().width;
+        if (width) {
+          const preferred = owner.matches(".export-options") ? bounds.right - width : bounds.left,
             available = document.documentElement.clientWidth,
             left = Math.max(8, Math.min(preferred, available - width - 8));
-          owner.style.setProperty(
+          updates.push([
+            owner,
             "--lab-menu-left",
             left - owner.getBoundingClientRect().left + "px",
-          );
+          ]);
         }
       }
+      updates.forEach(([owner, property, value]) => {
+        if (owner.style.getPropertyValue(property) !== value)
+          owner.style.setProperty(property, value);
+      });
     }
     for (const menu of menus) {
       const summary = menu.querySelector("summary"),
@@ -234,15 +224,14 @@
       { capture: true, passive: true },
     );
     const header = document.querySelector(".fixed-workspace-header");
-    if (header) new ResizeObserver(position).observe(header);
-    addEventListener("resize", position);
+    if (header) new ResizeObserver(placement.schedule).observe(header);
+    addEventListener("resize", placement.schedule);
     position();
   }
   function initializeMetricSizing() {
     for (const container of document.querySelectorAll("#headline-metrics, .metrics")) {
-      let frame = null;
       function fit() {
-        frame = null;
+        const updates = [];
         for (const value of container.querySelectorAll(
           ".metric strong, .metric .value, :scope > div > strong",
         )) {
@@ -260,13 +249,12 @@
             26,
             Math.max(16, (current * (value.clientWidth - 2)) / Math.max(width, 1)),
           );
-          if (Math.abs(next - current) > 0.5)
-            value.style.setProperty("--metric-value-size", next.toFixed(1) + "px");
+          if (Math.abs(next - current) > 0.5) updates.push([value, next.toFixed(1) + "px"]);
         }
+        // Measure all values before changing any font, avoiding repeated layout flushes.
+        updates.forEach(([value, size]) => value.style.setProperty("--metric-value-size", size));
       }
-      const schedule = () => {
-        if (frame === null) frame = requestAnimationFrame(fit);
-      };
+      const { schedule } = window.UIControls.frameTask(fit);
       new MutationObserver(schedule).observe(container, {
         subtree: true,
         childList: true,
@@ -291,94 +279,110 @@
     );
   }
   const workspaceHeader = document.querySelector(".fixed-workspace-header");
-  const workspaceNav = workspaceHeader?.querySelector(":scope > nav");
-  if (workspaceNav) {
-    const compactToggle = document.createElement("button");
-    compactToggle.type = "button";
-    compactToggle.className = "mobile-controls-toggle";
-    compactToggle.innerHTML = foldIcon(false);
-    compactToggle.setAttribute("aria-expanded", "true");
-    compactToggle.setAttribute("aria-label", "Hide Lab controls");
+  function initializeCompactControls() {
+    const workspaceNav = workspaceHeader?.querySelector(":scope > nav");
+    if (workspaceNav) {
+      const compactToggle = document.createElement("button");
+      compactToggle.type = "button";
+      compactToggle.className = "mobile-controls-toggle";
+      compactToggle.innerHTML = foldIcon(false);
+      compactToggle.setAttribute("aria-expanded", "true");
+      compactToggle.setAttribute("aria-label", "Hide Lab controls");
 
-    function setCompact(collapsed) {
-      workspaceHeader.classList.toggle("mobile-controls-collapsed", collapsed);
-      compactToggle.setAttribute("aria-expanded", String(!collapsed));
-      compactToggle.setAttribute(
-        "aria-label",
-        collapsed ? "Show Lab controls" : "Hide Lab controls",
+      function setCompact(collapsed) {
+        if (window.parent !== window) parent.postMessage({ type: "lab:layout" }, location.origin);
+        workspaceHeader.classList.toggle("mobile-controls-collapsed", collapsed);
+        compactToggle.setAttribute("aria-expanded", String(!collapsed));
+        compactToggle.setAttribute(
+          "aria-label",
+          collapsed ? "Show Lab controls" : "Hide Lab controls",
+        );
+        compactToggle.innerHTML = foldIcon(collapsed);
+        dispatchEvent(new Event("resize"));
+      }
+      compactToggle.addEventListener("click", () =>
+        setCompact(!workspaceHeader.classList.contains("mobile-controls-collapsed")),
       );
-      compactToggle.innerHTML = foldIcon(collapsed);
-      dispatchEvent(new Event("resize"));
+      document.addEventListener(
+        "keydown",
+        (event) => {
+          if (
+            event.key !== "Escape" ||
+            event.defaultPrevented ||
+            workspaceHeader.classList.contains("mobile-controls-collapsed") ||
+            document.querySelector(".toolbar-options[open], .math-menu:not([hidden])") ||
+            [...document.querySelectorAll(".module-popover")].some(
+              (panel) => panel.children.length && getComputedStyle(panel).display !== "none",
+            ) ||
+            event.target.tagName === "SELECT"
+          )
+            return;
+          event.preventDefault();
+          setCompact(true);
+          compactToggle.focus();
+        },
+        { capture: true },
+      );
+      // Keep the disclosure outside the tablist so it is not treated as a page tab.
+      workspaceHeader.append(compactToggle);
     }
-    compactToggle.addEventListener("click", () =>
-      setCompact(!workspaceHeader.classList.contains("mobile-controls-collapsed")),
-    );
-    document.addEventListener(
-      "keydown",
-      (event) => {
-        if (
-          event.key !== "Escape" ||
-          event.defaultPrevented ||
-          workspaceHeader.classList.contains("mobile-controls-collapsed") ||
-          document.querySelector(".toolbar-options[open], .math-menu:not([hidden])") ||
-          [...document.querySelectorAll(".module-popover")].some(
-            (panel) => panel.children.length && getComputedStyle(panel).display !== "none",
-          ) ||
-          event.target.tagName === "SELECT"
-        )
-          return;
-        event.preventDefault();
-        setCompact(true);
-        compactToggle.focus();
-      },
-      { capture: true },
-    );
-    // Keep the disclosure outside the tablist so it is not treated as a page tab.
-    workspaceHeader.append(compactToggle);
   }
-  function alignToolbarUtilities() {
-    if (!workspaceHeader) return;
-    const header = workspaceHeader.querySelector(":scope > header");
-    if (!header) return;
-    const primary = header.querySelector(".header-playback, .header-computation, .common-controls");
-    const secondary = header.querySelector(
-      ".secondary-controls, .header-file-actions, .grid-reset-controls",
-    );
-    if (!primary || !secondary) return;
-    const a = primary.getBoundingClientRect(),
-      b = secondary.getBoundingClientRect();
-    header.classList.toggle("utilities-wrapped", a.height > 0 && b.top >= a.bottom - 1);
+  function initializeToolbarAlignment() {
+    function alignToolbarUtilities() {
+      if (!workspaceHeader) return;
+      const header = workspaceHeader.querySelector(":scope > header");
+      if (!header) return;
+      const primary = header.querySelector(
+        ".header-playback, .header-computation, .common-controls",
+      );
+      const secondary = header.querySelector(
+        ".secondary-controls, .header-file-actions, .grid-reset-controls",
+      );
+      if (!primary || !secondary) return;
+      const a = primary.getBoundingClientRect(),
+        b = secondary.getBoundingClientRect();
+      const wrapped = a.height > 0 && b.top >= a.bottom - 1;
+      if (header.classList.contains("utilities-wrapped") !== wrapped)
+        header.classList.toggle("utilities-wrapped", wrapped);
+    }
+    const alignment = window.UIControls.frameTask(alignToolbarUtilities);
+    if (workspaceHeader) new ResizeObserver(alignment.schedule).observe(workspaceHeader);
+    addEventListener("resize", alignment.schedule);
+    document.fonts?.ready.then(alignment.schedule);
+    alignToolbarUtilities();
   }
-  if (workspaceHeader) new ResizeObserver(alignToolbarUtilities).observe(workspaceHeader);
-  addEventListener("resize", alignToolbarUtilities);
-  document.fonts?.ready.then(alignToolbarUtilities);
-  alignToolbarUtilities();
-  function reportViewport() {
-    if (window.parent !== window)
+  function initializeViewportBridge() {
+    if (window.parent === window) return;
+    function reportViewport() {
       parent.postMessage(
         { type: "lab:viewport", scrollbar: innerWidth - document.documentElement.clientWidth },
         location.origin,
       );
+    }
+    const viewport = window.UIControls.frameTask(reportViewport);
+    new ResizeObserver(viewport.schedule).observe(document.documentElement);
+    addEventListener("resize", viewport.schedule);
+    reportViewport();
+    let scrollPosition = 0;
+    const scroll = window.UIControls.frameTask(() => {
+      parent.postMessage({ type: "lab:scroll", y: scrollPosition }, location.origin);
+    });
+    document.addEventListener(
+      "scroll",
+      (event) => {
+        // Only page scrolling may hide or reveal the host header.
+        if (event.target !== document) return;
+        const position = scrollY;
+        if (!Number.isFinite(position)) return;
+        scrollPosition = position;
+        scroll.schedule();
+      },
+      { passive: true, capture: true },
+    );
   }
-  new ResizeObserver(reportViewport).observe(document.documentElement);
-  addEventListener("resize", reportViewport);
-  reportViewport();
-  let scrollFrame = null,
-    scrollPosition = 0;
-  document.addEventListener(
-    "scroll",
-    (event) => {
-      if (window.parent === window) return;
-      const target = event.target;
-      scrollPosition = target === document ? scrollY : target.scrollTop;
-      if (!Number.isFinite(scrollPosition) || scrollFrame !== null) return;
-      scrollFrame = requestAnimationFrame(() => {
-        scrollFrame = null;
-        parent.postMessage({ type: "lab:scroll", y: scrollPosition }, location.origin);
-      });
-    },
-    { passive: true, capture: true },
-  );
+  initializeCompactControls();
+  initializeToolbarAlignment();
+  initializeViewportBridge();
   initializePointerBehavior();
   initializeMetricSizing();
   initializeToolbarMenus();
@@ -386,7 +390,10 @@
   const sections = document.querySelector(SECTION_SELECTOR);
   if (sections) initializeNavigation(sections, { tabs: true, label: "Lab sections" });
   document.querySelectorAll(CATEGORY_SELECTOR).forEach((container) => {
-    initializeNavigation(container, { tabs: false, label: categoryLabel(container) });
+    initializeNavigation(container, {
+      tabs: container.dataset.panelTabs === "true",
+      label: container.getAttribute("aria-label") || categoryLabel(container),
+    });
   });
   initializeStatusFeedback();
   initializeWorkspaceLifecycle();

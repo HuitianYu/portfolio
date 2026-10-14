@@ -1,12 +1,18 @@
 <div class="contact-emails">
   <div>
     <span class="contact-email-label">Personal</span>
-    <a class="contact-email" href="mailto:{{ site.Params.email }}">{{ site.Params.email }} ↗</a>
+    <a class="contact-email" href="mailto:{{ site.Params.email }}">
+      {{ site.Params.email }}
+      {{ partial "external-link-mark.html" . }}
+    </a>
   </div>
   {{ range hugo.Data.contact.additionalEmails }}
     <div>
       <span class="contact-email-label">{{ .label }}</span>
-      <a class="contact-email" href="mailto:{{ .address }}">{{ .address }} ↗</a>
+      <a class="contact-email" href="mailto:{{ .address }}">
+        {{ .address }}
+        {{ partial "external-link-mark.html" . }}
+      </a>
     </div>
   {{ end }}
 </div>

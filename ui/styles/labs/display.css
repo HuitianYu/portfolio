@@ -1,0 +1,28 @@
+/* Appearance and camera controls share one labelled row. */
+html body .plot-display-controls .plot-rotation-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 20px;
+  margin: 0;
+}
+html body .plot-display-controls :is(.view-control-group, .plot-rotation-controls > label) {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  font-size: 12px;
+}
+html body .plot-display-controls .plot-rotation-controls :is(button, select) {
+  height: var(--ui-control-compact);
+  min-height: var(--ui-control-compact);
+}
+html body .plot-display-controls > label select:not([hidden]) {
+  height: var(--ui-control-compact);
+  min-height: var(--ui-control-compact);
+}
+html:root body .plot-display-controls .view-control-group > #rotate {
+  flex: 0 0 32px !important;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+}

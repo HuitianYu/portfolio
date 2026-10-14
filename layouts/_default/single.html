@@ -1,6 +1,5 @@
 {{ define "main" }}
   <article class="container article-container">
-    <a class="back-link" href="{{ printf "%s/" .Section | relURL }}">← {{ .Section | title }}</a>
     <header class="article-heading">
       <span class="eyebrow">{{ .Params.topic | default .Section }}</span>
       <h1>{{ .Title }}</h1>
@@ -29,19 +28,21 @@
         <p class="lead">{{ . }}</p>
       {{ end }}{{ .Content }}{{ with .Params.doi }}
         <div class="paper-reference">
-          <span class="eyebrow">JOURNAL ARTICLE · {{ $.Params.role }}</span>
+          <span class="eyebrow">Journal article · {{ $.Params.role }}</span>
           <a href="https://doi.org/{{ . }}">
-            Read the paper ↗
+            Read the paper
+            {{ partial "external-link-mark.html" . }}
             <small>DOI {{ . }}</small>
           </a>
         </div>
       {{ end }}
     </div>
+    {{ partial "photo-gallery.html" . }}
     {{ $slug := .File.Dir | path.Clean | path.Base }}{{ range (partial "labs-data.html" .) }}
       {{ if eq .paper $slug }}
         <section class="paper-lab">
           <div>
-            <span class="eyebrow">INTERACTIVE COMPANION</span>
+            <span class="eyebrow">Related lab</span>
             <h2>Explore the ideas in {{ .name }}.</h2>
           </div>
           {{ partial "lab-card.html" . }}
