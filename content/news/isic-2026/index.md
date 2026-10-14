@@ -12,6 +12,6 @@
 
 I presented **Robust Inline Growth-Rate Sensing for Cascaded Model-Predictive Control of Crystallization Processes** at the 23rd International Symposium on Industrial Crystallization in Budapest, Hungary. The symposium took place on 6–9 September 2026.
 
-[Conference entry →](/conferences/#isic-2026)
+[Conference entry](/conferences/#isic-2026)
 
 {{< lab-links stablegsensor mpcrystal >}}

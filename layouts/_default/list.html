@@ -52,7 +52,7 @@
                 <p class="authors">{{ delimit .authors ", " }}</p>
                 <p class="event-name">{{ .event }}</p>
                 <a class="text-link" href="{{ .url }}" target="_blank" rel="noopener">
-                  Conference website ↗
+                  Conference website
                 </a>
               </div>
             </article>
@@ -63,13 +63,10 @@
           <span class="wiki-symbol" aria-hidden="true">W</span>
           <div>
             <span class="eyebrow">NOTES & KNOWLEDGE</span>
-            <h2>
-              Open the Wiki
-              <span>↗</span>
-            </h2>
+            <h2>Open the Wiki</h2>
             <p>Research notes and references, all in one place.</p>
             <span class="wiki-url">{{ site.Params.wikiURL }}</span>
-            <span class="wiki-open">Open Wiki ↗</span>
+            <span class="wiki-open">Open Wiki</span>
           </div>
         </a>
       {{ else if eq .Section "news" }}
@@ -89,7 +86,7 @@
                   </div>
                   <h2><a href="{{ .RelPermalink }}">{{ .Title }}</a></h2>
                   <p>{{ .Params.summary }}</p>
-                  <a class="text-link" href="{{ .RelPermalink }}">Read update →</a>
+                  <a class="text-link" href="{{ .RelPermalink }}">Read update</a>
                 </div>
               </article>
             {{ end }}
@@ -99,7 +96,7 @@
             <span class="empty-icon" aria-hidden="true">✳</span>
             <h2>A little quiet here, for now.</h2>
             <p>Research updates will appear here.</p>
-            <a class="text-link" href="{{ "papers/" | relURL }}">Explore the papers →</a>
+            <a class="text-link" href="{{ "papers/" | relURL }}">Explore the papers</a>
           </div>
         {{ end }}
       {{ else if eq .Section "cv" }}
@@ -121,7 +118,6 @@
             <p>Explore the sections below, or open the downloadable CV.</p>
             <a class="button primary" href="{{ site.Params.cvURL }}" target="_blank" rel="noopener">
               Open CV
-              <span>↗</span>
             </a>
           </section>
           <div>{{ partial "cv-overview.html" . }}</div>

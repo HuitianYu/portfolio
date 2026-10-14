@@ -1,12 +1,12 @@
 <div class="card-actions">
-  <a href="{{ .primaryURL }}">{{ .primaryLabel }} →</a>
+  <a href="{{ .primaryURL }}">{{ .primaryLabel }}</a>
   {{ with .relatedURL }}
     {{ $external := or (hasPrefix . "https://") (hasPrefix . "http://") }}
     <a
       href="{{ . }}"
       {{ with $.relatedTitle }}aria-label="{{ . }}"{{ end }}
     >
-      {{ $.relatedLabel }} {{ if $external }}↗{{ else }}→{{ end }}
+      {{ $.relatedLabel }}{{ if $external }}↗{{ end }}
     </a>
   {{ end }}
 </div>

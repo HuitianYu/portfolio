@@ -6,7 +6,7 @@
       <h2>{{ .title }}</h2>
       <div>
         {{ range .entries }}
-          <article class="cv-entry">
+          <article class="cv-entry{{ if .current }}{{ printf " cv-entry-current" }}{{ end }}">
             {{ if and $education .institutionID }}
               {{ partial "institution-logo.html" .institutionID }}
             {{ end }}
@@ -21,7 +21,7 @@
             {{ if .grade }}
               <p class="academic-distinction">
                 Final grade:
-                {{ .grade }}{{ with .rank }}· {{ . }}{{ end }}
+                {{ .grade }}{{ with .rank }}{{ printf " · %s" . }}{{ end }}
               </p>
             {{ end }}
             <p>{{ .text }}</p>
@@ -36,7 +36,7 @@
     </section>
   {{ end }}
   <div class="inline-links">
-    <a href="{{ "papers/" | relURL }}">All papers →</a>
-    <a href="{{ "conferences/" | relURL }}">All conferences →</a>
+    <a href="{{ "papers/" | relURL }}">All papers</a>
+    <a href="{{ "conferences/" | relURL }}">All conferences</a>
   </div>
 </div>

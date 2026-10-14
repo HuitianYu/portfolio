@@ -27,7 +27,7 @@
     <link rel="icon" href="{{ "icons/curvature.svg" | relURL }}" type="image/svg+xml" />
     <link
       rel="stylesheet"
-      href="{{ "css/site.css" | relURL }}?v={{ readFile "static/css/site.css" | md5 }}"
+      href="{{ "css/site.css" | relURL }}?v={{ readFile "static/css/site.css" | md5 }}&amp;ui=responsive-20261013"
     />
     <link
       rel="stylesheet"
@@ -54,8 +54,12 @@
           Huitian Yu
           <span>RESEARCH & COMPUTATION</span>
         </a>
-        <button class="menu-toggle" aria-expanded="false" aria-controls="site-nav">
-          Menu
+        <button
+          class="menu-toggle"
+          aria-label="Navigation menu"
+          aria-expanded="false"
+          aria-controls="site-nav"
+        >
           <span>☰</span>
         </button>
         <nav id="site-nav" aria-label="Main navigation">
@@ -71,6 +75,7 @@
           {{ end }}
         </nav>
       </div>
+      {{ if and (eq .Section "labs") .IsPage }}{{ partial "lab-toolbar.html" . }}{{ end }}
     </header>
     <main id="main">{{ block "main" . }}{{ end }}</main>
     <footer class="site-footer">
@@ -79,7 +84,7 @@
       <div>
         <a href="mailto:{{ site.Params.email }}">Email ↗</a>
         {{ partial "contact-links.html" (slice "orcid" "github") }}
-        <a href="{{ "contact/" | relURL }}">Contact →</a>
+        <a href="{{ "contact/" | relURL }}">Contact</a>
       </div>
     </footer>
   </body>

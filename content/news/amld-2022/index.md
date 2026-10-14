@@ -14,6 +14,6 @@ At Applied Machine Learning Days 2022 in Lausanne, Switzerland, I presented **Di
 
 The presentation recording is available on YouTube.
 
-[Watch the recording ↗](https://www.youtube.com/watch?v=EWC2Cva2B2Y)
+[Watch the recording](https://www.youtube.com/watch?v=EWC2Cva2B2Y)
 
-[Conference entry →](/conferences/#amld-2022) · [Related paper →](/papers/euclid-brain-tissue/)
+[Conference entry](/conferences/#amld-2022) · [Related paper](/papers/euclid-brain-tissue/)

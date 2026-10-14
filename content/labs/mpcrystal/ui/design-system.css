@@ -2365,3 +2365,2905 @@ body > .lab-header-toggle {
   min-width: 0 !important;
   width: auto;
 }
+
+/* Shared Lab surfaces: one border, radius and spacing vocabulary. */
+:root {
+  --lab-panel-padding: 20px;
+  --lab-panel-gap: 16px;
+}
+:is(.card, .plotcard, .plot-card, .parameter-group, .subsystem-card) {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  min-width: 0;
+  box-shadow: none;
+}
+:is(.card, .plotcard, .plot-card, .subsystem-card) {
+  padding: var(--lab-panel-padding);
+}
+.mobile-controls-toggle {
+  display: none;
+}
+@media (max-width: 650px) {
+  :root {
+    --lab-panel-padding: 14px;
+    --lab-panel-gap: 12px;
+  }
+  .fixed-workspace-header > nav {
+    justify-content: flex-start;
+    overflow-x: auto;
+  }
+  .fixed-workspace-header > nav > button {
+    padding: 9px 12px !important;
+    font-size: 12px !important;
+  }
+  .fixed-workspace-header .mobile-controls-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-left: auto;
+    flex-shrink: 0;
+  }
+  .embedded-workspace
+    .fixed-workspace-header.mobile-controls-collapsed
+    > header[data-header-layout],
+  .fixed-workspace-header.mobile-controls-collapsed > header,
+  .fixed-workspace-header.mobile-controls-collapsed > .topbar {
+    display: none !important;
+  }
+  .fixed-workspace-header > header,
+  .fixed-workspace-header > .topbar {
+    padding: 10px 12px !important;
+    row-gap: 8px !important;
+  }
+  .fixed-workspace-header .headright {
+    gap: 8px !important;
+    width: 100%;
+    justify-content: flex-start;
+  }
+  .fixed-workspace-header .headright button {
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+  .fields {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .surface-settings {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .workgrid {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+  .workgrid .card,
+  .workgrid .plotcard {
+    min-width: 0;
+  }
+  input,
+  select {
+    max-width: 100%;
+  }
+}
+
+/* Controls remain above section tabs; the fold action owns a fixed right-hand column. */
+@media (max-width: 650px) {
+  .fixed-workspace-header {
+    display: flex;
+    flex-direction: column;
+    padding-bottom: 0;
+    padding-top: 0;
+  }
+  .fixed-workspace-header > header,
+  .fixed-workspace-header > .topbar {
+    order: 0;
+    min-height: 44px;
+    padding-right: 56px !important;
+  }
+  .fixed-workspace-header > nav {
+    order: 1;
+    padding-inline: 8px !important;
+    min-height: 44px;
+    position: relative;
+    z-index: 1;
+  }
+  .fixed-workspace-header.mobile-controls-collapsed {
+    padding-top: 44px;
+  }
+  .fixed-workspace-header > .mobile-controls-toggle {
+    position: absolute;
+    top: 4px;
+    right: 12px;
+    bottom: auto;
+    width: 36px;
+    height: 36px;
+    min-height: 36px;
+    margin: 0;
+    padding: 0;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: var(--paper);
+    color: var(--teal);
+    font: 12px/1 var(--sans);
+    box-shadow: none;
+    z-index: 5;
+  }
+  .fixed-workspace-header > .mobile-controls-toggle:is(:hover, :active, [aria-expanded="true"]) {
+    background: var(--paper);
+    color: var(--teal);
+    border-color: var(--line);
+    box-shadow: none;
+  }
+  /* Put playback and utilities on the same final row. */
+  .embedded-workspace .fixed-workspace-header > .topbar[data-header-layout="modules"] {
+    display: grid !important;
+    grid-template-columns: 1fr auto;
+  }
+  .fixed-workspace-header .topbar .primary-toolbar {
+    display: contents !important;
+  }
+  .fixed-workspace-header .topbar .header-status-hub {
+    grid-column: 1 / -1;
+    grid-row: 1;
+  }
+  .fixed-workspace-header .topbar .header-playback {
+    grid-column: 1;
+    grid-row: 2;
+    justify-self: start;
+  }
+  .fixed-workspace-header .topbar .top-actions {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    margin: 0;
+  }
+  .fixed-workspace-header .topbar .header-file-actions {
+    padding-left: 8px;
+  }
+  .embedded-workspace
+    .fixed-workspace-header.mobile-controls-collapsed
+    > .topbar[data-header-layout="modules"] {
+    display: none !important;
+  }
+}
+/* Text buttons, icon buttons and selects use a common action-row baseline. */
+.fixed-workspace-header
+  :is(.primary-toolbar, .headright, .common-controls, .top-actions, .playback-actions) {
+  align-items: center;
+}
+.fixed-workspace-header :is(.headright, .common-controls, .top-actions) > :is(button, select),
+.fixed-workspace-header .toolbar-options > summary {
+  box-sizing: border-box;
+  height: var(--control-height);
+  min-height: var(--control-height);
+  margin-top: 0;
+  margin-bottom: 0;
+  line-height: 1;
+}
+
+@media (max-width: 650px) {
+  .fixed-workspace-header .header-computation {
+    flex-wrap: nowrap;
+    gap: 8px;
+  }
+  .fixed-workspace-header .header-computation .computation-controls {
+    min-width: 0;
+    flex: none;
+  }
+  .fixed-workspace-header .header-computation .rotation-controls {
+    gap: 6px;
+    min-width: 0;
+  }
+  .fixed-workspace-header .header-computation :is(button, select) {
+    font-size: 11px !important;
+    padding-inline: 8px !important;
+  }
+}
+
+/* One controls fold action for both desktop and mobile; section tabs always stay visible. */
+.fixed-workspace-header {
+  padding-bottom: 0;
+}
+.fixed-workspace-header > header,
+.fixed-workspace-header > .topbar {
+  padding-right: 60px !important;
+}
+.fixed-workspace-header > .mobile-controls-toggle {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  bottom: auto;
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+  padding: 0;
+  margin: 0;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  color: var(--teal);
+  background: var(--paper);
+  font: 12px/1 var(--sans);
+  box-shadow: none;
+  z-index: 5;
+}
+.embedded-workspace .fixed-workspace-header.mobile-controls-collapsed > header[data-header-layout],
+.embedded-workspace .fixed-workspace-header.mobile-controls-collapsed > .topbar[data-header-layout],
+.fixed-workspace-header.mobile-controls-collapsed > header,
+.fixed-workspace-header.mobile-controls-collapsed > .topbar {
+  display: none !important;
+}
+.fixed-workspace-header.mobile-controls-collapsed {
+  padding-top: 56px;
+}
+
+/* Folding removes the action row completely; recovery lives at the edge of the tabs. */
+.fixed-workspace-header.mobile-controls-collapsed {
+  padding-top: 0;
+}
+.fixed-workspace-header.mobile-controls-collapsed > nav {
+  padding-right: 56px !important;
+}
+.fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle {
+  top: 8px;
+  right: 18px;
+  width: 24px;
+  height: 24px;
+  min-height: 24px;
+}
+
+@media (max-width: 650px) {
+  .fixed-workspace-header .header-computation .rotation-controls {
+    flex-wrap: nowrap !important;
+  }
+  .fixed-workspace-header .header-computation .rotation-controls select {
+    width: 110px !important;
+    min-width: 0 !important;
+    max-width: 110px !important;
+  }
+}
+
+/* Both fold states use the same icon size, button surface and edge alignment. */
+.fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle {
+  top: 4px;
+  right: 12px;
+  width: 36px;
+  height: 36px;
+  min-height: 36px;
+}
+.fixed-workspace-header > .mobile-controls-toggle svg {
+  display: block;
+}
+
+html
+  body.keyboard-navigation
+  .fixed-workspace-header
+  .header-module.popover-dismissed
+  > .module-popover,
+.fixed-workspace-header .header-module.popover-dismissed > .module-popover {
+  display: none !important;
+}
+:is(.module-popover, .export-options-list, .math-menu, .toolbar-options > .selection) {
+  border-color: var(--line);
+  border-radius: var(--radius);
+  box-shadow: none;
+}
+
+.fixed-workspace-header > .mobile-controls-toggle {
+  z-index: 110;
+}
+
+/* Narrow action rows wrap as left-aligned groups, with a compact shared height. */
+@media (max-width: 650px) {
+  :root {
+    --control-height: 32px;
+  }
+  .fixed-workspace-header :is(.headright, .secondary-controls, .top-actions, .header-file-actions) {
+    justify-content: flex-start !important;
+    justify-self: start !important;
+    margin-left: 0 !important;
+  }
+  .fixed-workspace-header .headright > .secondary-controls {
+    padding-left: 0 !important;
+    border-left: 0;
+  }
+  .fixed-workspace-header .topbar .header-file-actions {
+    padding-left: 0;
+    border-left: 0;
+  }
+  .fixed-workspace-header
+    :is(
+      .header-action,
+      .header-playback > button,
+      .headright button,
+      .top-actions button,
+      .toolbar-options > summary,
+      header select,
+      .calculation-control,
+      .calculation-control button,
+      .calculation-control select
+    ) {
+    height: 32px !important;
+    min-height: 32px !important;
+    line-height: 1 !important;
+  }
+  .fixed-workspace-header .header-status-hub {
+    gap: 8px !important;
+  }
+  .fixed-workspace-header .header-computation {
+    align-items: center;
+  }
+  .fixed-workspace-header > header,
+  .fixed-workspace-header > .topbar {
+    padding-block: 8px !important;
+  }
+}
+
+/* Compact narrow headers: reduce spacing before introducing another action row. */
+@media (max-width: 650px) {
+  .fixed-workspace-header > header,
+  .fixed-workspace-header > .topbar {
+    padding: 6px 48px 6px 12px !important;
+    row-gap: 6px !important;
+  }
+  .fixed-workspace-header .headright {
+    gap: 6px !important;
+  }
+  .fixed-workspace-header
+    :is(
+      .primary-toolbar,
+      .header-status-hub,
+      .header-file-actions,
+      .inline-header-settings,
+      .inline-header-settings fieldset
+    ) {
+    gap: 6px !important;
+  }
+  .fixed-workspace-header > nav {
+    min-height: 38px;
+    flex-wrap: nowrap !important;
+    overflow-x: auto;
+    gap: 4px !important;
+  }
+  .fixed-workspace-header > nav > button {
+    height: 36px;
+    min-height: 36px;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+    flex-shrink: 0;
+  }
+  .fixed-workspace-header > .mobile-controls-toggle {
+    top: 6px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+  }
+  .fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle {
+    top: 3px;
+    right: 14px;
+    width: 32px;
+    height: 32px;
+    min-height: 32px;
+  }
+  .fixed-workspace-header.mobile-controls-collapsed > nav {
+    padding-right: 52px !important;
+  }
+  .fixed-workspace-header .header-computation {
+    gap: 6px;
+  }
+}
+
+@media (max-width: 650px) {
+  html.embedded-workspace .fixed-workspace-header > header[data-header-layout],
+  html.embedded-workspace .fixed-workspace-header > .topbar[data-header-layout] {
+    padding-block: 6px !important;
+  }
+  html .fixed-workspace-header > :is(.tabs, .workspace-tabs, nav) > button {
+    height: 36px !important;
+    min-height: 36px !important;
+    padding: 0 10px !important;
+    font-size: 12px !important;
+    line-height: 1 !important;
+  }
+}
+
+/* MPC playback and export occupy distinct cells at every narrow breakpoint. */
+@media (max-width: 650px) {
+  html.embedded-workspace body .fixed-workspace-header > .topbar[data-header-layout="modules"] {
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    column-gap: 6px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    > .top-actions {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-playback {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+}
+
+/* MPC has one explicit grid contract across narrow and intermediate widths. */
+@media (max-width: 1000px) {
+  html.embedded-workspace body .fixed-workspace-header > .topbar[data-header-layout="modules"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) auto !important;
+    grid-template-rows: auto auto !important;
+    gap: 8px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    > .primary-toolbar {
+    display: contents !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-status-hub {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+    display: grid !important;
+    grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    height: auto !important;
+    gap: 6px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-action {
+    width: 100% !important;
+    min-width: 0 !important;
+    padding-inline: 8px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-playback {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    justify-self: start;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    > .top-actions {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: start !important;
+  }
+}
+@media (max-width: 520px) {
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="modules"]
+    .header-status-hub {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+/* Module choices open below the entire header, leaving section tabs unobscured. */
+html body .fixed-workspace-header .header-module > .module-popover {
+  top: var(--module-menu-top, 100%) !important;
+  left: 0 !important;
+  transform: none !important;
+  width: max(100%, 150px) !important;
+  min-width: 0 !important;
+  max-width: calc(100vw - 24px) !important;
+  padding: 6px !important;
+  z-index: 120;
+}
+html body .fixed-workspace-header .module-popover .adapt-choice .choice-options {
+  display: grid !important;
+  grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+  gap: 4px !important;
+}
+html body .fixed-workspace-header .module-popover .adapt-choice .choice-options label {
+  min-width: 0 !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 4px !important;
+}
+@media (max-width: 900px) {
+  #display > .workspace-introduction {
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 16px !important;
+  }
+  #display > .workspace-introduction > div:first-child {
+    flex: none !important;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100% !important;
+  }
+  #display > .workspace-introduction p {
+    width: 100%;
+    max-width: 100%;
+    word-break: normal;
+    overflow-wrap: break-word;
+  }
+  #display > .workspace-introduction > .display-summary {
+    flex: none !important;
+    min-width: 0 !important;
+    width: min(220px, 100%) !important;
+    max-width: 100% !important;
+    align-self: flex-start;
+  }
+}
+
+/* Fold switches sit beside the always-visible section tabs, never inside what they hide. */
+html body .fixed-workspace-header > .mobile-controls-toggle,
+html body .fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle,
+html body .fixed-workspace-header > .workspace-site-toggle {
+  position: absolute;
+  top: auto !important;
+  bottom: 6px !important;
+  right: 12px !important;
+  width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--teal);
+  z-index: 110;
+}
+html body .fixed-workspace-header > .workspace-site-toggle {
+  right: 50px !important;
+}
+html body .fixed-workspace-header.has-site-toggle > nav {
+  padding-right: 92px !important;
+}
+html body .fixed-workspace-header:not(.has-site-toggle) > nav {
+  padding-right: 52px !important;
+}
+html body .fixed-workspace-header > header,
+html body .fixed-workspace-header > .topbar {
+  padding-right: 12px !important;
+}
+/* Scientific actions remain distinct from their explicit settings toggles. */
+.header-module.has-module-menu > .header-action {
+  padding-right: 26px !important;
+}
+.header-module > .module-menu-toggle {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 24px;
+  min-width: 24px;
+  height: var(--control-height);
+  padding: 0 !important;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-left: 1px solid var(--line);
+  border-radius: 0 var(--radius) var(--radius) 0;
+  background: transparent;
+  color: var(--teal);
+  z-index: 2;
+}
+html
+  body.keyboard-navigation
+  .fixed-workspace-header
+  .header-module:not(.popover-open)
+  > .module-popover,
+html body .fixed-workspace-header .header-module:not(.popover-open) > .module-popover {
+  display: none !important;
+}
+html body.keyboard-navigation .fixed-workspace-header .header-module.popover-open > .module-popover,
+html body .fixed-workspace-header .header-module.popover-open > .module-popover {
+  display: block !important;
+}
+@media (max-width: 650px) {
+  html body .fixed-workspace-header > .mobile-controls-toggle,
+  html body .fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-toggle,
+  html body .fixed-workspace-header > .workspace-site-toggle {
+    bottom: 3px !important;
+  }
+}
+
+html body .fixed-workspace-header .header-module > .module-menu-toggle {
+  width: 24px !important;
+  min-width: 24px !important;
+  max-width: 24px !important;
+  right: 0 !important;
+  left: auto !important;
+  top: 0 !important;
+  padding: 0 !important;
+  z-index: 20;
+  background: var(--paper);
+  color: var(--teal);
+}
+
+/* Only the Lab controls fold switch belongs in the workspace. */
+html body .fixed-workspace-header > nav {
+  padding-right: 52px !important;
+  scroll-padding-right: 52px;
+}
+
+/* Native selects need their text line, rather than legacy vertical padding, inside the height. */
+html body .fixed-workspace-header select {
+  box-sizing: border-box !important;
+  padding-block: 0 !important;
+  padding-left: 8px !important;
+  padding-right: 26px !important;
+  line-height: normal !important;
+  vertical-align: middle;
+  text-overflow: ellipsis;
+  min-width: 0;
+}
+#surface-display {
+  margin: 0 0 var(--lab-panel-gap);
+}
+/* Curvature reads in the same order in two columns and in mobile document flow. */
+.workgrid > :last-child {
+  min-width: 0;
+}
+@media (max-width: 1100px) {
+  html.embedded-workspace body .fixed-workspace-header > .topbar[data-header-layout="calculation"] {
+    display: grid !important;
+    grid-template-columns: minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+    gap: 8px !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    > .common-controls {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: block !important;
+    width: 100%;
+    min-width: 0;
+    height: auto !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    .common-actions {
+    display: flex !important;
+    flex-wrap: wrap !important;
+    align-items: center !important;
+    gap: 8px !important;
+    height: auto !important;
+    min-height: 0 !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    > .top-actions {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+    position: static !important;
+    justify-self: start !important;
+    margin: 0 !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    .grid-reset-controls {
+    display: flex !important;
+    align-items: center !important;
+    flex-wrap: wrap;
+    gap: 8px;
+    height: auto !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    .grid-control {
+    display: inline-flex !important;
+    align-items: center !important;
+    gap: 6px !important;
+    margin: 0 !important;
+    height: var(--control-height) !important;
+  }
+  html.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar[data-header-layout="calculation"]
+    .calculation-control {
+    display: inline-flex !important;
+    flex: none !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    height: var(--control-height) !important;
+    margin: 0 !important;
+  }
+}
+
+/* Curvature wraps by available content width, not by an arbitrary viewport breakpoint. */
+html body .fixed-workspace-header .headright:has(.header-computation) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  gap: 8px 16px !important;
+}
+html body .fixed-workspace-header .headright .header-computation {
+  display: flex !important;
+  flex: none !important;
+  flex-basis: auto !important;
+  min-width: 0 !important;
+  width: auto !important;
+  flex-wrap: nowrap !important;
+  align-items: center;
+  gap: 8px !important;
+}
+html body .fixed-workspace-header .header-computation .computation-controls {
+  min-width: 0 !important;
+  flex: none !important;
+}
+html body .fixed-workspace-header .header-computation .rotation-controls {
+  flex-wrap: nowrap !important;
+}
+html body .fixed-workspace-header .headright:has(.header-computation) > .secondary-controls {
+  flex: none !important;
+  width: auto !important;
+  margin-left: auto !important;
+}
+@media (max-width: 650px) {
+  html body .fixed-workspace-header .headright:has(.header-computation) > .secondary-controls {
+    margin-left: 0 !important;
+  }
+}
+
+/* Comparison choices are a single disclosure; playback stays immediately available. */
+html body .fixed-workspace-header .headright:has(.compare-options) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  justify-content: flex-start !important;
+  gap: 8px !important;
+}
+html body .fixed-workspace-header .compare-options {
+  position: relative;
+  flex: none;
+}
+html body .fixed-workspace-header .compare-options > .selection {
+  position: absolute;
+  top: var(--toolbar-menu-top, calc(100% + 8px));
+  left: 0;
+  right: auto;
+  width: 320px !important;
+  max-width: calc(100vw - 24px) !important;
+  min-width: 0 !important;
+  display: grid !important;
+  grid-template-columns: minmax(0, 1fr) !important;
+  gap: 14px !important;
+  padding: 14px !important;
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  z-index: 200;
+}
+html body .fixed-workspace-header .compare-options:not([open]) > .selection {
+  display: none !important;
+}
+html body .fixed-workspace-header .compare-settings > label {
+  display: block;
+  margin: 0;
+}
+html body .fixed-workspace-header .compare-settings #case {
+  width: 120px !important;
+  min-width: 120px !important;
+}
+html body .fixed-workspace-header .compare-settings fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+html body .fixed-workspace-header .compare-settings legend {
+  margin-bottom: 6px;
+}
+html body .fixed-workspace-header .compare-settings .mode {
+  display: inline-flex;
+  width: auto;
+  justify-self: start;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #header-playback {
+  flex: 0 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  gap: 8px;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #header-playback > .controls {
+  flex: none !important;
+  width: auto !important;
+  gap: 8px;
+  justify-content: flex-start;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #frame {
+  min-width: 0 !important;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #timeline {
+  flex: none !important;
+  width: 80px !important;
+  min-width: 80px !important;
+  margin: 0 !important;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) #speed {
+  width: 70px !important;
+  min-width: 70px !important;
+}
+html body .fixed-workspace-header #resolution {
+  width: 150px !important;
+  min-width: 150px !important;
+}
+
+/* One nearby hover/click disclosure style, without a full-height arrow segment. */
+html body .fixed-workspace-header .header-module > .module-menu-toggle {
+  width: 22px !important;
+  min-width: 22px !important;
+  max-width: 22px !important;
+  height: 24px !important;
+  min-height: 24px !important;
+  top: calc((var(--control-height) - 24px) / 2) !important;
+  right: 3px !important;
+  border: 0 !important;
+  background: transparent !important;
+  color: var(--white);
+  border-radius: 4px;
+}
+html
+  body
+  .fixed-workspace-header
+  .header-module:has(.header-action:not(.primary))
+  > .module-menu-toggle {
+  color: var(--teal);
+}
+@media (hover: hover) and (pointer: fine) {
+  html body .fixed-workspace-header .header-module > .module-menu-toggle {
+    width: 1px !important;
+    min-width: 1px !important;
+    max-width: 1px !important;
+    height: 1px !important;
+    min-height: 1px !important;
+    padding: 0 !important;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+  html body .fixed-workspace-header .header-module.has-module-menu > .header-action {
+    padding-inline: 8px !important;
+  }
+  html body .fixed-workspace-header .header-module > .module-menu-toggle:focus-visible {
+    clip-path: none;
+    width: 22px !important;
+    min-width: 22px !important;
+    max-width: 22px !important;
+    height: 24px !important;
+    min-height: 24px !important;
+  }
+}
+html
+  body
+  .fixed-workspace-header
+  :is(.module-popover, .compare-options > .selection, .export-options-list) {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  box-shadow: none;
+}
+
+/* View operations belong to the 3D card, while reset-all remains a workspace action. */
+.plothead:has(.plot-rotation-controls) {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px 12px;
+}
+.plot-rotation-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin-left: auto;
+}
+.plot-rotation-controls label {
+  margin: 0;
+}
+.plot-rotation-controls :is(button, select) {
+  box-sizing: border-box;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+  font: 12px / normal var(--sans);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--teal);
+}
+.plot-rotation-controls select {
+  width: 96px;
+  padding-right: 22px;
+}
+html body .fixed-workspace-header #run[hidden] {
+  display: none !important;
+}
+html body .fixed-workspace-header #resolution {
+  width: 80px !important;
+  min-width: 80px !important;
+}
+#calculation-mode[data-progress-state="running"],
+#calculation-mode[data-progress-state="complete"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), transparent 82%) var(--run-progress),
+    var(--paper) var(--run-progress)
+  );
+  transition: --run-progress 180ms linear;
+}
+#calculation-mode[data-state="complete"] {
+  background-color: color-mix(in srgb, var(--success), var(--paper) 90%);
+}
+@media (max-width: 650px) {
+  .plot-rotation-controls {
+    margin-left: 0;
+    flex-basis: 100%;
+  }
+}
+
+#play {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.sequence-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 8px 0 16px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  font: 12px/1.5 var(--sans);
+}
+.sequence-controls > div {
+  flex: none;
+}
+.sequence-controls #frame {
+  min-width: 0;
+  white-space: nowrap;
+}
+.sequence-controls #timeline {
+  flex: 1 1 140px;
+  min-width: 100px;
+  max-width: 480px;
+  margin: 0;
+}
+.sequence-controls label {
+  margin: 0;
+}
+.sequence-controls #speed {
+  box-sizing: border-box;
+  width: 70px;
+  min-width: 70px;
+  height: 32px;
+  padding: 0 24px 0 8px;
+  line-height: normal;
+}
+
+/* Compact navigation labels without shrinking legibility. */
+html body .fixed-workspace-header > nav {
+  gap: 2px !important;
+}
+html body .fixed-workspace-header > nav > button {
+  padding-inline: 12px !important;
+}
+@media (max-width: 650px) {
+  html body .fixed-workspace-header > nav > button {
+    padding-inline: 8px !important;
+  }
+}
+html body .fixed-workspace-header #calculation-mode {
+  width: 88px !important;
+  min-width: 88px !important;
+}
+html body .fixed-workspace-header .compare-settings #case {
+  width: 104px !important;
+  min-width: 104px !important;
+}
+html body .fixed-workspace-header .headright:has(.compare-options) > .secondary-controls {
+  margin-left: auto !important;
+}
+html.embedded-workspace
+  body
+  .fixed-workspace-header
+  > .topbar[data-header-layout="modules"]
+  > .top-actions {
+  justify-self: end !important;
+}
+/* Recording settings belong to the comparison, below playback position. */
+html body .recording-settings {
+  margin: 12px 0 20px;
+  padding: 14px;
+  border: 1px solid var(--line, #deded2);
+  border-radius: 6px;
+}
+html body .recording-settings .compare-settings {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px 24px;
+  width: 100%;
+  min-width: 0;
+}
+html body .recording-settings .compare-settings > label {
+  flex: 0 1 140px;
+}
+html body .recording-settings fieldset {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 14px;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+  margin: 0;
+}
+html body .recording-settings fieldset label {
+  white-space: nowrap;
+}
+html body .recording-settings .mode {
+  margin-left: auto;
+}
+@media (max-width: 520px) {
+  html body .recording-settings .mode {
+    margin-left: 0;
+  }
+}
+
+/* Shared utility alignment at every viewport width, including wrapped rows. */
+html body .fixed-workspace-header .headright > .secondary-controls,
+html body .fixed-workspace-header .headright:has(.header-computation) > .secondary-controls,
+html body.embedded-workspace .fixed-workspace-header .headright > .secondary-controls {
+  margin-left: auto !important;
+  justify-content: flex-end;
+}
+html body .fixed-workspace-header .top-actions,
+html body .fixed-workspace-header .header-file-actions {
+  justify-content: flex-end;
+}
+
+@media (max-width: 1000px) {
+  html:root body .fixed-workspace-header > .topbar.topbar[data-header-layout="modules"] {
+    display: grid !important;
+    grid-template-columns: auto minmax(0, 1fr) !important;
+    grid-template-rows: auto auto !important;
+  }
+  html:root
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    .header-status-hub {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+  }
+  html:root
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    .header-playback {
+    grid-column: 1 !important;
+    grid-row: 2 !important;
+  }
+  html:root
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    > .top-actions {
+    grid-column: 2 !important;
+    grid-row: 2 !important;
+    justify-self: end !important;
+  }
+}
+
+/* Shared utility buttons: one neutral visual language across all Labs. */
+html body .fixed-workspace-header :is(.secondary-controls, .header-file-actions) > button,
+html body .fixed-workspace-header .export-options > summary {
+  box-sizing: border-box;
+  min-height: 32px !important;
+  height: 32px !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--line, #deded2) !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: var(--accent, #60633d) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+html body .sequence-controls .header-playback {
+  display: flex;
+  flex: 0 0 auto;
+}
+html body .sequence-controls .playback-actions {
+  display: flex;
+  gap: 6px;
+}
+html body .sequence-controls .playback-actions button {
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+  border-radius: 6px;
+}
+html body .playback-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+html body .playback-toggle svg {
+  width: 14px;
+  height: 14px;
+  flex: none;
+}
+
+html body.recording-workspace .recording-utilities {
+  display: flex;
+  justify-content: flex-end;
+  margin: -8px 0 16px;
+}
+html.embedded-workspace body.recording-workspace .fixed-workspace-header > header {
+  display: none !important;
+}
+html body.recording-workspace .mobile-controls-toggle {
+  display: none !important;
+}
+html body.recording-workspace .fixed-workspace-header > nav {
+  padding-right: 12px !important;
+}
+html body.recording-workspace .recording-utilities > button {
+  height: 32px;
+  min-height: 32px;
+  padding: 0 12px;
+  border-radius: 6px;
+  background: transparent;
+  font-size: 13px;
+}
+
+@media (max-width: 1000px) {
+  html:root:not(.embedded-workspace)
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    > .brand {
+    grid-column: 1 / -1 !important;
+    grid-row: 1 !important;
+  }
+  html:root:not(.embedded-workspace)
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    .header-status-hub {
+    grid-row: 2 !important;
+  }
+  html:root:not(.embedded-workspace)
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    .header-playback,
+  html:root:not(.embedded-workspace)
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    > .top-actions {
+    grid-row: 3 !important;
+  }
+}
+
+@media (max-width: 1000px) {
+  html:root
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    > .primary-toolbar {
+    display: contents !important;
+  }
+}
+
+html body #parameters .parameter-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+  gap: 16px;
+  margin: 24px 0;
+  align-items: start;
+}
+html body #parameters .parameter-card {
+  padding: 20px;
+  min-width: 0;
+}
+html body #parameters .parameter-card > label,
+html body #parameters .surface-smoothing > label {
+  display: block;
+  margin: 12px 0;
+}
+html body #display .surface-settings {
+  display: flex !important;
+  flex-wrap: wrap;
+  gap: 12px 24px;
+}
+html body #display .surface-settings > div {
+  flex: 1 1 240px;
+  min-width: 0;
+  border: 0;
+  padding: 0;
+}
+html body #display .surface-settings .settings-subtitle {
+  display: none;
+}
+html body #display .surface-display {
+  padding: 16px;
+}
+html body .fixed-workspace-header [data-toolbar-group="secondary"] {
+  margin-left: auto !important;
+  justify-content: flex-end !important;
+}
+
+/* Common right-aligned utilities, including OrbitalFlatness. */
+html:root body .fixed-workspace-header .grid-reset-controls {
+  display: flex !important;
+  flex-wrap: wrap;
+  justify-content: flex-end !important;
+  justify-self: end !important;
+  margin-left: auto !important;
+  gap: 6px !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  :is(.grid-reset-controls, .secondary-controls, .header-file-actions)
+  > button,
+html:root body .recording-utilities > button {
+  box-sizing: border-box;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--line, #deded2) !important;
+  border-radius: 6px !important;
+  background: transparent !important;
+  color: var(--accent, #60633d) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1 !important;
+}
+
+/* Flat recording settings, with image presentation beside the sequence. */
+html body .recording-settings {
+  padding: 12px 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  margin: 8px 0 12px !important;
+}
+html body .recording-settings .compare-settings {
+  background: transparent !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  box-shadow: none !important;
+  padding: 0 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 16px 24px !important;
+}
+html body .recording-settings .compare-settings > label {
+  flex: 0 1 150px;
+}
+html body .image-mode {
+  width: max-content;
+  max-width: 100%;
+  margin: 16px 0 8px;
+}
+html body .image-mode > button {
+  min-height: 32px;
+  height: 32px;
+  padding: 0 12px;
+}
+
+/* Curvature: selection in the toolbar, appearance attached to the surface. */
+html body .fixed-workspace-header .crystal-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 8px;
+  flex: 1 1 100%;
+  min-width: 0;
+}
+html body .fixed-workspace-header .crystal-toolbar label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+  margin: 0;
+  font-size: 11px;
+}
+html body .crystal-toolbar .crystal-control-viewgroup {
+  flex: 0 1 100px;
+}
+html body .crystal-toolbar .crystal-control-crystal {
+  flex: 1 1 200px;
+}
+html body .crystal-toolbar .crystal-control-geometry {
+  flex: 0 1 140px;
+}
+html body .crystal-toolbar .crystal-control-render-mode {
+  flex: 0 1 110px;
+}
+html body .fixed-workspace-header .crystal-toolbar select {
+  width: 100%;
+  min-width: 0 !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 24px 0 8px !important;
+  font-size: 12px;
+}
+html body .crystal-toolbar .data-source {
+  display: none;
+}
+html body .curvature-results {
+  display: block;
+}
+html body .plot-display-controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 12px 20px;
+  padding: 12px 16px;
+}
+html body .plot-display-controls > label {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  margin: 0;
+  font-size: 12px;
+}
+html body .plot-display-controls select:not([hidden]) {
+  min-height: 30px;
+  height: 30px;
+  padding: 0 24px 0 8px;
+  width: 130px;
+}
+html body .coordinate-toggle {
+  display: inline-flex;
+  gap: 2px;
+  border-radius: 5px;
+  background: var(--soft, #eef0e9);
+  padding: 2px;
+}
+html body .coordinate-toggle button {
+  height: 28px;
+  min-height: 28px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 4px;
+  font-size: 12px;
+  background: transparent;
+}
+html body .coordinate-toggle button[aria-pressed="true"] {
+  background: var(--accent, #60633d);
+  color: white;
+}
+html body .plot-guides {
+  display: flex;
+  gap: 18px;
+  padding: 8px 16px 12px;
+  font-size: 12px;
+}
+html body .plot-guides label {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  margin: 0;
+}
+
+/* Calculation toolbar wraps only when its actual controls no longer fit. */
+html:root body .fixed-workspace-header > .topbar.topbar[data-header-layout="calculation"] {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: center !important;
+  gap: 8px 12px !important;
+}
+html:root body .fixed-workspace-header > .topbar.topbar[data-header-layout="calculation"] > .brand {
+  order: 0;
+  flex: 1 0 100%;
+}
+html:root
+  body
+  .fixed-workspace-header
+  > .topbar.topbar[data-header-layout="calculation"]
+  > .common-controls {
+  order: 1;
+  display: flex !important;
+  flex: 0 1 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  > .topbar.topbar[data-header-layout="calculation"]
+  > .top-actions {
+  order: 2;
+  position: static !important;
+  display: flex !important;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  margin: 0 0 0 auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  > .topbar.topbar[data-header-layout="calculation"]
+  .grid-reset-controls {
+  width: auto !important;
+  border: 0 !important;
+  padding: 0 !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  > .topbar.topbar[data-header-layout="calculation"]
+  .common-actions {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+
+html body .crystal-toolbar .crystal-options {
+  position: relative;
+  flex: 0 0 auto;
+  align-self: end;
+}
+html body .crystal-toolbar .crystal-options > summary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 12px;
+  border: 1px solid var(--line, #deded2);
+  border-radius: 6px;
+  font-size: 12px;
+  cursor: pointer;
+}
+html body .crystal-options .crystal-picker {
+  position: absolute;
+  z-index: 100;
+  top: calc(100% + 6px);
+  left: 0;
+  width: 280px;
+  max-width: calc(100vw - 40px);
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  background: var(--panel, #fffef9);
+  border: 1px solid var(--line, #deded2);
+  border-radius: 6px;
+}
+html body .crystal-options:not([open]) > .crystal-picker {
+  display: none;
+}
+html body .crystal-toolbar .crystal-picker label {
+  flex: none !important;
+  width: 100%;
+}
+html body .crystal-toolbar {
+  flex: 0 1 auto !important;
+}
+html body .fixed-workspace-header .headright:has(.crystal-toolbar) {
+  gap: 8px 12px !important;
+}
+
+html body .fixed-workspace-header .header-case {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+  font-size: 12px;
+}
+html body .header-case .data-source {
+  display: none;
+}
+html body .fixed-workspace-header .header-case select {
+  height: 32px !important;
+  min-height: 32px !important;
+  width: 94px;
+  min-width: 0 !important;
+  padding: 0 22px 0 8px !important;
+  font-size: 12px;
+}
+
+/* Curvature toolbar: primary action first, compact selections, utilities last. */
+html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) {
+  display: flex !important;
+  flex-wrap: wrap !important;
+  align-items: end !important;
+  gap: 8px !important;
+}
+html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) > .header-computation {
+  order: 0;
+  flex: 0 0 auto !important;
+  width: auto !important;
+  min-width: 0 !important;
+  margin: 0 !important;
+}
+html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) .computation-controls {
+  display: flex !important;
+  flex-wrap: nowrap !important;
+  width: auto !important;
+  min-width: 0 !important;
+}
+html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) > .crystal-toolbar {
+  order: 1;
+  flex: 0 1 auto !important;
+  flex-wrap: nowrap !important;
+  gap: 6px;
+}
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-geometry {
+  flex: 0 0 94px !important;
+  width: 94px;
+}
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
+  flex: 0 0 100px !important;
+  width: 100px;
+}
+html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) > .secondary-controls {
+  order: 2;
+  margin-left: auto !important;
+  flex: 0 0 auto !important;
+}
+
+html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) #recalculate {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 12px !important;
+}
+
+/* Single-height toolbars: playback first, selectors afterwards. */
+html:root body .fixed-workspace-header .headright > .header-case {
+  margin-left: auto !important;
+  flex: 0 0 auto !important;
+}
+html:root body .fixed-workspace-header .header-case select {
+  width: 100px !important;
+  min-width: 100px !important;
+}
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-picker .crystal-control-geometry {
+  width: 100%;
+  flex: none !important;
+}
+html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) {
+  align-items: center !important;
+}
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
+  align-self: center;
+  width: 112px;
+  flex: 0 0 112px !important;
+}
+
+html:root body .fixed-workspace-header #calculation-mode {
+  height: 32px !important;
+  min-height: 32px !important;
+  border-radius: 6px !important;
+}
+html:root body .fixed-workspace-header #calculation-mode[data-mode="automatic"] {
+  background-color: var(--teal) !important;
+  color: var(--paper) !important;
+  border-color: var(--teal) !important;
+  color-scheme: dark;
+}
+html:root
+  body
+  .fixed-workspace-header
+  #calculation-mode[data-mode="automatic"][data-progress-state="running"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 18%) var(--run-progress),
+    var(--teal) var(--run-progress)
+  ) !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  #calculation-mode[data-mode="automatic"][data-progress-state="complete"] {
+  background-image: none !important;
+}
+html:root body .fixed-workspace-header #calculation-mode option {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+html:root body .fixed-workspace-header #recalculate {
+  width: 88px !important;
+  min-width: 88px !important;
+  max-width: 88px !important;
+  white-space: nowrap;
+}
+html:root body .fixed-workspace-header #recalculate[data-state="running"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 22%) var(--run-progress),
+    var(--teal) var(--run-progress)
+  );
+}
+html:root body .fixed-workspace-header #recalculate[data-state="error"] {
+  background-color: #984c3d;
+  border-color: #984c3d;
+}
+
+html body #parameters .parameter-cards {
+  display: block !important;
+}
+html body #parameters .parameter-card[hidden] {
+  display: none !important;
+}
+html body #parameters .parameter-card {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 20px;
+}
+html body #parameters .curvature-parameter-fields,
+html body #parameters #curvature-calculation {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+  align-items: start;
+}
+html body #parameters .parameter-card label:not(.check):not(.smoothing-header-toggle) {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: stretch !important;
+  gap: 6px;
+  margin: 0 !important;
+  min-width: 0;
+}
+html body #parameters .parameter-card :is(input:not([type="checkbox"]), select) {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+html body #parameters :is(#weight-settings, #otsu-settings) {
+  min-width: 0;
+}
+html body #parameters #weight-settings {
+  display: grid;
+  gap: 16px;
+}
+html body #parameters #weight-settings[hidden],
+html body #parameters #otsu-settings[hidden] {
+  display: none !important;
+}
+html body #parameters .note {
+  margin-top: 20px;
+}
+@media (max-width: 520px) {
+  html body #parameters .curvature-parameter-fields,
+  html body #parameters #curvature-calculation {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Shared two-option segmented buttons, matching the controller target selector. */
+html body :is(.coordinate-toggle, .image-mode) {
+  display: inline-flex;
+  gap: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border-radius: 6px;
+  overflow: hidden;
+}
+html body :is(.coordinate-toggle, .image-mode) > button {
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 0 !important;
+  font-size: 12px !important;
+  font-weight: 400;
+  background: transparent;
+  color: var(--teal);
+}
+html body :is(.coordinate-toggle, .image-mode) > button:first-child {
+  border-radius: 6px 0 0 6px !important;
+}
+html body :is(.coordinate-toggle, .image-mode) > button:last-child {
+  border-radius: 0 6px 6px 0 !important;
+  margin-left: -1px;
+}
+html
+  body
+  :is(.coordinate-toggle, .image-mode)
+  > button:is([aria-pressed="true"], [aria-selected="true"], .active) {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+  border-color: var(--teal) !important;
+}
+
+html:root body #parameters .parameter-card {
+  display: block !important;
+}
+html:root body #parameters #method {
+  display: block !important;
+  grid-column: 1 / -1 !important;
+  width: 100% !important;
+  box-sizing: border-box;
+  min-height: 0 !important;
+  height: auto !important;
+  margin: 20px 0 0 !important;
+  padding: 12px 14px;
+}
+
+/* Match the parameter typography already used by MPCrystal. */
+html:root body #parameters .parameter-card :is(h2, h3, h4) {
+  font-family: var(--sans) !important;
+  font-size: 11px !important;
+  font-weight: 500 !important;
+  line-height: 1.5 !important;
+  letter-spacing: 0.03em;
+  margin: 0 0 14px !important;
+}
+html:root body #parameters .parameter-card label {
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 1.5;
+}
+html:root body #parameters .parameter-card :is(input:not([type="checkbox"]), select) {
+  font-family: var(--sans);
+  font-size: 14px;
+}
+html:root body #parameters .parameter-card .note {
+  font-family: var(--sans);
+  font-size: 12px;
+  line-height: 1.65;
+}
+html:root body #parameters .parameter-card .input-guide {
+  font-family: var(--sans);
+  font-size: 12px;
+  margin-bottom: 16px;
+}
+
+/* Auto/manual split action: the chevron selects mode; the main button runs manually. */
+html:root body .fixed-workspace-header .calculation-control {
+  display: inline-flex !important;
+  align-items: center !important;
+  gap: 0 !important;
+}
+html:root body .fixed-workspace-header .calculation-control #run {
+  height: 32px !important;
+  min-height: 32px !important;
+  width: 74px !important;
+  min-width: 74px !important;
+  padding: 0 10px !important;
+  border-radius: 6px 0 0 6px !important;
+  line-height: 1 !important;
+}
+html:root body .fixed-workspace-header .calculation-control:has([data-mode="automatic"]) #run {
+  opacity: 1 !important;
+  background-color: var(--teal) !important;
+  color: var(--paper) !important;
+  border-color: var(--teal) !important;
+}
+html:root body .fixed-workspace-header .calculation-control #calculation-mode {
+  width: 28px !important;
+  min-width: 28px !important;
+  max-width: 28px !important;
+  padding: 0 !important;
+  font-size: 0 !important;
+  border-radius: 0 6px 6px 0 !important;
+  border: 1px solid var(--teal) !important;
+  border-left-color: rgba(255, 255, 255, 0.3) !important;
+  background-color: var(--teal) !important;
+  appearance: none !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m3 4.5 3 3 3-3' fill='none' stroke='%23fdfcf6' stroke-width='1.4'/%3E%3C/svg%3E") !important;
+  background-position: center !important;
+  background-repeat: no-repeat !important;
+  background-size: 12px !important;
+}
+html:root body .fixed-workspace-header #calculation-mode option {
+  font-size: 14px !important;
+}
+/* Align math fields with ordinary parameter labels and controls. */
+html:root body #parameters #curvature-calculation .field-math-wrapper {
+  display: flex !important;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+html:root body #parameters #curvature-calculation .parameter-label {
+  display: block;
+  font-family: var(--sans);
+  font-size: 13px;
+  line-height: 19.5px;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+html:root body #parameters #curvature-calculation .math-select {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+html:root
+  body
+  #parameters
+  #curvature-calculation
+  :is(#field-trigger, select, input:not([type="checkbox"])) {
+  height: 44px !important;
+  min-height: 44px !important;
+  box-sizing: border-box;
+  margin: 0 !important;
+  font-size: 14px !important;
+}
+html:root body #parameters #curvature-calculation #field-trigger {
+  display: flex;
+  align-items: center;
+}
+html:root body .fixed-workspace-header :is(nav.tabs, nav.workspace-tabs) > button {
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  line-height: 1 !important;
+}
+
+html:root body #parameters .parameter-card[hidden] {
+  display: none !important;
+}
+
+/* Full mode selector and persistent manual calculate icon. */
+html:root body .fixed-workspace-header .calculation-control {
+  gap: 6px !important;
+}
+html:root body .fixed-workspace-header .calculation-control #calculation-mode {
+  width: 96px !important;
+  min-width: 96px !important;
+  max-width: 96px !important;
+  padding: 0 26px 0 10px !important;
+  font-size: 13px !important;
+  border-radius: 6px !important;
+  background-position: right 9px center !important;
+}
+html:root body .fixed-workspace-header .calculation-control #calculation-mode[data-mode="manual"] {
+  background-color: var(--paper) !important;
+  color: var(--teal) !important;
+  border-color: var(--line) !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m3 4.5 3 3 3-3' fill='none' stroke='%235c5f3c' stroke-width='1.4'/%3E%3C/svg%3E") !important;
+}
+html:root body .fixed-workspace-header .calculation-control #run {
+  display: inline-flex !important;
+  align-items: center;
+  justify-content: center;
+  width: 32px !important;
+  min-width: 32px !important;
+  max-width: 32px !important;
+  height: 32px !important;
+  padding: 0 !important;
+  border-radius: 6px !important;
+}
+html:root body .fixed-workspace-header .calculation-control:has([data-mode="automatic"]) #run {
+  opacity: 0.35 !important;
+  cursor: default;
+}
+
+/* Native and mathematical parameter selectors share the same visible control. */
+html:root body #parameters .parameter-card select,
+html:root body #parameters #curvature-calculation #field-trigger {
+  appearance: none !important;
+  background-color: var(--paper) !important;
+  border: 1px solid var(--line) !important;
+  border-radius: 6px !important;
+  color: var(--ink) !important;
+  padding: 0 30px 0 12px !important;
+  font-family: var(--sans) !important;
+  font-size: 14px !important;
+  height: 44px !important;
+  min-height: 44px !important;
+  line-height: normal !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath d='m3 4.5 3 3 3-3' fill='none' stroke='%2323251c' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important;
+  background-position: right 12px center !important;
+  background-size: 12px !important;
+}
+html:root body #parameters #field-trigger {
+  white-space: nowrap;
+  gap: 6px;
+}
+html:root body #parameters #field-trigger:after {
+  content: none !important;
+}
+html:root body #parameters #field-trigger .inline-formula {
+  margin-left: 0;
+  font-size: 12px;
+  flex: 0 1 auto;
+}
+
+html:root body #parameters [data-display-panel][hidden] {
+  display: none !important;
+}
+html:root body #parameters .parameter-subtabs {
+  margin: 0 0 20px;
+}
+html:root body #parameters [data-parameter-panel="weighting"] #weight-settings {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+}
+@media (max-width: 520px) {
+  html:root body #parameters [data-parameter-panel="weighting"] #weight-settings {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Keep focus within select borders instead of drawing an offset bracket beside neighbours. */
+html:root body select:focus,
+html:root body select:focus-visible {
+  box-shadow: none !important;
+  outline: 2px solid var(--teal);
+  outline-offset: -2px !important;
+}
+html:root body .fixed-workspace-header .calculation-control {
+  box-shadow: none !important;
+  outline: none !important;
+  background: transparent !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  overflow: visible !important;
+}
+html:root body .fixed-workspace-header .calculation-control #calculation-mode {
+  border: 1px solid var(--line) !important;
+  border-radius: 6px !important;
+  line-height: normal !important;
+  box-shadow: none !important;
+  color-scheme: light !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  .calculation-control
+  #calculation-mode[data-mode="automatic"] {
+  border-color: var(--teal) !important;
+}
+html:root body .fixed-workspace-header #calculation-mode[data-mode="automatic"]:focus-visible {
+  outline: 2px solid var(--paper) !important;
+  outline-offset: -3px !important;
+}
+
+html:root body #parameters .weight-formula-note {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 12px 14px;
+  margin-top: 20px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--pale);
+  color: var(--muted);
+  overflow-x: auto;
+}
+html:root body #parameters .weight-formula-note #weight-formula {
+  display: block;
+  margin: 0;
+}
+html:root body #parameters .weight-formula-note mjx-container {
+  margin: 0 !important;
+}
+
+html:root body #parameters .weight-formula-note {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+html:root body #parameters .weight-formula-note #weight-formula {
+  height: auto !important;
+  max-height: none !important;
+  overflow: visible !important;
+}
+html:root body #parameters .weight-formula-note mjx-container {
+  max-width: 100%;
+  overflow: visible !important;
+}
+html:root body #parameters .weight-formula-note svg {
+  max-width: 100%;
+  height: auto;
+}
+html:root body #parameters [data-appearance-panel][hidden] {
+  display: none !important;
+}
+html:root body .fixed-workspace-header .calculation-control #calculation-mode[hidden] {
+  display: none !important;
+}
+html:root body .mode-options {
+  position: relative;
+}
+html:root body .mode-options > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  box-sizing: border-box;
+  width: 96px;
+  height: 32px;
+  min-height: 32px;
+  padding: 0 10px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: 13px var(--sans);
+  cursor: pointer;
+  list-style: none;
+}
+html:root body .mode-options > summary::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+}
+html:root body .mode-options > summary[data-mode="automatic"] {
+  background-color: var(--teal);
+  border-color: var(--teal);
+  color: var(--paper);
+}
+html:root body .mode-menu {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  z-index: 100;
+  width: 120px;
+  padding: 6px;
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  display: grid;
+  gap: 2px;
+}
+html:root body .mode-options:not([open]) .mode-menu {
+  display: none;
+}
+html:root body .mode-menu button {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  height: 32px !important;
+  min-height: 32px !important;
+  border: 0;
+  padding: 0 10px;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--ink);
+  font: 13px var(--sans);
+}
+html:root body .mode-menu button[aria-pressed="true"] {
+  background: var(--teal);
+  color: var(--paper);
+}
+html:root body .mode-menu button:hover {
+  background: var(--pale);
+  color: var(--ink);
+}
+
+/* State changes keep their reserved footprint. */
+html:root body #play,
+html:root body #rotate {
+  box-sizing: border-box;
+  width: 84px !important;
+  min-width: 84px !important;
+  max-width: 84px !important;
+  flex: 0 0 84px !important;
+  white-space: nowrap;
+  justify-content: center;
+}
+html:root body .fixed-workspace-header .header-module > .header-action {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+html:root body .fixed-workspace-header .headright > .header-case {
+  margin-left: 0 !important;
+}
+
+html:root body .fixed-workspace-header .mode-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  width: 88px !important;
+  min-width: 88px !important;
+  max-width: 88px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 12px !important;
+  border-radius: 6px !important;
+  font: 13px var(--sans);
+}
+html:root body .fixed-workspace-header .mode-toggle[data-mode="manual"] {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  color: var(--teal);
+}
+html:root body .fixed-workspace-header .mode-toggle[data-mode="automatic"] {
+  background-color: var(--teal);
+  border: 1px solid var(--teal);
+  color: var(--paper);
+}
+html:root body .fixed-workspace-header .mode-toggle[data-progress-state="running"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 18%) var(--run-progress),
+    var(--teal) var(--run-progress)
+  );
+}
+html:root body .fixed-workspace-header .mode-toggle[data-progress-state="complete"] {
+  background-image: none;
+}
+
+/* Responsive foundation for all four Labs. Width controls columns; height controls chrome. */
+:root {
+  --lab-action-size: 32px;
+  --lab-field-size: 44px;
+  --lab-space: 16px;
+  --lab-text-small: 12px;
+}
+html:root body .fixed-workspace-header > :is(header, .topbar) {
+  padding-block: 8px !important;
+}
+html:root body .fixed-workspace-header > :is(nav.tabs, nav.workspace-tabs) {
+  min-height: 36px !important;
+  padding-block: 0 !important;
+}
+html:root body .fixed-workspace-header > :is(nav.tabs, nav.workspace-tabs) > button {
+  height: 36px !important;
+  min-height: 36px !important;
+  padding-block: 0 !important;
+  white-space: nowrap;
+}
+html:root body .fixed-workspace-header .mobile-controls-toggle {
+  width: 32px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+}
+html:root body .fixed-workspace-header :is(button, summary, select) {
+  box-sizing: border-box;
+}
+html:root body .fixed-workspace-header .header-action {
+  height: 32px !important;
+  min-height: 32px !important;
+}
+html:root body :is(nav.parameter-tabs, nav.parameter-subtabs, nav.result-tabs) {
+  flex-wrap: nowrap !important;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-padding-inline: 8px;
+  overscroll-behavior-x: contain;
+}
+html:root body :is(nav.parameter-tabs, nav.parameter-subtabs, nav.result-tabs) > button {
+  flex: 0 0 auto;
+  white-space: nowrap;
+  min-height: 32px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+html:root body .toolbar-options > :is(.selection, .crystal-picker, .mode-menu),
+html:root body .module-popover {
+  max-height: var(--lab-menu-room, calc(100dvh - 120px));
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+}
+html:root body .fixed-workspace-header .toolbar-options > summary {
+  white-space: nowrap;
+}
+@media (max-width: 650px) {
+  html:root body .fixed-workspace-header ~ main {
+    padding-inline: 14px;
+  }
+  html:root body :is(.card, .plotcard, .plot-card, .subsystem-card) {
+    --lab-panel-padding: 14px;
+  }
+  html:root body .fixed-workspace-header > :is(header, .topbar) {
+    padding-block: 6px !important;
+  }
+  html:root body :is(nav.parameter-tabs, nav.result-tabs) {
+    padding: 5px;
+    gap: 3px;
+  }
+  html:root body :is(nav.parameter-tabs, nav.parameter-subtabs, nav.result-tabs) > button {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+  html:root body .workspace-introduction h1 {
+    font-size: 28px;
+    line-height: 1.15;
+  }
+  html:root body .workspace-introduction p {
+    font-size: 13px;
+    line-height: 1.65;
+  }
+}
+/* Landscape phones need screen height for the experiment, not expanded vertical spacing. */
+@media (max-height: 480px) and (orientation: landscape) {
+  html:root body .fixed-workspace-header > :is(header, .topbar) {
+    padding-block: 5px !important;
+  }
+  html:root body .fixed-workspace-header > :is(nav.tabs, nav.workspace-tabs) {
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+  html:root body .fixed-workspace-header > :is(nav.tabs, nav.workspace-tabs) > button {
+    height: 34px !important;
+    min-height: 34px !important;
+  }
+  html:root body .workspace-introduction {
+    padding-block: 14px !important;
+    margin-block: 0 16px !important;
+  }
+  html:root body .workspace-introduction h1 {
+    font-size: 26px;
+  }
+  html:root body .plothead {
+    padding-block: 8px;
+  }
+  html:root body .fixed-workspace-header .mobile-controls-toggle {
+    top: auto;
+    bottom: 1px;
+  }
+}
+@media (min-width: 700px) and (max-height: 480px) and (orientation: landscape) {
+  html:root.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"] {
+    grid-template-columns: minmax(0, 1fr) auto auto !important;
+    grid-template-rows: auto !important;
+    gap: 8px !important;
+  }
+  html:root.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    .header-status-hub {
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+  }
+  html:root.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    .header-playback {
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+  }
+  html:root.embedded-workspace
+    body
+    .fixed-workspace-header
+    > .topbar.topbar[data-header-layout="modules"]
+    > .top-actions {
+    grid-column: 3 !important;
+    grid-row: 1 !important;
+  }
+}
+/* Comparison columns remain readable: extra methods scroll together instead of shrinking to slivers. */
+html:root body .comparison-scroll {
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scrollbar-width: thin;
+}
+html:root body .comparison-scroll .method-grid {
+  min-width: calc(var(--cols) * 220px + (var(--cols) - 1) * 12px);
+}
+@media (max-width: 650px) {
+  html:root body .comparison-scroll .method-grid {
+    min-width: calc(var(--cols) * 160px + (var(--cols) - 1) * 6px);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root body *,
+  html:root body *::before,
+  html:root body *::after {
+    scroll-behavior: auto !important;
+  }
+}
+
+html:root body .fixed-workspace-header .headright:has(.header-case) > .header-playback {
+  flex: 0 0 auto !important;
+  min-width: max-content !important;
+}
+html:root body #parameters .parameter-card {
+  padding: var(--lab-panel-padding, 20px) !important;
+}
+
+@media (max-width: 380px) {
+  html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
+    width: 90px !important;
+    flex-basis: 90px !important;
+  }
+  html:root body .fixed-workspace-header .crystal-toolbar .crystal-options > summary {
+    padding-inline: 8px !important;
+  }
+}
+
+/* The retained tab-row control works at every width, including landscape. */
+html:root
+  body
+  .fixed-workspace-header.mobile-controls-collapsed.mobile-controls-collapsed
+  > :is(header, .topbar)[data-header-layout] {
+  display: none !important;
+}
+
+/* Text-only action labels share the established action silhouette. */
+html:root body button[data-ui-action],
+html:root body .button {
+  font-family: var(--sans);
+  border-radius: 6px;
+}
+html:root body .fixed-workspace-header .export-options > summary::after {
+  content: none !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  :is(.secondary-controls, .header-file-actions, .grid-reset-controls) {
+  gap: 6px !important;
+}
+
+/* Related controls stay adjacent; utilities align to the row they actually occupy. */
+html:root body .fixed-workspace-header .headright {
+  justify-content: flex-start !important;
+}
+html:root body .fixed-workspace-header .headright:has(.header-case) .playback-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px !important;
+}
+html:root body .fixed-workspace-header .header-playback .header-case {
+  margin: 0 !important;
+  flex: 0 0 auto;
+}
+html:root body .fixed-workspace-header :is(#play, #restart, #recalculate) {
+  width: 88px !important;
+  min-width: 88px !important;
+  max-width: 88px !important;
+  flex: 0 0 88px !important;
+}
+html:root body .fixed-workspace-header .header-case select {
+  width: 96px !important;
+  min-width: 96px !important;
+}
+html:root body .fixed-workspace-header :is(#export, #export-results),
+html:root body .fixed-workspace-header .export-options > summary {
+  width: 72px !important;
+  min-width: 72px !important;
+  justify-content: center;
+}
+html:root
+  body
+  .fixed-workspace-header
+  :is(.secondary-controls, .header-file-actions, .grid-reset-controls)
+  > button:is(#reset, #reset-all) {
+  width: 88px !important;
+  min-width: 88px !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  header.utilities-wrapped.utilities-wrapped[data-header-layout]
+  .headright
+  > .secondary-controls,
+html:root
+  body
+  .fixed-workspace-header
+  header.utilities-wrapped.utilities-wrapped[data-header-layout]
+  > .top-actions {
+  margin-left: 0 !important;
+  justify-self: start !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  header.utilities-wrapped.utilities-wrapped[data-header-layout]
+  :is(.secondary-controls, .header-file-actions, .grid-reset-controls) {
+  justify-content: flex-start !important;
+  margin-left: 0 !important;
+}
+
+html:root body .fixed-workspace-header .headright:has(.header-case) > .header-playback {
+  flex: 0 0 auto !important;
+  min-width: 0 !important;
+  max-width: 100%;
+}
+html:root body .fixed-workspace-header .headright:has(.header-case) .playback-actions {
+  flex-wrap: wrap;
+}
+
+/* Library shortcuts keep identity and geometry together at the left of the table. */
+html:root body #library table {
+  min-width: 690px;
+  table-layout: fixed;
+}
+html:root body #library th:nth-child(1) {
+  width: 154px;
+}
+html:root body #library th:nth-child(2) {
+  width: 170px;
+}
+html:root body #library th:nth-child(3) {
+  width: 100px;
+}
+html:root body #library th:nth-child(4) {
+  width: 100px;
+}
+html:root body #library th:nth-child(5) {
+  width: 70px;
+}
+html:root body #library th:nth-child(6) {
+  width: 84px;
+}
+html:root body #library :is(td, th) {
+  box-sizing: border-box;
+  padding: 10px 8px;
+}
+html:root body #library td:nth-child(4) {
+  font-size: 12px;
+  color: var(--ink);
+}
+html:root body #library .library-link {
+  display: inline;
+  width: auto;
+  min-height: 32px;
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--teal);
+  text-align: left;
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  overflow-wrap: anywhere;
+  white-space: normal;
+  font: 12px var(--sans);
+}
+html:root body #library td:first-child .library-link {
+  font:
+    11px/1.6 Consolas,
+    monospace;
+}
+html:root body .library-geometries {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+html:root body #library .library-geometry {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 30px;
+  min-height: 30px;
+  padding: 0 6px;
+  font: 11px var(--sans);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--teal);
+  white-space: nowrap;
+}
+html:root body #library .library-geometry:hover {
+  background: var(--pale);
+  border-color: var(--teal);
+}
+html:root body #library .library-inspect {
+  min-height: 32px;
+  padding: 0 9px;
+  font: 12px var(--sans);
+  border-radius: 6px;
+}
+html:root body #library .tablewrap {
+  overscroll-behavior-x: contain;
+}
+@media (max-width: 650px) {
+  html:root body #library th:nth-child(1) {
+    width: 142px;
+  }
+  html:root body #library th:nth-child(2) {
+    width: 160px;
+  }
+}
+
+@media (max-width: 650px) {
+  html:root body #library .intro .summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex: none;
+    width: auto;
+    border: 0;
+    padding: 0;
+    margin: 12px 0 0;
+  }
+  html:root body #library .intro .summary strong {
+    font: 500 16px var(--sans);
+  }
+  html:root body #library .intro .summary span {
+    font: 12px var(--sans);
+  }
+}
+
+html:root body #library td:first-child {
+  overflow-wrap: anywhere;
+  font:
+    11px/1.6 Consolas,
+    monospace;
+}
+
+/* Playback has the same on/off colour vocabulary as automatic calculation. */
+html:root body :is(#play, #rotate)[aria-pressed="false"],
+html:root body [data-playback-state="paused"] {
+  background: var(--paper) !important;
+  color: var(--teal) !important;
+  border: 1px solid var(--line) !important;
+  box-shadow: none !important;
+}
+html:root body :is(#play, #rotate)[aria-pressed="true"],
+html:root body [data-playback-state="playing"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+  border: 1px solid var(--teal) !important;
+  box-shadow: none !important;
+}
+/* Orbital workers report completion, not a numerical percentage: do not fabricate progress. */
+@keyframes lab-busy-sweep {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+html:root body .fixed-workspace-header .mode-toggle[data-progress-state="running"] {
+  background-image: linear-gradient(
+    90deg,
+    var(--teal) 35%,
+    color-mix(in srgb, var(--teal), white 35%) 50%,
+    var(--teal) 65%
+  ) !important;
+  background-size: 220% 100%;
+  animation: lab-busy-sweep 1.2s linear infinite;
+}
+html:root body .fixed-workspace-header .mode-toggle[data-progress-state="complete"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 20%) 100%,
+    var(--teal) 100%
+  ) !important;
+  background-size: 100% 100%;
+  animation: none;
+}
+html:root body .fixed-workspace-header #recalculate[data-state="running"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 30%) var(--run-progress),
+    var(--teal) var(--run-progress)
+  ) !important;
+}
+html:root body .fixed-workspace-header #recalculate[data-state="complete"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 20%) 100%,
+    var(--teal) 100%
+  ) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root body .fixed-workspace-header .mode-toggle[data-progress-state="running"] {
+    animation: none !important;
+    background: color-mix(in srgb, var(--teal), white 20%) !important;
+  }
+}
+
+/* Calculations share the same real fill; playback uses its dark/light pair. */
+html:root body .fixed-workspace-header .mode-toggle[data-progress-state="running"] {
+  animation: none !important;
+  background-position: 0 0 !important;
+  background-size: 100% 100% !important;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 30%) var(--run-progress),
+    var(--teal) var(--run-progress)
+  ) !important;
+}
+html:root body .fixed-workspace-header .mode-toggle[data-progress-state="complete"] {
+  animation: none !important;
+  background-position: 0 0 !important;
+  background-size: 100% 100% !important;
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 30%) 100%,
+    var(--teal) 100%
+  ) !important;
+}
+html:root body .fixed-workspace-header #recalculate[data-state="complete"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), white 30%) 100%,
+    var(--teal) 100%
+  ) !important;
+}
+html:root body :is(#play, #rotate)[aria-pressed="false"],
+html:root body [data-playback-state="paused"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+  border-color: var(--teal) !important;
+}
+html:root body :is(#play, #rotate)[aria-pressed="true"],
+html:root body [data-playback-state="playing"] {
+  background: color-mix(in srgb, var(--teal), white 30%) !important;
+  color: var(--paper) !important;
+  border-color: color-mix(in srgb, var(--teal), white 30%) !important;
+}
+
+/* The legacy hover bridge covered the next row of modules; bridge only an open panel. */
+html:root body .fixed-workspace-header .header-module::after {
+  content: none !important;
+  display: none !important;
+  pointer-events: none !important;
+}
+html:root body .fixed-workspace-header .header-action::before {
+  pointer-events: none;
+}
+html:root body .fixed-workspace-header .module-popover::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -6px;
+  height: 6px;
+}
+@media (max-width: 650px), (hover: none), (pointer: coarse) {
+  html:root body .fixed-workspace-header .header-module.has-module-menu > .module-menu-toggle {
+    display: inline-flex !important;
+    clip-path: none !important;
+    width: 28px !important;
+    height: 32px !important;
+    min-height: 32px !important;
+    right: 0 !important;
+    top: 0 !important;
+    margin: 0 !important;
+    overflow: visible !important;
+  }
+  html:root body .fixed-workspace-header .header-module.has-module-menu > .header-action {
+    padding-right: 30px !important;
+  }
+}
+
+/* Equal module footprints: centred labels, aligned lights, independent settings target. */
+html:root body .fixed-workspace-header .header-status-hub {
+  display: grid !important;
+  grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+  gap: 6px !important;
+}
+html:root body .fixed-workspace-header .header-module {
+  min-width: 0;
+  width: 100%;
+  position: relative;
+}
+html:root body .fixed-workspace-header .header-module > .header-action {
+  position: relative;
+  display: block !important;
+  width: 100% !important;
+  min-width: 0 !important;
+  max-width: none !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  padding: 0 !important;
+  font-size: 12px;
+}
+html:root body .fixed-workspace-header .header-action .module-label {
+  position: absolute;
+  inset: 0 20px;
+  display: block;
+  line-height: 30px;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  pointer-events: none;
+}
+html:root body .fixed-workspace-header .header-action::before {
+  position: absolute;
+  left: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  margin: 0 !important;
+  width: 6px;
+  height: 6px;
+}
+@media (max-width: 520px) {
+  html:root body .fixed-workspace-header .header-status-hub {
+    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  }
+}
+@media (min-width: 1001px) {
+  html:root body .fixed-workspace-header .primary-toolbar .header-status-hub {
+    width: 488px !important;
+  }
+}
+@media (max-height: 480px) and (orientation: landscape) {
+  html:root body .fixed-workspace-header .header-module > .header-action {
+    font-size: 11px;
+  }
+}
+@keyframes lab-status-breathe {
+  0%,
+  100% {
+    opacity: 1;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success), transparent 80%);
+  }
+  50% {
+    opacity: 0.65;
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success), transparent 90%);
+  }
+}
+html:root body .fixed-workspace-header .header-action[data-state="active"]::before {
+  animation: lab-status-breathe 2.4s ease-in-out infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root body .fixed-workspace-header .header-action::before {
+    animation: none !important;
+  }
+}
+
+/* Keep module geometry inside the toolbar's available width. */
+html:root body .fixed-workspace-header .primary-toolbar .header-status-hub {
+  box-sizing: border-box;
+  width: 100% !important;
+  max-width: 488px !important;
+  min-width: 0 !important;
+  height: auto !important;
+  margin: 0 !important;
+  justify-self: start;
+}
+html:root body .fixed-workspace-header .header-module {
+  box-sizing: border-box;
+  height: 32px !important;
+  min-height: 32px !important;
+  margin: 0 !important;
+  inset: auto !important;
+}
+html:root body .fixed-workspace-header .header-module > .module-menu-toggle {
+  position: absolute !important;
+  display: inline-flex !important;
+  clip-path: none !important;
+  width: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  height: 32px !important;
+  min-height: 32px !important;
+  top: 0 !important;
+  right: 0 !important;
+  left: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  background: transparent !important;
+  overflow: visible !important;
+}
+@media (min-width: 1001px) {
+  html:root body .fixed-workspace-header .primary-toolbar .header-status-hub {
+    width: 488px !important;
+    flex: 0 1 488px !important;
+  }
+}
+html:root body .fixed-workspace-header .header-module > .header-action {
+  inset: auto !important;
+  margin: 0 !important;
+  transform: none !important;
+}
+html:root body .fixed-workspace-header .header-action .module-label {
+  margin: 0 !important;
+  padding: 0 !important;
+  width: auto !important;
+  min-width: 0 !important;
+  height: auto !important;
+  transform: none !important;
+}
+
+/* Operation cards stack actions on narrow screens; compact parameter choices stay together. */
+@media (max-width: 650px) {
+  html:root body .operation-groups.aligned-operations .operation-group {
+    display: flex !important;
+    flex-flow: column nowrap !important;
+    align-items: stretch !important;
+    min-width: 0 !important;
+    height: auto !important;
+  }
+  html:root body .operation-groups.aligned-operations .operation-group > button {
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: none !important;
+    margin: 0 !important;
+    align-self: stretch !important;
+  }
+  html:root body .operation-groups.aligned-operations .operation-group > fieldset {
+    display: block !important;
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+  html:root body .operation-groups.aligned-operations .operation-group .choice-options {
+    box-sizing: border-box;
+    height: auto !important;
+    min-width: 0 !important;
+    max-width: 100%;
+  }
+  html:root body .operation-groups.aligned-operations .adapt-choice .choice-options {
+    display: grid !important;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 6px;
+  }
+  html:root body .operation-groups.aligned-operations .adapt-choice .choice-options label {
+    box-sizing: border-box;
+    width: 100% !important;
+    min-width: 0 !important;
+    max-width: 100%;
+    justify-content: center;
+    margin: 0 !important;
+    padding-inline: 6px !important;
+  }
+}
+@media (min-width: 651px) and (max-width: 1000px) {
+  html:root body .operation-groups.aligned-operations {
+    grid-template-columns: minmax(0, 1fr) !important;
+  }
+}
+
+/* Popovers share viewport clamping, including left-aligned wrapped Export rows. */
+html:root body .fixed-workspace-header .toolbar-options > summary + *,
+html:root body .fixed-workspace-header .header-module > .module-popover {
+  left: var(--lab-menu-left, 0px) !important;
+  right: auto !important;
+  transform: none !important;
+}

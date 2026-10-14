@@ -48,7 +48,7 @@
   </head>
   <body>
     <div class="fixed-workspace-header">
-      <header data-header-layout="modules" class="topbar">
+      <header class="topbar" data-header-layout="modules">
         <a aria-label="MPCrystal Lab home" class="brand" href="#">
           <span
             aria-hidden="true"
@@ -66,28 +66,16 @@
             <i></i>
             Simulation · Browser computation
           </span>
-          <button
-            aria-controls="simulation-controls"
-            aria-expanded="false"
-            class="button"
-            data-ui-action="true"
-            id="toggle-controls"
-          >
-            Control
-          </button>
           <div class="header-file-actions">
             <details class="toolbar-options export-options">
-              <summary>Export ↓</summary>
+              <summary>Export</summary>
               <div class="export-options-list">
                 <button class="button subtle" data-ui-action="true" id="save-data">
-                  Export data ↓
+                  Data (JSON)
                 </button>
-                <button class="button" data-ui-action="true" id="export-csv">
-                  Export results ↓
-                </button>
+                <button class="button" data-ui-action="true" id="export-csv">Results (CSV)</button>
               </div>
             </details>
-
             <button class="button" data-ui-action="true" id="reset">Reset all</button>
           </div>
         </div>
@@ -136,8 +124,13 @@
                   <option value="2000">2 s</option>
                 </select>
               </label>
-              <button class="button subtle" data-ui-action="true" id="save-data-operation">
-                Export data ↓
+              <button
+                aria-label="Export data as JSON"
+                class="button subtle"
+                data-ui-action="true"
+                id="save-data-operation"
+              >
+                Export
               </button>
             </div>
           </div>
@@ -155,9 +148,7 @@
                   <legend class="control-target-label">
                     Control target:
                     <strong id="active-target"></strong>
-                    <button class="text-button" data-ui-action="true" id="edit-target">
-                      Edit →
-                    </button>
+                    <button class="text-button" data-ui-action="true" id="edit-target">Edit</button>
                   </legend>
                   <div class="choice-options">
                     <label>
@@ -252,9 +243,7 @@
             <span>Progress</span>
             <strong id="run-progress">0 / 900 steps</strong>
           </div>
-          <button class="button" data-ui-action="true" id="view-display">
-            View live display →
-          </button>
+          <button class="button" data-ui-action="true" id="view-display">View live display</button>
         </div>
       </section>
       <section class="workspace-page" hidden="" id="overview">
@@ -341,10 +330,10 @@
           </h2>
           <p>
             <a href="https://doi.org/10.1002/aic.70648" rel="noopener" target="_blank">
-              DOI 10.1002/aic.70648 ↗
+              DOI 10.1002/aic.70648
             </a>
             ·
-            <a href="../../../papers/growth-rate-control/" target="_top">Paper details →</a>
+            <a href="../../../papers/growth-rate-control/" target="_top">Paper details</a>
           </p>
         </section>
       </section>
@@ -366,17 +355,16 @@
         </div>
         <section class="controller-settings card">
           <span>Controller mode</span>
-          <div class="controller-mode-switch" role="group" aria-label="Controller mode">
-            <button type="button" data-controller-mode="MPC" aria-pressed="true" class="active">
+          <div aria-label="Controller mode" class="controller-mode-switch" role="group">
+            <button aria-pressed="true" class="active" data-controller-mode="MPC" type="button">
               MPC
             </button>
-            <button type="button" data-controller-mode="PI" aria-pressed="false">PI</button>
+            <button aria-pressed="false" data-controller-mode="PI" type="button">PI</button>
           </div>
-          <select id="mode" hidden="" aria-hidden="true">
+          <select aria-hidden="true" hidden="" id="mode">
             <option>MPC</option>
             <option>PI</option>
           </select>
-
           <details class="input-guide parameter-help">
             <summary>Input guide</summary>
             <p>
@@ -400,7 +388,6 @@
           class="parameter-subtabs"
           id="parameter-subtabs"
         ></nav>
-
         <div id="parameter-groups"></div>
         <p hidden="" id="no-results">No matching parameters.</p>
       </section>

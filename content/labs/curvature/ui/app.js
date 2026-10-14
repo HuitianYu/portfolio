@@ -121,7 +121,8 @@ let filtered = [],
   theta = 0,
   loadToken = 0;
 const groups = [...new Set(catalog.map((c) => c.group))];
-$("rotate").textContent = rotating ? "Pause rotation" : "Resume rotation";
+renderRotationButton();
+$("rotate").setAttribute("aria-label", rotating ? "Pause rotation" : "Start rotation");
 function tab(id) {
   if (!window.LabWorkspace.selectSection(id)) return;
   syncRotationLoop();
@@ -164,31 +165,61 @@ function crystalSourceKey(c) {
 function crystalSource(c) {
   return window.LAB_CONFIG.ui.dataSources[crystalSourceKey(c)].label;
 }
+function openLibraryCrystal(crystal, geometry = "single") {
+  $("geometry").value = geometry;
+  select(crystal);
+  tab("display");
+}
 function rows() {
   let subset = filtered.slice(page * 20, page * 20 + 20);
   $("rows").replaceChildren();
+  function action(label, accessibleName, onClick, className = "library-link") {
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = className;
+    button.textContent = label;
+    button.setAttribute("aria-label", accessibleName);
+    button.onclick = onClick;
+    return button;
+  }
   for (const c of subset) {
-    let tr = document.createElement("tr");
-    for (const t of [
-      c.name,
-      c.group,
-      c.roundness.toString(),
-      crystalSource(c),
-      "Single · Agglomerate · Broken",
+    const tr = document.createElement("tr");
+    const name = document.createElement("td");
+    name.textContent = c.name;
+    const geometries = document.createElement("td");
+    const choices = document.createElement("div");
+    choices.className = "library-geometries";
+    for (const [value, label] of [
+      ["single", "Single"],
+      ["agglomerate", "Agglo"],
+      ["broken", "Broken"],
     ]) {
-      let td = document.createElement("td");
-      td.textContent = t;
-      tr.append(td);
+      choices.append(
+        action(
+          label,
+          "Inspect " + c.name + " · " + value,
+          () => openLibraryCrystal(c, value),
+          "library-geometry",
+        ),
+      );
     }
-    let td = document.createElement("td"),
-      b = document.createElement("button");
-    b.textContent = "Inspect →";
-    b.onclick = () => {
-      select(c);
-      tab("display");
-    };
-    td.append(b);
-    tr.append(td);
+    geometries.append(choices);
+    const size = document.createElement("td");
+    size.textContent = c.group;
+    const roundness = document.createElement("td");
+    roundness.textContent = c.roundness.toString();
+    const source = document.createElement("td");
+    source.textContent = crystalSource(c);
+    const inspect = document.createElement("td");
+    inspect.append(
+      action(
+        "Inspect",
+        "Inspect " + c.name + " as single crystal",
+        () => openLibraryCrystal(c),
+        "library-inspect",
+      ),
+    );
+    tr.append(name, geometries, size, roundness, source, inspect);
     $("rows").append(tr);
   }
   $("matches").textContent = filtered.length + " matching crystals";
@@ -741,7 +772,11 @@ function classifyMean(m, H, nClasses = 5) {
 let classificationState = null;
 function classificationForCurrent() {
   const source = displayCurves || curves;
-  if (!$("discrete").checked || $("calculation-mode").value !== "discrete" || !source) return null;
+  if (
+    ($("render-mode").value !== "discrete" && $("calculation-mode").value !== "discrete") ||
+    !source
+  )
+    return null;
   const n = numericInput("n-classes");
   if (!Number.isInteger(n) || n < 2 || n > 10) {
     $("status").textContent = "Choose 2–10 Multi-Otsu classes.";
@@ -997,6 +1032,7 @@ async function updateColourTitle(classified) {
 }
 let colourMapping = null;
 function draw() {
+  syncCoordinateButtons();
   if (!mesh) return;
   updateMathField();
   $("lighting").disabled = $("field").value !== "solid";
@@ -1015,7 +1051,8 @@ function draw() {
     coordinateNote.append(document.createTextNode("; curvature labels are dimensionless."));
   } else coordinateNote.textContent = "Coordinate unit: " + nativeUnit() + ".";
   $("discrete").disabled = false;
-  const classified = classificationForCurrent();
+  const classificationData = classificationForCurrent();
+  const classified = $("render-mode").value === "discrete" ? classificationData : null;
   const v = mesh.vertices,
     f = mesh.faces,
     field = $("field").value,
@@ -1161,7 +1198,7 @@ function draw() {
     { responsive: true, displaylogo: false, modeBarButtonsToRemove: ["toImage"] },
   ).then(() => updateColourTitle(classified));
   updateFieldHeading(classified);
-  updateRoundnessMetric(classified);
+  updateRoundnessMetric(classificationData);
   drawHistogram(classified);
 }
 window.addEventListener("resize", () =>
@@ -1180,7 +1217,8 @@ $("export").onclick = () => {
 };
 $("rotate").onclick = () => {
   rotating = !rotating;
-  $("rotate").textContent = rotating ? "Pause rotation" : "Resume rotation";
+  renderRotationButton();
+  $("rotate").setAttribute("aria-label", rotating ? "Pause rotation" : "Start rotation");
   syncRotationLoop();
 };
 let last = 0,
@@ -1396,7 +1434,13 @@ function updateMathField() {
     k2: "Principal curvature",
   };
   function content(e, v) {
-    e.replaceChildren(document.createTextNode(names[v]));
+    e.replaceChildren(
+      document.createTextNode(
+        e.id === "field-trigger"
+          ? { H: "Mean", K: "Gaussian", k1: "Principal 1", k2: "Principal 2" }[v]
+          : names[v],
+      ),
+    );
     const f = document.createElement("span");
     f.className = "inline-formula";
     e.append(f);
@@ -1424,7 +1468,7 @@ function updateMathField() {
 
 function updateFieldHeading(classified) {
   const e = $("fieldtitle"),
-    mode = $("calculation-mode").selectedOptions[0].text;
+    mode = $("render-mode").selectedOptions[0].text;
   e.replaceChildren(document.createTextNode(mode + " · "));
   const f = document.createElement("span");
   e.append(f);
@@ -1489,14 +1533,11 @@ $("field-menu").onkeydown = (e) => {
 
 function setProgress(value, message) {
   $("status").textContent = message;
-  $("recalculate").textContent =
-    value === 5 && !mesh
-      ? "Loading data…"
-      : value > 0 && value < 100
-        ? "Calculating " + Math.round(value) + "%"
-        : !mesh && selected
-          ? "Retry loading"
-          : "Recalculate";
+  $("recalculate").textContent = "Calculate";
+  $("recalculate").dataset.state =
+    value >= 100 ? "complete" : value > 0 ? "running" : !mesh && selected ? "error" : "ready";
+  $("recalculate").style.setProperty("--run-progress", Math.max(0, Math.min(100, value)) + "%");
+  $("recalculate").setAttribute("aria-busy", String(value > 0 && value < 100));
   $("recalculate").title = message;
   $("progress-fill").style.width = Math.max(0, Math.min(100, value)) + "%";
   $("progress-percent").textContent = Math.round(value) + "%";
@@ -1550,7 +1591,8 @@ select(defaultCrystal);
 $("reset-all").onclick = async () => {
   rotating = !matchMedia("(prefers-reduced-motion: reduce)").matches;
   theta = 0;
-  $("rotate").textContent = rotating ? "Pause rotation" : "Resume rotation";
+  renderRotationButton();
+  $("rotate").setAttribute("aria-label", rotating ? "Pause rotation" : "Start rotation");
   clearTimeout(smoothTimer);
   clearTimeout(surfaceTimer);
   smoothTask++;
@@ -1582,6 +1624,8 @@ $("reset-all").onclick = async () => {
   $("lighting").value = "soft";
   $("geometry").value = "single";
   $("curvature-source").value = "H";
+  $("render-mode").value = "continuous";
+  $("calculation-mode").value = "weights";
   const mode = $("calculation-mode");
   mode.value =
     [...mode.options].find((option) => option.defaultSelected)?.value || mode.options[0].value;
@@ -1646,9 +1690,14 @@ function updateRoundnessMetric(classified) {
 }
 function syncCalculationMode() {
   const mode = $("calculation-mode").value;
+  const rendering = $("render-mode").value;
   $("field").value =
-    mode === "weights" ? "weights" : mode === "solid" ? "solid" : $("curvature-source").value;
-  $("discrete").checked = mode === "discrete";
+    rendering === "weights"
+      ? "weights"
+      : rendering === "solid"
+        ? "solid"
+        : $("curvature-source").value;
+  $("discrete").checked = rendering === "discrete";
   $("otsu-settings").hidden = mode !== "discrete";
   $("weight-settings").hidden = mode === "solid";
   classificationState = null;
@@ -1661,6 +1710,13 @@ function syncCalculationMode() {
   else draw();
 }
 $("calculation-mode").onchange = syncCalculationMode;
+$("render-mode").onchange = () => {
+  const mode = $("render-mode").value;
+  $("field").value =
+    mode === "solid" ? "solid" : mode === "weights" ? "weights" : $("curvature-source").value;
+  $("discrete").checked = mode === "discrete";
+  draw();
+};
 for (const id of ["sigma-ratio", "weight-order"])
   $(id).onchange = () => {
     const ratio = numericInput("sigma-ratio"),
@@ -1722,7 +1778,64 @@ window.addEventListener("lab:suspend", (event) => {
   if (event.detail.reason === "page-exit") {
     for (const cancel of [...activeComputations]) cancel();
     rotating = false;
-    $("rotate").textContent = "Resume rotation";
+    renderRotationButton();
+    $("rotate").setAttribute("aria-label", "Start rotation");
     syncRotationLoop();
   }
+});
+
+function renderRotationButton() {
+  const button = $("rotate");
+  const label = rotating ? "Pause" : "Rotate";
+  button.classList.add("playback-toggle");
+  button.setAttribute("aria-pressed", String(rotating));
+  button.textContent = label;
+}
+
+function syncCoordinateButtons() {
+  document.querySelectorAll("[data-coordinate]").forEach((button) => {
+    button.setAttribute("aria-pressed", String(button.dataset.coordinate === $("scale").value));
+  });
+}
+document.querySelectorAll("[data-coordinate]").forEach((button) => {
+  button.onclick = () => {
+    if ($("scale").value === button.dataset.coordinate) return;
+    $("scale").value = button.dataset.coordinate;
+    syncCoordinateButtons();
+    $("scale").onchange();
+  };
+});
+syncCoordinateButtons();
+
+document.querySelectorAll("[data-parameter-page]").forEach((button) => {
+  button.onclick = () => {
+    document
+      .querySelectorAll("[data-parameter-page]")
+      .forEach((item) => item.classList.toggle("active", item === button));
+    document.querySelectorAll("[data-parameter-panel]").forEach((panel) => {
+      panel.hidden = panel.dataset.parameterPanel !== button.dataset.parameterPage;
+    });
+  };
+});
+
+document.querySelectorAll("[data-display-parameter]").forEach((button) => {
+  button.onclick = () => {
+    document
+      .querySelectorAll("[data-display-parameter]")
+      .forEach((item) => item.classList.toggle("active", item === button));
+    document.querySelectorAll("[data-display-panel]").forEach((panel) => {
+      panel.hidden = panel.dataset.displayPanel !== button.dataset.displayParameter;
+    });
+  };
+});
+
+document.querySelectorAll("[data-appearance-page]").forEach((button) => {
+  button.onclick = () => {
+    document
+      .querySelectorAll("[data-appearance-page]")
+      .forEach((item) => item.classList.toggle("active", item === button));
+    document.querySelectorAll("[data-appearance-panel]").forEach((panel) => {
+      panel.hidden = panel.dataset.appearancePanel !== button.dataset.appearancePage;
+    });
+  };
 });

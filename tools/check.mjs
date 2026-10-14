@@ -16,6 +16,15 @@ const files = (await fs.readdir(path.join(root, "static/js")))
 for (const lab of labs) {
   const directory = path.join(root, "content/labs", lab, "ui");
   const workspace = await fs.readFile(path.join(directory, "workspace.txt"), "utf8");
+  const ids = [...workspace.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map((match) => match[1]);
+  assert.equal(new Set(ids).size, ids.length, `Duplicate workspace IDs: ${lab}`);
+  const app = await fs.readFile(path.join(directory, "app.js"), "utf8");
+  const generated = new Set(
+    [...app.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map((match) => match[1]),
+  );
+  for (const [, id] of app.matchAll(/\$\("([^"\n]+)"\)/g)) {
+    assert.ok(ids.includes(id) || generated.has(id), `Missing workspace element ${lab}: #${id}`);
+  }
   if (/type\s*=\s*["']file["']/i.test(workspace))
     throw Error(`User file input is disabled: ${lab}`);
 
@@ -89,10 +98,39 @@ for (const mode of ["MPC", "PI"])
     while (simulation.step()) {}
     if (simulation.history.length !== simulation.p.steps) throw Error("Incomplete MPC run");
   }
+// Switching targets after the former sigma limit must preserve the run budget.
+const switchedRun = new mpc.Simulation(
+  { ...mpc.defaults, steps: 1100 },
+  { mode: "PI", target: "G" },
+);
+for (let i = 0; i < 1000; i++) assert.ok(switchedRun.step());
+switchedRun.update(switchedRun.values, { target: "sigma" });
+assert.equal(switchedRun.p.steps, 1100);
+assert.ok(switchedRun.step());
+switchedRun.update(switchedRun.values, { target: "G" });
+assert.equal(switchedRun.p.steps, 1100);
+while (switchedRun.step()) {}
+assert.equal(switchedRun.history.length, 1100);
+assert.ok(fieldKeys.includes("steps"));
+assert.ok(!fieldKeys.includes("steps_sigma") && !fieldKeys.includes("steps_G"));
+assert.throws(() => mpc.validate({ ...mpc.defaults, steps: 0 }));
+assert.throws(() => mpc.validate({ ...mpc.defaults, steps: 1.5 }));
 if (labs.includes("orbitalflatness")) {
   const orbital = require("../content/labs/orbitalflatness/ui/engine.js");
   for (const dimension of [1, 2, 3]) {
-    orbital.solve({ ...orbital.defaultConfig(dimension), numPoints: 21 });
+    const config = { ...orbital.defaultConfig(dimension), numPoints: 21 };
+    const progress = [];
+    const baseline = orbital.solve(config);
+    assert.deepEqual(
+      orbital.solve(config, (value) => progress.push(value)),
+      baseline,
+    );
+    assert.equal(progress.at(-1), 100);
+    assert.ok(
+      progress.every(
+        (value, index) => value >= 0 && value <= 100 && (!index || value >= progress[index - 1]),
+      ),
+    );
   }
 }
 console.log(

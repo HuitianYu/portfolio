@@ -21,14 +21,8 @@
         </p>
         <p class="current-location">Based in {{ partial "current-location.html" . }}</p>
         <div class="hero-actions">
-          <a class="button primary" href="{{ "papers/" | relURL }}">
-            Explore my research
-            <span>→</span>
-          </a>
-          <a class="button" href="{{ "cv/" | relURL }}">
-            View my CV
-            <span>→</span>
-          </a>
+          <a class="button primary" href="{{ "papers/" | relURL }}">Explore my research</a>
+          <a class="button" href="{{ "cv/" | relURL }}">View my CV</a>
         </div>
         <div class="personal-links" aria-label="Personal and academic profiles">
           <a href="mailto:{{ site.Params.email }}">Email ↗</a>
@@ -91,7 +85,7 @@
           <h2>Research you can interact with.</h2>
         </div>
         <div class="carousel-heading-actions">
-          <a class="text-link" href="{{ "labs/" | relURL }}">All labs →</a>
+          <a class="text-link" href="{{ "labs/" | relURL }}">All labs</a>
           <div class="carousel-arrows">
             <button
               class="carousel-pause"
@@ -137,7 +131,7 @@
           <h2>Selected papers.</h2>
         </div>
         <div class="carousel-heading-actions">
-          <a class="text-link" href="{{ "papers/" | relURL }}">All papers →</a>
+          <a class="text-link" href="{{ "papers/" | relURL }}">All papers</a>
           <div class="carousel-arrows">
             <button
               class="carousel-pause"
@@ -192,7 +186,7 @@
         <p>{{ hugo.Data.contact.intro }}</p>
         <div class="inline-links">
           {{ partial "contact-links.html" (slice "scholar" "linkedin" "tum") }}
-          <a href="{{ "contact/" | relURL }}">All contact details →</a>
+          <a href="{{ "contact/" | relURL }}">All contact details</a>
         </div>
       </div>
     </section>

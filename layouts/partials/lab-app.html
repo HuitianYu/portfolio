@@ -3,7 +3,7 @@
 {{ $source := .source }}
 {{ $icon := .icon }}
 {{ $document := $source.Content }}
-{{ $document = replace $document (printf "url('%s-icon.svg')" $page.Params.id) (printf "url('%s')" $icon.RelPermalink) }}
+{{ $document = replace $document (printf "%s-icon.svg" $page.Params.id) $icon.RelPermalink }}
 {{ $data := $page.Params.data | default dict }}
 {{ $runtimeData := dict "recordURL" ($data.recordurl | default "") "doi" ($data.doi | default "") "conceptDOI" ($data.conceptdoi | default "") "remoteEnabled" ($data.remoteenabled | default false) "fileBaseURL" ($data.filebaseurl | default "") "archives" ($data.archives | default slice) }}
 {{ $runtime := dict "id" $page.Params.id "name" $page.Title "data" $runtimeData "ui" (index hugo.Data "lab-ui") }}

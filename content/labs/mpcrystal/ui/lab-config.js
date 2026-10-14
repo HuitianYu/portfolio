@@ -20,7 +20,7 @@ window.LAB_CONFIG = {
       operation: "Operation",
       parameters: "Parameters",
       display: "Display",
-      library: "Crystal library",
+      library: "Library",
       design: "Design",
       results: "Display",
     },

@@ -1,0 +1,90 @@
+{{ $id := .Params.id }}{{ $lab := index (where (partial "labs-data.html" .) "id" $id) 0 }}
+<div class="lab-toolbar">
+  <a href="{{ "labs/" | relURL }}">← Labs</a>
+  <span class="lab-toolbar-brand" title="{{ $lab.name }}">
+    <span class="theme-icon" aria-hidden="true" style="--icon-url:url('{{ $lab.iconurl }}')"></span>
+    <span>{{ $lab.name }}</span>
+  </span>
+  <div class="lab-toolbar-actions" role="group" aria-label="Workspace actions">
+    {{ with $lab.paperurl }}
+      <a
+        class="lab-resource-action"
+        href="{{ . }}"
+        aria-label="Related paper"
+        title="Related paper"
+      >
+        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+          <path
+            d="M5 2.5h7l3 3v12H5zM12 2.5v4h3M8 10h4M8 13h4"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+            stroke-linejoin="round"
+          />
+        </svg>
+      </a>
+    {{ end }}{{ with $lab.data.recordurl }}
+      <a
+        class="lab-resource-action"
+        href="{{ . }}"
+        target="_blank"
+        rel="noopener"
+        aria-label="Dataset"
+        title="Dataset"
+      >
+        <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+          <ellipse
+            cx="10"
+            cy="4.5"
+            rx="6"
+            ry="2.5"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          />
+          <path
+            d="M4 4.5v10c0 3.3 12 3.3 12 0v-10M4 9.5c0 3.3 12 3.3 12 0"
+            fill="none"
+            stroke="currentColor"
+            stroke-width="1.5"
+          />
+        </svg>
+      </a>
+    {{ end }}
+    <button
+      id="restart-lab"
+      class="lab-icon-action"
+      aria-label="Restart lab"
+      type="button"
+      title="{{ (index hugo.Data "lab-ui").shell.reloadHint }}"
+    >
+      <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+        <path
+          d="M15.6 6.3A6 6 0 1 0 16 13M15.6 2.8v4h-4"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        />
+      </svg>
+    </button>
+    <a
+      class="lab-icon-action"
+      aria-label="Open standalone lab"
+      href="{{ $lab.appurl }}"
+      target="_blank"
+      rel="noopener"
+      title="{{ (index hugo.Data "lab-ui").shell.newInstanceHint }}"
+    >
+      <svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true">
+        <path
+          d="M11 3h6v6M17 3l-9 9M8 4H3v13h13v-5"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.5"
+        />
+      </svg>
+    </a>
+  </div>
+</div>

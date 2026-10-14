@@ -20,7 +20,7 @@
     controls = document.querySelector(".common-controls");
   const statusHub = document.createElement("div");
   statusHub.className = "header-status-hub";
-  statusHub.append($("toggle-controls"), document.querySelector(".status-strip"));
+  statusHub.append(document.querySelector(".status-strip"));
   header.insertBefore(statusHub, document.querySelector(".top-actions"));
   const moduleMoves = [];
   let lastSelectedTarget = $("target").value;
@@ -43,7 +43,13 @@
     const button = document.createElement("button");
     button.className = "header-action";
     button.dataset.action = action;
-    button.textContent = $(action).textContent.replace("↗", "").trim();
+    button.textContent = {
+      start: "Controller",
+      sensor: "GSensor",
+      adaptive: "Adapter",
+      seed: "Seed",
+    }[action];
+    button.setAttribute("aria-label", $(action).textContent.trim());
     button.onclick = () => $(action).click();
     module.append(button, statusHub.querySelector(note));
     const panel = document.createElement("div");
@@ -59,7 +65,7 @@
       clone.querySelectorAll("[id]").forEach((e) => e.removeAttribute("id"));
       if (node.tagName === "BUTTON" && refresh === "refresh")
         clone.dataset.controllerRefresh = "true";
-      if (node.tagName === "BUTTON") clone.textContent = "Refresh ↻";
+      if (node.tagName === "BUTTON") clone.textContent = "Refresh";
       if (node.tagName === "BUTTON")
         clone.onclick = () => {
           flashRefresh(clone);
@@ -130,6 +136,9 @@
     sync();
   }
 
+  function playbackIcon(play = false) {
+    return `<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">${play ? '<path d="M6 3.5v13l10-6.5z" fill="currentColor"/>' : '<rect x="5" y="4" width="3" height="12" rx=".7" fill="currentColor"/><rect x="12" y="4" width="3" height="12" rx=".7" fill="currentColor"/>'}</svg>`;
+  }
   function stepIcon() {
     return '<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false"><path d="M5 4v12l8-6z" fill="currentColor"/><path d="M15 4v12" stroke="currentColor" stroke-width="1.5"/></svg>';
   }
@@ -140,7 +149,7 @@
     b.className = "button header-playback-action";
     b.dataset.uiAction = "true";
     b.dataset.action = action;
-    b.innerHTML = action === "step" ? stepIcon() : "Ⅱ";
+    b.innerHTML = action === "step" ? stepIcon() : playbackIcon();
     b.setAttribute("aria-label", $(action).textContent);
     b.title = $(action).title;
     b.disabled = $(action).disabled;
@@ -153,37 +162,7 @@
   document.querySelector(".header-file-actions").dataset.toolbarGroup = "secondary";
   statusHub.before(primaryToolbar);
   primaryToolbar.append(statusHub, headerPlayback);
-  let controlsHovered = false,
-    controlsPinned = false;
-  function syncControlPopover() {
-    document.body.classList.add("header-controls-permanent");
-  }
-  header.addEventListener("mouseenter", () => {
-    controlsHovered = true;
-    syncControlPopover();
-  });
-  header.addEventListener("mouseleave", (e) => {
-    if (!controls.contains(e.relatedTarget)) {
-      controlsHovered = false;
-      syncControlPopover();
-    }
-  });
-  controls.addEventListener("mouseenter", () => {
-    controlsHovered = true;
-    syncControlPopover();
-  });
-  controls.addEventListener("mouseleave", (e) => {
-    if (!header.contains(e.relatedTarget)) {
-      controlsHovered = false;
-      syncControlPopover();
-    }
-  });
-  $("toggle-controls").onclick = () => {
-    controlsPinned = !controlsPinned;
-    syncControlPopover();
-  };
-  window.addEventListener("scroll", syncControlPopover, { passive: true });
-  window.addEventListener("resize", syncControlPopover);
+  document.body.classList.add("header-controls-permanent");
   const coloursDefault = {
     T: "#dc143c",
     Tj: "#7cfc00",
@@ -778,6 +757,7 @@
     $("start").innerHTML = running ? "Stop controller" : "Start controller";
     $("pause").disabled = !running;
     $("pause").textContent = paused ? "Resume" : "Pause";
+    $("pause").dataset.playbackState = running && !paused ? "playing" : "paused";
     $("step").disabled = !sim || !paused;
     $("sensor").disabled = !running;
     $("seed").disabled = !running;
@@ -824,14 +804,30 @@
     if (running) $("seed").title = "Each click adds one seed batch.";
     document.querySelectorAll(".header-playback-action[data-action]").forEach((b) => {
       const main = $(b.dataset.action);
-      b.innerHTML = b.dataset.action === "step" ? stepIcon() : paused ? "▶" : "Ⅱ";
+      b.innerHTML = b.dataset.action === "step" ? stepIcon() : playbackIcon(paused);
       b.setAttribute("aria-label", main.textContent);
       b.title = main.textContent;
       b.disabled = main.disabled;
+      if (b.dataset.action === "pause")
+        b.dataset.playbackState = running && !paused ? "playing" : "paused";
     });
     document.querySelectorAll(".header-action").forEach((b) => {
       const main = $(b.dataset.action);
-      b.textContent = main.textContent.replace("↗", "").trim();
+      let label = b.querySelector(".module-label");
+      if (!label) {
+        label = document.createElement("span");
+        label.className = "module-label";
+        b.replaceChildren(label);
+      }
+      label.textContent = {
+        start: "Controller",
+        sensor: "GSensor",
+        adaptive: "Adapter",
+        seed: "Seed",
+      }[b.dataset.action];
+      if (b.dataset.action === "seed" && acceptedSeedBatches)
+        label.textContent += " · " + acceptedSeedBatches;
+      b.setAttribute("aria-label", main.textContent.trim());
       b.classList.toggle("primary", main.classList.contains("primary"));
       b.classList.toggle("on", main.classList.contains("on"));
       b.classList.toggle("stop-action", main.classList.contains("stop-action"));

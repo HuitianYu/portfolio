@@ -1,25 +1,111 @@
 function initializeSiteControls() {
   const toggle = document.querySelector(".menu-toggle"),
-    nav = document.querySelector("#site-nav");
-  toggle?.addEventListener("click", () => {
-    const open = toggle.getAttribute("aria-expanded") !== "true";
+    nav = document.querySelector("#site-nav"),
+    header = document.querySelector(".header-inner"),
+    brand = header?.querySelector(".wordmark"),
+    hover = matchMedia("(hover:hover) and (pointer:fine)");
+  if (!toggle || !nav || !header || !brand) return;
+  let closeTimer;
+  function setOpen(open) {
+    clearTimeout(closeTimer);
+    open = open && header.classList.contains("nav-compact");
     toggle.setAttribute("aria-expanded", String(open));
     nav.classList.toggle("open", open);
+  }
+  function measure() {
+    const previous = nav.getAttribute("style");
+    for (const [name, value] of Object.entries({
+      display: "flex",
+      position: "absolute",
+      visibility: "hidden",
+      width: "max-content",
+      "flex-wrap": "nowrap",
+      "max-width": "none",
+      padding: "0",
+      gap: "20px",
+    }))
+      nav.style.setProperty(name, value, "important");
+    const required = nav.getBoundingClientRect().width;
+    if (previous === null) nav.removeAttribute("style");
+    else nav.setAttribute("style", previous);
+    const style = getComputedStyle(header),
+      available =
+        header.clientWidth -
+        parseFloat(style.paddingLeft) -
+        parseFloat(style.paddingRight) -
+        brand.getBoundingClientRect().width -
+        24;
+    const compact = required > available;
+    if (header.classList.contains("nav-compact") !== compact) setOpen(false);
+    header.classList.toggle("nav-compact", compact);
+    if (!compact) setOpen(false);
+  }
+  const closeSoon = () => {
+    clearTimeout(closeTimer);
+    closeTimer = setTimeout(() => setOpen(false), 180);
+  };
+  toggle.addEventListener("pointerenter", (e) => {
+    if (e.pointerType === "mouse" && hover.matches) setOpen(true);
   });
-  const focus = document.querySelector("#focus-lab");
-  focus?.addEventListener("click", () => {
-    const active = document.body.classList.toggle("lab-focus");
-    focus.setAttribute("aria-pressed", String(active));
-    focus.textContent = active ? focus.dataset.labelExit + " ⤡" : focus.dataset.labelFocus + " ⤢";
+  toggle.addEventListener("pointerleave", (e) => {
+    if (e.pointerType === "mouse" && hover.matches) closeSoon();
   });
-  document.addEventListener("keydown", (e) => {
-    if (
-      e.key === "Escape" &&
-      document.body.classList.contains("lab-focus") &&
-      !document.body.classList.contains("lab-header-hidden")
-    )
-      focus.click();
+  nav.addEventListener("pointerenter", () => clearTimeout(closeTimer));
+  nav.addEventListener("pointerleave", (e) => {
+    if (e.pointerType === "mouse" && hover.matches) closeSoon();
   });
+  toggle.addEventListener("click", (e) => {
+    if (!hover.matches || e.detail === 0 || e.pointerType === "touch" || e.pointerType === "pen")
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+  });
+  header.addEventListener("focusout", (event) => {
+    if (!header.contains(event.relatedTarget)) setOpen(false);
+  });
+  document.addEventListener("pointerdown", (e) => {
+    if (!header.contains(e.target)) setOpen(false);
+  });
+  nav.querySelectorAll("a").forEach((link) => link.addEventListener("click", () => setOpen(false)));
+  new ResizeObserver(measure).observe(header);
+  addEventListener("resize", measure);
+  document.fonts?.ready.then(measure);
+  measure();
+}
+
+function initializeContextLabel() {
+  const toolbar = document.querySelector(".lab-toolbar"),
+    brand = toolbar?.querySelector(".lab-toolbar-brand"),
+    name = brand?.lastElementChild;
+  if (!toolbar || !brand || !name) return;
+  function fit() {
+    const previous = name.getAttribute("style");
+    for (const [key, value] of Object.entries({
+      display: "inline-block",
+      position: "absolute",
+      visibility: "hidden",
+      width: "max-content",
+    }))
+      name.style.setProperty(key, value, "important");
+    const required = name.getBoundingClientRect().width;
+    if (previous === null) name.removeAttribute("style");
+    else name.setAttribute("style", previous);
+    const style = getComputedStyle(toolbar),
+      icon = brand.querySelector(".theme-icon"),
+      back = toolbar.querySelector(":scope > a"),
+      actions = toolbar.querySelector(".lab-toolbar-actions");
+    const available =
+      toolbar.clientWidth -
+      parseFloat(style.paddingLeft) -
+      parseFloat(style.paddingRight) -
+      (back?.getBoundingClientRect().width || 0) -
+      (actions?.getBoundingClientRect().width || 0) -
+      (icon?.getBoundingClientRect().width || 0) -
+      40;
+    toolbar.classList.toggle("context-name-hidden", required > available);
+  }
+  new ResizeObserver(fit).observe(toolbar);
+  addEventListener("resize", fit);
+  document.fonts?.ready.then(fit);
+  fit();
 }
 
 function initializeCarousels() {
@@ -60,20 +146,24 @@ function initializeCarousels() {
       });
     };
     const normalize = () => {
+      if (performance.now() < movingUntil) return;
       const w = step(),
         index = Math.round(track.scrollLeft / w);
       if (index < pad) jump(track.scrollLeft + count * w);
       else if (index >= count + pad) jump(track.scrollLeft - count * w);
     };
+    let movingUntil = 0;
     const move = (direction) => {
+      if (performance.now() < movingUntil) return;
       normalize();
+      movingUntil = performance.now() + 700;
       track.scrollBy({ left: direction * step(), behavior: reduced ? "instant" : "smooth" });
     };
     const refresh = () => {
       clearInterval(timer);
       if (!stopped && !hover && !focused && visible && !document.hidden)
         timer = setInterval(() => move(1), 3000);
-      pause.textContent = stopped ? "▶" : "Ⅱ";
+      pause.innerHTML = playbackIcon(stopped);
       pause.setAttribute("aria-pressed", String(stopped));
       pause.setAttribute(
         "aria-label",
@@ -95,14 +185,13 @@ function initializeCarousels() {
       "scroll",
       () => {
         clearTimeout(scrollTimer);
-        scrollTimer = setTimeout(normalize, 180);
+        scrollTimer = setTimeout(normalize, 500);
       },
       { passive: true },
     );
-    const hoverArea = track.closest(".home-section") || track;
+    const hoverArea = track;
     hoverArea.addEventListener("mouseenter", () => {
       hover = true;
-      track.scrollTo({ left: track.scrollLeft, behavior: "instant" });
       refresh();
     });
     hoverArea.addEventListener("mouseleave", () => {
@@ -158,11 +247,27 @@ function initializePageOutline() {
     if (hoverDevice.matches) setOpen(false);
   });
   outline.addEventListener("focusin", () => setOpen(true));
-  outline.addEventListener("focusout", () => {
-    if (!outline.contains(document.activeElement) && !outline.matches(":hover")) setOpen(false);
+  outline.addEventListener("focusout", (event) => {
+    if (!outline.contains(event.relatedTarget) && !outline.matches(":hover")) setOpen(false);
   });
-  toggle.addEventListener("click", () => {
-    if (!hoverDevice.matches) setOpen(toggle.getAttribute("aria-expanded") !== "true");
+  toggle.addEventListener("click", (event) => {
+    if (
+      !hoverDevice.matches ||
+      event.detail === 0 ||
+      event.pointerType === "touch" ||
+      event.pointerType === "pen"
+    )
+      setOpen(toggle.getAttribute("aria-expanded") !== "true");
+  });
+  outline.addEventListener("keydown", (event) => {
+    if (event.key === "Escape") {
+      event.preventDefault();
+      toggle.focus();
+      setOpen(false);
+    }
+  });
+  document.addEventListener("pointerdown", (event) => {
+    if (!outline.contains(event.target)) setOpen(false);
   });
   const sections = links
     .map((a) => document.getElementById(decodeURIComponent(a.hash.slice(1))))
@@ -186,21 +291,6 @@ function initializePageOutline() {
   update();
 }
 
-// Accept Escape from the embedded workspace only, without replacing its instance.
-window.addEventListener("message", (event) => {
-  const frame = document.querySelector("#lab-frame");
-  if (
-    event.origin !== location.origin ||
-    event.source !== frame?.contentWindow ||
-    event.data?.type !== "lab:exit-focus"
-  )
-    return;
-  if (document.body.classList.contains("lab-focus")) {
-    document.querySelector("#focus-lab")?.click();
-    document.querySelector("#focus-lab")?.focus();
-  }
-});
-
 // The mobile navigation is a disclosure, with an explicit keyboard exit.
 function initializeMobileKeyboardExit() {
   const button = document.querySelector(".menu-toggle"),
@@ -223,56 +313,113 @@ document.querySelector("#restart-lab")?.addEventListener("click", () => {
 });
 
 initializeSiteControls();
+initializeContextLabel();
 initializeCarousels();
 initializePageOutline();
 initializeMobileKeyboardExit();
 
-function initializeLabHeaderToggle() {
-  const button = document.querySelector("#toggle-lab-headers");
-  if (!button) return;
-  const send = () =>
-    document
-      .querySelector("#lab-frame")
-      ?.contentWindow.postMessage(
-        { type: "lab:headers", hidden: document.body.classList.contains("lab-header-hidden") },
-        location.origin,
-      );
-  function setHidden(hidden) {
-    document.body.classList.toggle("lab-header-hidden", hidden);
-    button.setAttribute("aria-pressed", String(hidden));
-    button.setAttribute("aria-label", hidden ? button.dataset.labelShow : button.dataset.labelHide);
-    button.title = hidden ? button.dataset.labelShow + " (Escape)" : button.dataset.labelHide;
-    button.querySelector("span").textContent = hidden ? "▾" : "▴";
-    send();
-    window.dispatchEvent(new Event("resize"));
-  }
-  button.addEventListener("click", () =>
-    setHidden(!document.body.classList.contains("lab-header-hidden")),
+function playbackIcon(play) {
+  return `<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">${play ? '<path d="M6 3.5v13l10-6.5z" fill="currentColor"/>' : '<rect x="5" y="4" width="3" height="12" rx=".7" fill="currentColor"/><rect x="12" y="4" width="3" height="12" rx=".7" fill="currentColor"/>'}</svg>`;
+}
+function updateHostHeaderSize() {
+  const frame = document.querySelector("#lab-frame");
+  const contentWidth = frame?.contentDocument?.documentElement?.clientWidth;
+  if (contentWidth > 0)
+    document.documentElement.style.setProperty(
+      "--lab-scrollbar-size",
+      Math.max(0, frame.clientWidth - contentWidth) + "px",
+    );
+  const firstRow = document.querySelector(".header-inner");
+  if (firstRow?.offsetHeight)
+    document.documentElement.style.setProperty(
+      "--navigation-button-top",
+      firstRow.offsetHeight / 2 - 18 + "px",
+    );
+  const hidden =
+    document.body.classList.contains("site-nav-hidden") ||
+    document.body.classList.contains("mobile-nav-away");
+  document.documentElement.style.setProperty(
+    "--site-header-size",
+    (hidden
+      ? document.body.classList.contains("site-nav-hidden") &&
+        !document.body.classList.contains("lab-workspace")
+        ? 36
+        : 0
+      : document.querySelector(".site-header")?.offsetHeight || 0) + "px",
   );
-  document.addEventListener("keydown", (event) => {
-    if (event.key === "Escape" && document.body.classList.contains("lab-header-hidden")) {
-      event.preventDefault();
-      setHidden(false);
-      button.focus();
+}
+function initializeResponsiveHeader() {
+  let previousY = 0,
+    travel = 0,
+    transitionUntil = 0;
+  function revealNavigation(hidden) {
+    if (document.body.classList.contains("mobile-nav-away") !== hidden)
+      transitionUntil = performance.now() + 300;
+    document.body.classList.toggle("mobile-nav-away", hidden);
+    updateHostHeaderSize();
+  }
+  function followScroll(y) {
+    if (!Number.isFinite(y)) return;
+    const delta = y - previousY;
+    previousY = y;
+    if (performance.now() < transitionUntil) {
+      travel = 0;
+      return;
     }
+    if (
+      !matchMedia("(max-width:760px), (max-height:480px) and (orientation:landscape)").matches ||
+      document.body.classList.contains("site-nav-hidden")
+    )
+      return;
+    if (document.querySelector(".menu-toggle")?.getAttribute("aria-expanded") === "true") return;
+    travel = Math.sign(delta) === Math.sign(travel) ? travel + delta : delta;
+    if (y < 40 || travel < -20) {
+      revealNavigation(false);
+      travel = 0;
+    } else if (y > 100 && travel > 32) {
+      revealNavigation(true);
+      travel = 0;
+    }
+  }
+  addEventListener("scroll", () => followScroll(scrollY), { passive: true });
+  addEventListener("message", (event) => {
+    if (
+      event.origin === location.origin &&
+      event.source === document.querySelector("#lab-frame")?.contentWindow &&
+      event.data?.type === "lab:scroll"
+    )
+      followScroll(event.data.y);
   });
+  addEventListener("message", (event) => {
+    if (
+      event.origin !== location.origin ||
+      event.source !== document.querySelector("#lab-frame")?.contentWindow ||
+      event.data?.type !== "lab:viewport"
+    )
+      return;
+    const inset = Number(event.data.scrollbar);
+    if (Number.isFinite(inset) && inset >= 0 && inset <= 40)
+      document.documentElement.style.setProperty("--lab-scrollbar-size", inset + "px");
+  });
+  document.querySelector(".menu-toggle")?.addEventListener("click", () => {
+    revealNavigation(false);
+  });
+  document
+    .querySelector(".site-header")
+    ?.addEventListener("focusin", () => revealNavigation(false));
+  addEventListener("resize", () => {
+    if (!matchMedia("(max-width:760px), (max-height:480px) and (orientation:landscape)").matches)
+      revealNavigation(false);
+  });
+  new ResizeObserver(updateHostHeaderSize).observe(document.querySelector(".site-header"));
   document.addEventListener(
     "load",
     (event) => {
-      if (event.target.id === "lab-frame") send();
+      if (event.target.id === "lab-frame") updateHostHeaderSize();
     },
     true,
   );
-  window.addEventListener("message", (event) => {
-    const frame = document.querySelector("#lab-frame");
-    if (
-      event.origin === location.origin &&
-      event.source === frame?.contentWindow &&
-      event.data?.type === "lab:show-headers"
-    ) {
-      setHidden(false);
-      button.focus();
-    }
-  });
+  addEventListener("resize", updateHostHeaderSize);
+  updateHostHeaderSize();
 }
-initializeLabHeaderToggle();
+initializeResponsiveHeader();
