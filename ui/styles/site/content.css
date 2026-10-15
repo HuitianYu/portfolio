@@ -193,7 +193,8 @@
   }
   .outline-collapsed .outline-toggle {
     justify-content: center;
-    padding: 13px 8px;
+    padding: 0;
+    min-height: 44px;
   }
   .page-content [id] {
     scroll-margin-top: 110px;
@@ -236,7 +237,8 @@
 
 /* Workspace height follows actual header/toolbar layout, including mobile wrapping. */
 body.lab-workspace {
-  height: 100dvh;
+  min-height: 100dvh;
+  height: auto;
   display: flex;
   flex-direction: column;
 }
@@ -502,4 +504,30 @@ body.lab-workspace {
   .education-identity .school-mark {
     top: 20px;
   }
+}
+
+/* The owner emphasis identifies the person; the written role identifies authorship. */
+.authors .author-owner {
+  color: var(--ink);
+  font-weight: 600;
+}
+.author-role {
+  margin: 8px 0;
+  font: 12px/1.6 var(--sans);
+  color: var(--teal);
+}
+.author-role-label {
+  font-weight: 600;
+}
+.paper-card .contribution-note {
+  margin: 4px 0 10px;
+  font: 12px/1.6 var(--sans);
+}
+
+body.lab-workspace > .site-footer {
+  flex: none;
+}
+body.lab-workspace .lab-shell iframe {
+  height: calc(100dvh - var(--site-header-height, 160px)) !important;
+  min-height: 560px !important;
 }

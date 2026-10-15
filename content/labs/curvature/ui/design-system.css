@@ -2944,7 +2944,7 @@ html body .fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-t
 html body .fixed-workspace-header > .workspace-site-toggle {
   position: absolute;
   top: auto !important;
-  bottom: 6px !important;
+  bottom: 3px !important;
   right: 12px !important;
   width: 32px !important;
   height: var(--ui-control-compact) !important;
@@ -3896,7 +3896,7 @@ html body .crystal-options .crystal-picker {
   z-index: 100;
   top: calc(100% + 6px);
   left: 0;
-  width: 280px;
+  width: 250px;
   max-width: calc(100vw - 40px);
   padding: 12px;
   display: flex;
@@ -4659,6 +4659,15 @@ html body label:is(.check, .check-label, .smoothing-header-toggle)[hidden] {
   display: none !important;
 }
 
+/* Native checkbox glyphs sit optically above the text on Windows browsers. */
+html body #parameters .smoothing-heading .smoothing-header-toggle > span {
+  display: block;
+  line-height: 20px;
+}
+html body #parameters .smoothing-heading .smoothing-header-toggle > input[type="checkbox"] {
+  transform: translateY(1px);
+}
+
 /* Source: ui/styles/labs/responsive.css */
 /* Responsive foundation for all four Labs. Width controls columns; height controls chrome. */
 :root {
@@ -5064,6 +5073,27 @@ html:root body #library td:first-child {
     monospace;
 }
 
+/* Module playback and file actions share a row after the module grid wraps. */
+html:root body .fixed-workspace-header > .topbar[data-header-layout="modules"] > .top-actions {
+  margin-block: 0 !important;
+  align-self: center;
+}
+html:root body .fixed-workspace-header .primary-toolbar .header-playback {
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  align-self: center;
+}
+
+/* Clip scrolling tabs before the fixed fold switch, including keyboard scrolling. */
+html:root body .fixed-workspace-header > nav {
+  box-sizing: border-box;
+  width: calc(100% - 52px) !important;
+  max-width: calc(100% - 52px);
+  margin-right: 52px;
+  padding-right: 4px !important;
+  scroll-padding-right: 4px;
+}
+
 /* Source: ui/styles/labs/states.css */
 /* Calculations share the same real fill; playback uses its dark/light pair. */
 html:root body .fixed-workspace-header .mode-toggle[data-progress-state="running"],
@@ -5189,20 +5219,6 @@ html:root body .fixed-workspace-header .header-action::before {
     font-size: var(--ui-label);
   }
 }
-@keyframes lab-status-breathe {
-  0%,
-  100% {
-    opacity: 1;
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success), transparent 80%);
-  }
-  50% {
-    opacity: 0.65;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success), transparent 90%);
-  }
-}
-html:root body .fixed-workspace-header .header-action[data-state="active"]::before {
-  animation: lab-status-breathe 2.4s ease-in-out infinite;
-}
 @media (prefers-reduced-motion: reduce) {
   html:root body .fixed-workspace-header .header-action::before {
     animation: none !important;
@@ -5322,6 +5338,31 @@ html:root body .fixed-workspace-header .header-module > .module-popover {
   transform: none !important;
 }
 
+/* Only active status lights breathe; no layout changes or JS timer. */
+.fixed-workspace-header .header-action[data-state="active"]::before,
+.operation-status[data-state="active"]::before,
+.status[data-state="active"] #status-dot {
+  animation: lab-status-breathe 2.4s ease-in-out infinite;
+}
+@keyframes lab-status-breathe {
+  0%,
+  100% {
+    background-color: var(--success);
+    border-color: var(--success);
+  }
+  50% {
+    background-color: var(--white, #fff);
+    border-color: var(--white, #fff);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fixed-workspace-header .header-action[data-state="active"]::before,
+  .operation-status[data-state="active"]::before,
+  .status[data-state="active"] #status-dot {
+    animation: none;
+  }
+}
+
 /* Source: ui/styles/labs/display.css */
 /* Appearance and camera controls share one labelled row. */
 html body .plot-display-controls .plot-rotation-controls {
@@ -5352,4 +5393,331 @@ html:root body .plot-display-controls .view-control-group > #rotate {
   flex: 0 0 32px !important;
   height: var(--ui-control-compact) !important;
   min-height: var(--ui-control-compact) !important;
+}
+
+/* Source: ui/styles/labs/shell.css */
+/* Structural contract: one content container, sibling panels, one persistent footer. */
+html:root body main.lab-content {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1600px;
+  min-height: calc(100dvh - var(--lab-chrome-height, 160px));
+  margin: 0 auto;
+  padding: 24px clamp(14px, 3vw, 36px) 20px !important;
+  gap: 0;
+}
+html:root body .lab-content > [data-section-panel] {
+  box-sizing: border-box;
+  flex: 1 0 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0 !important;
+}
+html:root body .lab-content > [data-section-panel][hidden] {
+  display: none !important;
+}
+html:root body .lab-content > .lab-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 40px 0 0;
+  padding: 20px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font: 12px/1.6 var(--sans);
+}
+.lab-footer-identity {
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.lab-footer-description {
+  margin-left: auto;
+}
+.lab-footer-guide {
+  color: var(--teal);
+  text-underline-offset: 3px;
+}
+@media (max-width: 650px) {
+  html:root body main.lab-content {
+    padding-top: 20px !important;
+  }
+  .lab-footer-description {
+    margin-left: 0;
+  }
+}
+
+.recording-library {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 16px;
+}
+.recording-case {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+.recording-case h2,
+.recording-case p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.recording-case button {
+  min-height: var(--ui-control-standard);
+  padding: 0 12px;
+  justify-self: end;
+}
+
+/* Embedded apps delegate the site footer to their host. */
+body.embedded-lab .lab-footer {
+  display: none !important;
+}
+.media-error {
+  padding: 16px;
+  color: var(--ink);
+}
+
+html:root body #library .filter {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+html:root body #library .filter .search {
+  flex: 1 1 220px;
+}
+html:root body .data-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+html:root body .recording-case > .source-badge {
+  justify-self: start;
+}
+
+/* Source: ui/styles/labs/progress.css */
+/* Persistent source and status rows avoid jumps when loading finishes. */
+.analysis-progress {
+  min-height: 58px;
+  margin-block: 20px;
+}
+.progress-caption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+}
+.progress-caption > [role="status"] {
+  flex: 1;
+  min-width: 0;
+}
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 56px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 5px;
+  background: var(--pale, #eeeee6);
+  color: var(--teal, #60633d);
+  font-size: 12px;
+  line-height: 1;
+}
+.analysis-progress .progress-track {
+  display: block;
+  height: 6px;
+  margin-top: 8px;
+  background: var(--line, #dfdfd5);
+  overflow: hidden;
+  border-radius: 4px;
+}
+.analysis-progress[data-state="error"] .progress-track {
+  opacity: 0.35;
+}
+.recording-track > div {
+  height: 100%;
+  background: var(--teal, #60633d);
+  width: 0;
+}
+[data-state="running"] .recording-track > div {
+  width: 35%;
+  animation: recording-loading 1.5s ease-in-out infinite alternate;
+}
+[data-state="complete"] .recording-track > div {
+  width: 100%;
+}
+@keyframes recording-loading {
+  to {
+    transform: translateX(180%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-state="running"] .recording-track > div {
+    animation: none;
+  }
+}
+
+/* Normalize legacy paragraph margins and line boxes in both source/status strips. */
+html:root body .analysis-progress .progress-caption {
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  min-height: 24px;
+  font-size: 12px;
+  line-height: 24px;
+}
+html:root body .analysis-progress .progress-caption > #status {
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 24px;
+  align-self: center;
+}
+html:root body .analysis-progress .source-badge {
+  box-sizing: border-box;
+  height: 24px;
+  min-height: 24px;
+  margin: 0;
+  padding: 0 9px;
+  line-height: 24px;
+  align-self: center;
+}
+
+@keyframes recording-button-loading {
+  to {
+    background-position: 200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root body .fixed-workspace-header #play.download-pending {
+    animation: none;
+  }
+}
+
+/* Source is a connectivity hint; actual failures use the error state. */
+html:root body .source-badge[data-source="local"] {
+  background: #e7eee3;
+  color: #38553b;
+}
+html:root body .source-badge[data-source="cloud"] {
+  background: #f3ead5;
+  color: #75591e;
+}
+html:root body .analysis-progress {
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+html:root body .analysis-progress #progress-fill,
+html:root body [data-state="running"] .recording-track > div {
+  background: color-mix(in srgb, var(--teal), var(--paper) 65%);
+}
+html:root body .analysis-progress[data-state="complete"] #progress-fill,
+html:root body [data-state="complete"] .recording-track > div {
+  background: var(--teal);
+}
+html:root body .fixed-workspace-header #recalculate[data-state="running"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), var(--paper) 65%) var(--run-progress),
+    var(--paper) var(--run-progress)
+  ) !important;
+  color: var(--ink) !important;
+}
+html:root body .fixed-workspace-header #recalculate[data-state="complete"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+}
+html:root body .fixed-workspace-header #play.download-pending {
+  background-image: linear-gradient(
+    110deg,
+    var(--paper) 25%,
+    color-mix(in srgb, var(--teal), var(--paper) 65%) 50%,
+    var(--paper) 75%
+  ) !important;
+  color: var(--ink) !important;
+  background-size: 200% 100%;
+  animation: recording-button-loading 1.5s linear infinite;
+}
+html:root body .fixed-workspace-header #play[data-state="complete"][aria-pressed="false"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+}
+/* One enclosing border avoids overlapping edges between image-mode segments. */
+html:root body .image-mode {
+  border: 1px solid var(--line);
+}
+html:root body .image-mode > button {
+  border: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+html:root body .image-mode > button::before,
+html:root body .image-mode > button::after {
+  display: none !important;
+}
+
+/* Shared determinate task progress; a playback range replaces the download track. */
+.analysis-progress [data-progress-fill] {
+  height: 100%;
+  background: color-mix(in srgb, var(--teal), var(--paper) 65%);
+}
+.analysis-progress[data-state="complete"] [data-progress-fill] {
+  background: var(--teal);
+}
+.progress-playback {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 32px;
+}
+.progress-playback #timeline {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  accent-color: var(--teal);
+}
+.progress-playback #speed {
+  height: 32px;
+  min-height: 32px;
+  padding-block: 0;
+}
+html:root body .progress-playback[hidden],
+html:root body .recording-track[hidden] {
+  display: none !important;
+}
+html:root
+  body
+  :is(#pause, .header-playback-action[data-action="pause"]):is(
+    [data-state="running"],
+    [data-state="paused"]
+  ) {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), var(--paper) 65%) var(--run-progress),
+    var(--paper) var(--run-progress)
+  ) !important;
+  color: var(--ink) !important;
+}
+html:root body :is(#pause, .header-playback-action[data-action="pause"])[data-state="complete"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+}
+/* Progressive enhancement: native option colours depend on the browser/OS. */
+html:root body :is(select, option)[data-source="local"] {
+  background-color: #e7eee3 !important;
+  color: #38553b !important;
+}
+html:root body :is(select, option)[data-source="cloud"] {
+  background-color: #f3ead5 !important;
+  color: #75591e !important;
 }

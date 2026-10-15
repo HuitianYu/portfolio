@@ -8,7 +8,7 @@
       <span>· {{ .Date.Format "2006" }}</span>
     </div>
     <h3><a href="{{ .RelPermalink }}">{{ .Title }}</a></h3>
-    <p class="authors">{{ delimit .Params.authors ", " }}</p>
+    {{ partial "paper-authors.html" . }}
     <p class="journal">{{ .Params.journal }} · {{ .Params.displayDate }}</p>
     {{ $slug := .File.Dir | path.Clean | path.Base }}{{ $relatedURL := "" }}{{ $relatedLabel := "" }}{{ range (partial "labs-data.html" .) }}
       {{ if eq .paper $slug }}

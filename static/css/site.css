@@ -149,7 +149,7 @@ img {
 .wordmark-name {
   display: inline-block;
   position: relative;
-  padding-right: 34px;
+  padding-right: 40px;
   font: inherit;
 }
 .header-logo,
@@ -157,8 +157,8 @@ img {
   position: absolute;
   right: 0;
   top: 50%;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   transform: translateY(-50%);
   background-color: var(--teal);
   -webkit-mask: var(--brand-mark) center / contain no-repeat;
@@ -503,7 +503,7 @@ img {
 }
 .footer-name {
   position: relative;
-  padding-right: 34px;
+  padding-right: 40px;
   font: 20px var(--serif);
   color: var(--ink);
 }
@@ -783,9 +783,7 @@ img {
   border: 0;
   background: var(--paper);
 }
-.lab-route .site-footer {
-  display: none;
-}
+
 @media (min-width: 1500px) {
   .home-hero {
     gap: 75px;
@@ -797,7 +795,7 @@ img {
 @media (max-width: 1000px) {
   .container {
     padding-left: 30px;
-    padding-right: 34px;
+    padding-right: 40px;
   }
   .header-inner {
     padding: 20px 30px;
@@ -855,12 +853,20 @@ img {
     font-size: 24px;
   }
   .menu-toggle {
-    display: flex;
-    gap: 18px;
-    background: none;
-    border: 0;
-    color: var(--ink);
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--teal);
+  }
+  .menu-toggle[aria-expanded="true"] {
+    background: var(--pale);
   }
   #site-nav {
     display: none;
@@ -1671,7 +1677,8 @@ img {
 }
 .outline-collapsed .outline-toggle {
   justify-content: center;
-  padding: 13px 8px;
+  padding: 0;
+  min-height: 44px;
 }
 .page-content [id],
 .page-content .lab-card {
@@ -1979,7 +1986,8 @@ img {
   }
   .outline-collapsed .outline-toggle {
     justify-content: center;
-    padding: 13px 8px;
+    padding: 0;
+    min-height: 44px;
   }
   .page-content [id] {
     scroll-margin-top: 110px;
@@ -2022,7 +2030,8 @@ img {
 
 /* Workspace height follows actual header/toolbar layout, including mobile wrapping. */
 body.lab-workspace {
-  height: 100dvh;
+  min-height: 100dvh;
+  height: auto;
   display: flex;
   flex-direction: column;
 }
@@ -2288,6 +2297,32 @@ body.lab-workspace {
   .education-identity .school-mark {
     top: 20px;
   }
+}
+
+/* The owner emphasis identifies the person; the written role identifies authorship. */
+.authors .author-owner {
+  color: var(--ink);
+  font-weight: 600;
+}
+.author-role {
+  margin: 8px 0;
+  font: 12px/1.6 var(--sans);
+  color: var(--teal);
+}
+.author-role-label {
+  font-weight: 600;
+}
+.paper-card .contribution-note {
+  margin: 4px 0 10px;
+  font: 12px/1.6 var(--sans);
+}
+
+body.lab-workspace > .site-footer {
+  flex: none;
+}
+body.lab-workspace .lab-shell iframe {
+  height: calc(100dvh - var(--site-header-height, 160px)) !important;
+  min-height: 560px !important;
 }
 
 /* Source: ui/styles/site/navigation.css */
@@ -2813,13 +2848,13 @@ body.lab-workspace {
   align-items: center;
   justify-content: center;
   margin-left: auto;
-  width: 36px;
-  height: 36px;
-  min-height: 36px;
+  width: 46px;
+  height: 46px;
+  min-height: 46px;
   padding: 0;
-  border: 0 !important;
-  border-radius: 0;
-  background: transparent !important;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: transparent;
   box-shadow: none !important;
   color: var(--ink);
   cursor: pointer;

@@ -24,6 +24,18 @@ for (const lab of labs) {
   const workspace = await fs.readFile(path.join(directory, "workspace.txt"), "utf8");
   const ids = [...workspace.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map((match) => match[1]);
   assert.equal(new Set(ids).size, ids.length, `Duplicate workspace IDs: ${lab}`);
+  assert.equal((workspace.match(/<main\b/g) || []).length, 1, `One main container: ${lab}`);
+  assert.ok(workspace.includes('class="lab-content"'), `Shared container: ${lab}`);
+  assert.equal(
+    (workspace.match(/<!-- LAB_FOOTER -->/g) || []).length,
+    1,
+    `One shared footer: ${lab}`,
+  );
+  for (const [, key] of workspace.matchAll(/data-section="([^"]+)"/g))
+    assert.ok(
+      workspace.includes(`data-section-panel="${key}"`),
+      `Panel wrapper missing: ${lab}/${key}`,
+    );
   const app = await fs.readFile(path.join(directory, "app.js"), "utf8");
   const generated = new Set(
     [...app.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map((match) => match[1]),
@@ -44,6 +56,40 @@ for (const file of files) {
 }
 await checkUIControls(new URL("../", import.meta.url));
 await checkLabRuntime(new URL("../", import.meta.url));
+if (labs.includes("stablegsensor")) {
+  const recordingContext = { window: { LAB_CONFIG: { data: {} } }, URL };
+  vm.runInNewContext(
+    await fs.readFile(
+      path.join(root, "content/labs/stablegsensor/ui/recording-sources.js"),
+      "utf8",
+    ),
+    recordingContext,
+  );
+  const recordingSource = recordingContext.window.RecordingSources.source;
+  const videoFile = "loftr_image_correction_animation.mp4";
+  assert.equal(recordingSource("case_1", videoFile), `assets/case_1/${videoFile}`);
+  const remoteRecordings = { remoteEnabled: true, fileBaseURL: "https://example.org/files/" };
+  assert.equal(
+    recordingSource("case_3", videoFile, remoteRecordings),
+    `assets/case_3/${videoFile}`,
+  );
+  assert.equal(
+    recordingSource("case_1", videoFile, remoteRecordings),
+    `https://example.org/files/case_1_${videoFile}`,
+  );
+  assert.throws(() => recordingSource("case_10", videoFile), /Unknown/);
+  assert.throws(
+    () =>
+      recordingSource("case_1", videoFile, {
+        remoteEnabled: true,
+        fileBaseURL: "http://example.org/",
+      }),
+    /HTTPS/,
+  );
+} else {
+  console.log("StableGSensor source checks skipped (Lab not present).");
+}
+
 await checkCurvatureEngine(new URL("../", import.meta.url));
 await checkCurvatureCamera(new URL("../", import.meta.url));
 await checkCurvaturePresentation(new URL("../", import.meta.url));

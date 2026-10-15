@@ -589,7 +589,7 @@ html body .crystal-options .crystal-picker {
   z-index: 100;
   top: calc(100% + 6px);
   left: 0;
-  width: 280px;
+  width: 250px;
   max-width: calc(100vw - 40px);
   padding: 12px;
   display: flex;
@@ -1350,4 +1350,13 @@ html
 }
 html body label:is(.check, .check-label, .smoothing-header-toggle)[hidden] {
   display: none !important;
+}
+
+/* Native checkbox glyphs sit optically above the text on Windows browsers. */
+html body #parameters .smoothing-heading .smoothing-header-toggle > span {
+  display: block;
+  line-height: 20px;
+}
+html body #parameters .smoothing-heading .smoothing-header-toggle > input[type="checkbox"] {
+  transform: translateY(1px);
 }

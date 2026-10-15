@@ -1,0 +1,11 @@
+{{ $footer := index (index hugo.Data "lab-ui").footers .Params.id }}
+{{/* One footer belongs to the workspace container, outside all tab panels. */}}
+<footer class="lab-footer">
+  <span class="lab-footer-identity">{{ $footer.identity }}</span>
+  <span class="lab-footer-description">{{ $footer.description }}</span>
+  {{ with $footer.guide }}
+    <a class="lab-footer-guide" href="{{ . }}" target="_blank" rel="noopener">
+      Model, units, and user guide
+    </a>
+  {{ end }}
+</footer>

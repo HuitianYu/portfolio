@@ -401,3 +401,24 @@ html:root body #library td:first-child {
     11px/1.6 Consolas,
     monospace;
 }
+
+/* Module playback and file actions share a row after the module grid wraps. */
+html:root body .fixed-workspace-header > .topbar[data-header-layout="modules"] > .top-actions {
+  margin-block: 0 !important;
+  align-self: center;
+}
+html:root body .fixed-workspace-header .primary-toolbar .header-playback {
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  align-self: center;
+}
+
+/* Clip scrolling tabs before the fixed fold switch, including keyboard scrolling. */
+html:root body .fixed-workspace-header > nav {
+  box-sizing: border-box;
+  width: calc(100% - 52px) !important;
+  max-width: calc(100% - 52px);
+  margin-right: 52px;
+  padding-right: 4px !important;
+  scroll-padding-right: 4px;
+}

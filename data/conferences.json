@@ -13,7 +13,8 @@
     "location": "Budapest, Hungary",
     "format": "Presentation",
     "url": "https://akcongress.com/isic2026/",
-    "verified": "Event name, dates and location confirmed from the organizer; presentation title and authors supplied by the author."
+    "verified": "Event name, dates and location confirmed from the organizer; presentation title and authors supplied by the author.",
+    "participationRole": "Presenter"
   },
   {
     "id": "dechema-2026",
@@ -29,7 +30,8 @@
     "location": "Frankfurt am Main, Germany",
     "format": "Presentation",
     "url": "https://dechema.de/JTR_KRI_TRO_2026.html",
-    "verified": "Event confirmed from organizer. Presentation title normalized from author-supplied shorthand; final wording still to confirm."
+    "verified": "Event confirmed from organizer. Presentation title normalized from author-supplied shorthand; final wording still to confirm.",
+    "participationRole": "Presenter"
   },
   {
     "id": "dechema-2025",
@@ -45,7 +47,8 @@
     "location": "Winterthur, Switzerland",
     "format": "Presentation",
     "url": "https://dechema.de/Veranstaltungen/2025/JTR_KRI_%2B18__19_3_25_%2BWinterthur_CH-p-20540916.html",
-    "verified": "Event confirmed. TUM mediatum lists Jiewen Zhao as additional coauthor; retained author-supplied two-author list pending confirmation."
+    "verified": "Event confirmed. TUM mediatum lists Jiewen Zhao as additional coauthor; retained author-supplied two-author list pending confirmation.",
+    "participationRole": "Presenter"
   },
   {
     "id": "dechema-2024",
@@ -61,7 +64,8 @@
     "location": "Frankfurt am Main, Germany",
     "format": "Presentation",
     "url": "https://dechema.de/JTR_GFSP_KRI_MFA_PMT.html",
-    "verified": "Event confirmed from organizer; presentation title and authors supplied by author."
+    "verified": "Event confirmed from organizer; presentation title and authors supplied by author.",
+    "participationRole": "Presenter"
   },
   {
     "id": "amld-2022",
@@ -77,7 +81,8 @@
     "location": "Lausanne, Switzerland",
     "format": "Pitch",
     "url": "https://memento.epfl.ch/event/applied-machine-learning-days-2022/",
-    "verified": "EPFL historical event page; individual contribution details are author supplied."
+    "verified": "EPFL historical event page; individual contribution details are author supplied.",
+    "participationRole": "Presenter"
   },
   {
     "id": "battery-2019",
@@ -98,7 +103,8 @@
     "location": "Aachen, Germany",
     "format": "Poster",
     "url": "https://www.isea.rwth-aachen.de/cms/isea/die-organisationseinheit/aktuelle-veranstaltungen/~rtou/kraftwerk-batterie/",
-    "verified": "RWTH ISEA historical event page opened in browser: Kraftwerk Batterie 2019, April 3-4, 2019 in Aachen. Contribution details are author supplied."
+    "verified": "RWTH ISEA historical event page opened in browser: Kraftwerk Batterie 2019, April 3-4, 2019 in Aachen. Contribution details are author supplied.",
+    "participationRole": "Research contributor"
   },
   {
     "id": "processnet-2019",
@@ -118,7 +124,8 @@
     "location": "Essen, Germany",
     "format": "Poster",
     "url": "https://dechema.de/",
-    "verified": "CV gives May; organizer programme identifies March. Heat and mass transfer sessions 18–19 March within the joint 18–20 March meeting."
+    "verified": "CV gives May; organizer programme identifies March. Heat and mass transfer sessions 18–19 March within the joint 18–20 March meeting.",
+    "participationRole": "Research contributor"
   },
   {
     "id": "photoiupac-2018",
@@ -140,6 +147,7 @@
     "acronym": "PhotoIUPAC 2018",
     "location": "Dublin, Ireland",
     "format": "Presentation",
-    "url": "https://photoiupac2018.com/"
+    "url": "https://photoiupac2018.com/",
+    "participationRole": "Research contributor"
   }
 ]

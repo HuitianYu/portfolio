@@ -1,0 +1,217 @@
+/* Persistent source and status rows avoid jumps when loading finishes. */
+.analysis-progress {
+  min-height: 58px;
+  margin-block: 20px;
+}
+.progress-caption {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 24px;
+}
+.progress-caption > [role="status"] {
+  flex: 1;
+  min-width: 0;
+}
+.source-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  min-width: 56px;
+  height: 24px;
+  padding: 0 9px;
+  border-radius: 5px;
+  background: var(--pale, #eeeee6);
+  color: var(--teal, #60633d);
+  font-size: 12px;
+  line-height: 1;
+}
+.analysis-progress .progress-track {
+  display: block;
+  height: 6px;
+  margin-top: 8px;
+  background: var(--line, #dfdfd5);
+  overflow: hidden;
+  border-radius: 4px;
+}
+.analysis-progress[data-state="error"] .progress-track {
+  opacity: 0.35;
+}
+.recording-track > div {
+  height: 100%;
+  background: var(--teal, #60633d);
+  width: 0;
+}
+[data-state="running"] .recording-track > div {
+  width: 35%;
+  animation: recording-loading 1.5s ease-in-out infinite alternate;
+}
+[data-state="complete"] .recording-track > div {
+  width: 100%;
+}
+@keyframes recording-loading {
+  to {
+    transform: translateX(180%);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  [data-state="running"] .recording-track > div {
+    animation: none;
+  }
+}
+
+/* Normalize legacy paragraph margins and line boxes in both source/status strips. */
+html:root body .analysis-progress .progress-caption {
+  align-items: center;
+  gap: 10px;
+  margin: 0 0 8px;
+  min-height: 24px;
+  font-size: 12px;
+  line-height: 24px;
+}
+html:root body .analysis-progress .progress-caption > #status {
+  display: block;
+  margin: 0;
+  padding: 0;
+  line-height: 24px;
+  align-self: center;
+}
+html:root body .analysis-progress .source-badge {
+  box-sizing: border-box;
+  height: 24px;
+  min-height: 24px;
+  margin: 0;
+  padding: 0 9px;
+  line-height: 24px;
+  align-self: center;
+}
+
+@keyframes recording-button-loading {
+  to {
+    background-position: 200% 0;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  html:root body .fixed-workspace-header #play.download-pending {
+    animation: none;
+  }
+}
+
+/* Source is a connectivity hint; actual failures use the error state. */
+html:root body .source-badge[data-source="local"] {
+  background: #e7eee3;
+  color: #38553b;
+}
+html:root body .source-badge[data-source="cloud"] {
+  background: #f3ead5;
+  color: #75591e;
+}
+html:root body .analysis-progress {
+  margin-top: 0;
+  margin-bottom: 24px;
+}
+html:root body .analysis-progress #progress-fill,
+html:root body [data-state="running"] .recording-track > div {
+  background: color-mix(in srgb, var(--teal), var(--paper) 65%);
+}
+html:root body .analysis-progress[data-state="complete"] #progress-fill,
+html:root body [data-state="complete"] .recording-track > div {
+  background: var(--teal);
+}
+html:root body .fixed-workspace-header #recalculate[data-state="running"] {
+  background-image: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), var(--paper) 65%) var(--run-progress),
+    var(--paper) var(--run-progress)
+  ) !important;
+  color: var(--ink) !important;
+}
+html:root body .fixed-workspace-header #recalculate[data-state="complete"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+}
+html:root body .fixed-workspace-header #play.download-pending {
+  background-image: linear-gradient(
+    110deg,
+    var(--paper) 25%,
+    color-mix(in srgb, var(--teal), var(--paper) 65%) 50%,
+    var(--paper) 75%
+  ) !important;
+  color: var(--ink) !important;
+  background-size: 200% 100%;
+  animation: recording-button-loading 1.5s linear infinite;
+}
+html:root body .fixed-workspace-header #play[data-state="complete"][aria-pressed="false"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+}
+/* One enclosing border avoids overlapping edges between image-mode segments. */
+html:root body .image-mode {
+  border: 1px solid var(--line);
+}
+html:root body .image-mode > button {
+  border: 0 !important;
+  margin: 0 !important;
+  box-shadow: none !important;
+}
+html:root body .image-mode > button::before,
+html:root body .image-mode > button::after {
+  display: none !important;
+}
+
+/* Shared determinate task progress; a playback range replaces the download track. */
+.analysis-progress [data-progress-fill] {
+  height: 100%;
+  background: color-mix(in srgb, var(--teal), var(--paper) 65%);
+}
+.analysis-progress[data-state="complete"] [data-progress-fill] {
+  background: var(--teal);
+}
+.progress-playback {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-height: 32px;
+}
+.progress-playback #timeline {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+  accent-color: var(--teal);
+}
+.progress-playback #speed {
+  height: 32px;
+  min-height: 32px;
+  padding-block: 0;
+}
+html:root body .progress-playback[hidden],
+html:root body .recording-track[hidden] {
+  display: none !important;
+}
+html:root
+  body
+  :is(#pause, .header-playback-action[data-action="pause"]):is(
+    [data-state="running"],
+    [data-state="paused"]
+  ) {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), var(--paper) 65%) var(--run-progress),
+    var(--paper) var(--run-progress)
+  ) !important;
+  color: var(--ink) !important;
+}
+html:root body :is(#pause, .header-playback-action[data-action="pause"])[data-state="complete"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+}
+/* Progressive enhancement: native option colours depend on the browser/OS. */
+html:root body :is(select, option)[data-source="local"] {
+  background-color: #e7eee3 !important;
+  color: #38553b !important;
+}
+html:root body :is(select, option)[data-source="cloud"] {
+  background-color: #f3ead5 !important;
+  color: #75591e !important;
+}

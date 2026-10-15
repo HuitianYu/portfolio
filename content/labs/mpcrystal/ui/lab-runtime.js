@@ -73,12 +73,15 @@
   }
   function selectSection(key) {
     const buttons = [...document.querySelectorAll(".fixed-workspace-header > nav [data-section]")];
+    const panelFor = (button) =>
+      document.querySelector(`[data-section-panel="${button.dataset.section}"]`) ||
+      document.getElementById(button.dataset.section);
     const selected = buttons.find((button) => button.dataset.section === key);
-    if (!selected || selected.disabled) return false;
+    if (!selected || selected.disabled || !panelFor(selected)) return false;
     document.body.dataset.section = key;
     for (const button of buttons) {
       const active = button === selected;
-      const panel = document.getElementById(button.dataset.section);
+      const panel = panelFor(button);
       button.id ||= "lab-section-" + button.dataset.section;
       presentPanel(button, panel, active);
     }
@@ -86,5 +89,34 @@
   }
   window.LabCharts = Object.freeze({ font, config: chartConfig });
   window.LabWorkspace = Object.freeze({ selectSection, connectPanels });
-  window.LabUI = Object.freeze({ text, playback });
+  function dataFailure(element, detail) {
+    element.textContent = detail || "Data unavailable. Check public access and try again.";
+    element.hidden = false;
+    element.dataset.error = "true";
+    element.setAttribute("role", "status");
+  }
+  function operationState(button, state, message, progress = 0) {
+    button.dataset.state = state;
+    button.setAttribute("aria-busy", String(state === "running"));
+    button.style.setProperty("--run-progress", Math.max(0, Math.min(100, progress)) + "%");
+    button.title = message;
+  }
+  function progress(root, { state = "ready", value = 0, message = "Ready", detail = "" } = {}) {
+    if (!root) return;
+    const percent = Math.max(0, Math.min(100, value));
+    root.dataset.state = state;
+    const caption = root.querySelector("[data-progress-message]");
+    const info = root.querySelector("[data-progress-detail]");
+    const track = root.querySelector('[role="progressbar"]');
+    const fill = root.querySelector("[data-progress-fill]");
+    if (caption) caption.textContent = message;
+    if (info) info.textContent = detail || Math.round(percent) + "%";
+    if (track) {
+      track.setAttribute("aria-valuenow", String(percent));
+      track.setAttribute("aria-valuetext", detail || message);
+      track.setAttribute("aria-busy", String(state === "running"));
+    }
+    if (fill) fill.style.width = percent + "%";
+  }
+  window.LabUI = Object.freeze({ text, playback, dataFailure, operationState, progress });
 })();

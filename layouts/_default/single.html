@@ -3,10 +3,10 @@
     <header class="article-heading">
       <span class="eyebrow">{{ .Params.topic | default .Section }}</span>
       <h1>{{ .Title }}</h1>
-      {{ with .Params.authors }}
-        <p class="authors">{{ delimit . ", " }}</p>
-      {{ end }}{{ with .Params.contributionNote }}
-        <p class="contribution-note">{{ . }}</p>
+      {{ if eq .Section "papers" }}
+        {{ partial "paper-authors.html" . }}
+      {{ else }}
+        {{ with .Params.authors }}<p class="authors">{{ delimit . ", " }}</p>{{ end }}
       {{ end }}
       {{ if eq .Section "news" }}
         <p class="journal">

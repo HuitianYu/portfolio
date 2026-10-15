@@ -94,10 +94,7 @@
                   <select id="viewgroup"></select>
                 </label>
                 <label class="crystal-control crystal-control-crystal">
-                  <span class="data-label-row">
-                    Crystal
-                    <span class="data-source" data-source="local" id="data-source">Local</span>
-                  </span>
+                  <span class="data-label-row">Crystal</span>
                   <select id="crystal"></select>
                 </label>
                 <label class="crystal-control crystal-control-geometry">
@@ -175,8 +172,8 @@
         <button data-section="display">Display</button>
       </nav>
     </div>
-    <main>
-      <section id="overview">
+    <main class="lab-content">
+      <section data-section-panel="overview" id="overview">
         <div class="intro">
           <div>
             <div class="eyebrow">Geometry</div>
@@ -260,7 +257,7 @@
           </p>
         </section>
       </section>
-      <section hidden="" id="library">
+      <section hidden="" data-section-panel="library" id="library">
         <div class="intro workspace-introduction">
           <div>
             <div class="eyebrow">Crystals</div>
@@ -277,6 +274,14 @@
             <span class="label-with-unit">Original size group [µm]</span>
             <select id="group">
               <option value="all">All size groups</option>
+            </select>
+          </label>
+          <label>
+            Source
+            <select id="source-filter">
+              <option value="all">All</option>
+              <option value="local">Local</option>
+              <option value="cloud">Cloud</option>
             </select>
           </label>
           <label class="search">
@@ -315,7 +320,7 @@
           <button data-ui-action="true" id="next">Next</button>
         </div>
       </section>
-      <section hidden="" id="parameters">
+      <section hidden="" data-section-panel="parameters" id="parameters">
         <div class="page-introduction workspace-introduction">
           <div>
             <div class="eyebrow">Calculation</div>
@@ -358,7 +363,7 @@
             <div data-display-panel="mesh">
               <h3 class="settings-subtitle smoothing-heading">
                 <label class="smoothing-header-toggle" title="Smooth mesh automatically">
-                  Mesh smoothing
+                  <span>Mesh smoothing</span>
                   <input
                     aria-label="Smooth mesh automatically"
                     checked=""
@@ -367,7 +372,7 @@
                   />
                 </label>
               </h3>
-              <hr />
+
               <div class="curvature-parameter-fields">
                 <label>
                   Iteration rule
@@ -415,7 +420,7 @@
             <div data-display-panel="surface" hidden="">
               <h3 class="settings-subtitle smoothing-heading">
                 <label class="smoothing-header-toggle" title="Smooth curvature values">
-                  Curvature smoothing
+                  <span>Curvature smoothing</span>
                   <input
                     aria-label="Smooth curvature values"
                     checked=""
@@ -639,7 +644,7 @@
           </p>
         </details>
       </section>
-      <section hidden="" id="display">
+      <section hidden="" data-section-panel="display" id="display">
         <div class="intro workspace-introduction">
           <div>
             <div class="eyebrow">Surface</div>
@@ -650,9 +655,10 @@
             </p>
           </div>
         </div>
-        <div class="progress-status analysis-progress" id="analysis-progress" hidden>
+        <div class="progress-status analysis-progress" id="analysis-progress">
           <div class="progress-caption">
-            <span id="status" role="status">Ready</span>
+            <span class="data-source source-badge" data-source="local" id="data-source">Local</span>
+            <span id="status" data-progress-message role="status">Ready</span>
             <span id="progress-percent">0%</span>
           </div>
           <div
@@ -663,9 +669,10 @@
             id="progress-track"
             role="progressbar"
           >
-            <div id="progress-fill"></div>
+            <div id="progress-fill" data-progress-fill></div>
           </div>
         </div>
+
         <div hidden="" id="data-error" role="alert"></div>
         <div class="curvature-results">
           <div>
@@ -808,10 +815,7 @@
           </div>
         </div>
       </section>
-      <footer>
-        <span>CURVATURE LAB / SIMULATED CRYSTALS</span>
-        <span>Mesh geometry · Local curvature · Shape analysis</span>
-      </footer>
+      <!-- LAB_FOOTER -->
     </main>
     <script data-lab-interface="" defer="" src="lab-interface.js"></script>
   </body>

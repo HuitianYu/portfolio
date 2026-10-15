@@ -3,6 +3,7 @@
 {{ $source := .source }}
 {{ $icon := .icon }}
 {{ $document := $source.Content }}
+{{ $document = replace $document "<!-- LAB_FOOTER -->" (partial "lab-footer.html" $page) }}
 {{ $document = replace $document (printf "%s-icon.svg" $page.Params.id) $icon.RelPermalink }}
 {{ $data := $page.Params.data | default dict }}
 {{ $runtimeData := dict "recordURL" ($data.recordurl | default "") "doi" ($data.doi | default "") "conceptDOI" ($data.conceptdoi | default "") "remoteEnabled" ($data.remoteenabled | default false) "fileBaseURL" ($data.filebaseurl | default "") "archives" ($data.archives | default slice) }}
@@ -14,7 +15,7 @@
 {{ $document = replace $document "href=\"design-system.css\"" (printf "href=\"%s\"" $shared) }}
 {{ $script := printf "%s?v=%s" ("js/lab-interface.js" | relURL) (readFile "static/js/lab-interface.js" | md5) }}
 {{ $document = replace $document "src=\"lab-interface.js\"" (printf "src=\"%s\"" $script) }}
-{{ range slice "app.js" "style.css" "engine.js" "schema.js" "chart-schema.js" "data-loader.js" "lab-config.js" }}
+{{ range slice "app.js" "style.css" "engine.js" "schema.js" "chart-schema.js" "recording-sources.js" "data-loader.js" "lab-config.js" }}
   {{ $file := . }}{{ with $page.Resources.GetMatch (printf "ui/%s" $file) }}
     {{ $versioned := printf "%s?v=%s" $file (.Content | md5) }}
     {{ $document = replaceRE (printf "(src|href)=\"%s(?:\\?[^\"]*)?\"" (replace $file "." "\\.")) (printf "${1}=\"%s\"" $versioned) $document }}

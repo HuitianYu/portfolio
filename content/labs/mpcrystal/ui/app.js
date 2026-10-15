@@ -618,6 +618,23 @@
       label: paused ? "Resume" : "Pause",
       disabled: !running,
     });
+    const progressValue = p.steps ? Math.min(100, (n / p.steps) * 100) : 0;
+    const progressState =
+      n >= p.steps ? "complete" : running ? (paused ? "paused" : "running") : "ready";
+    const progressMessage =
+      n >= p.steps ? "Complete" : running ? (paused ? "Paused" : "Simulating…") : "Ready";
+    window.LabUI.progress($("simulation-progress"), {
+      state: progressState,
+      value: progressValue,
+      message: progressMessage,
+      detail: `${n} / ${p.steps} steps`,
+    });
+    window.LabUI.operationState(
+      $("pause"),
+      progressState,
+      `${progressMessage} · ${n} / ${p.steps} steps`,
+      progressValue,
+    );
     $("step").disabled = !sim || !paused;
     $("sensor").disabled = !running;
     $("seed").disabled = !running;
@@ -673,6 +690,12 @@
       b.title = main.textContent;
       b.disabled = main.disabled;
       if (b.dataset.action === "pause") {
+        window.LabUI.operationState(
+          b,
+          progressState,
+          `${progressMessage} · ${n} / ${p.steps} steps`,
+          progressValue,
+        );
         b.dataset.playbackState = running && !paused ? "playing" : "paused";
         b.setAttribute("aria-pressed", String(running && !paused));
       }
@@ -1315,19 +1338,26 @@
     }
   };
   function flashRefresh(button) {
-    button.getAnimations().forEach((a) => a.cancel());
-    const css = getComputedStyle(document.documentElement),
-      accent = css.getPropertyValue("--teal").trim(),
-      paper = css.getPropertyValue("--white").trim(),
-      pale = css.getPropertyValue("--pale").trim();
+    if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    button.getAnimations().forEach((animation) => animation.cancel());
+    const style = getComputedStyle(button);
+    const background = style.backgroundColor;
+    const color = style.color;
+    const theme = getComputedStyle(document.documentElement);
+    const accent = theme.getPropertyValue("--teal").trim();
+    const paper = theme.getPropertyValue("--paper").trim();
+    const channels = background
+      .match(/[\d.]+/g)
+      ?.slice(0, 3)
+      .map(Number) || [255, 255, 255];
+    const dark = channels[0] * 0.2126 + channels[1] * 0.7152 + channels[2] * 0.0722 < 160;
     button.animate(
       [
-        { backgroundColor: paper, color: accent },
-        { offset: 0.25, backgroundColor: accent, color: paper },
-        { offset: 0.65, backgroundColor: pale, color: accent },
-        { backgroundColor: paper, color: accent },
+        { backgroundColor: background, color },
+        { offset: 0.5, backgroundColor: dark ? paper : accent, color: dark ? accent : paper },
+        { backgroundColor: background, color },
       ],
-      { duration: 650, easing: "ease-out" },
+      { duration: 2200, easing: "ease-in-out" },
     );
   }
   $("refresh").onclick = () => {

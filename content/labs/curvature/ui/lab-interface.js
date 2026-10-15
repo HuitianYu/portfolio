@@ -376,6 +376,18 @@
       { passive: true },
     );
   }
+  if (window.parent !== window) document.body.classList.add("embedded-lab");
+  // Shared container height follows wrapped and collapsed workspace controls.
+  if (workspaceHeader) {
+    const sizeChrome = window.UIControls.frameTask(() => {
+      document.documentElement.style.setProperty(
+        "--lab-chrome-height",
+        `${workspaceHeader.getBoundingClientRect().height}px`,
+      );
+    });
+    new ResizeObserver(sizeChrome.schedule).observe(workspaceHeader);
+    sizeChrome.schedule();
+  }
   initializeCompactControls();
   initializeToolbarAlignment();
   initializeViewportBridge();

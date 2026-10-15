@@ -122,20 +122,6 @@ html:root body .fixed-workspace-header .header-action::before {
     font-size: var(--ui-label);
   }
 }
-@keyframes lab-status-breathe {
-  0%,
-  100% {
-    opacity: 1;
-    box-shadow: 0 0 0 0 color-mix(in srgb, var(--success), transparent 80%);
-  }
-  50% {
-    opacity: 0.65;
-    box-shadow: 0 0 0 3px color-mix(in srgb, var(--success), transparent 90%);
-  }
-}
-html:root body .fixed-workspace-header .header-action[data-state="active"]::before {
-  animation: lab-status-breathe 2.4s ease-in-out infinite;
-}
 @media (prefers-reduced-motion: reduce) {
   html:root body .fixed-workspace-header .header-action::before {
     animation: none !important;
@@ -253,4 +239,29 @@ html:root body .fixed-workspace-header .header-module > .module-popover {
   left: var(--lab-menu-left, 0px) !important;
   right: auto !important;
   transform: none !important;
+}
+
+/* Only active status lights breathe; no layout changes or JS timer. */
+.fixed-workspace-header .header-action[data-state="active"]::before,
+.operation-status[data-state="active"]::before,
+.status[data-state="active"] #status-dot {
+  animation: lab-status-breathe 2.4s ease-in-out infinite;
+}
+@keyframes lab-status-breathe {
+  0%,
+  100% {
+    background-color: var(--success);
+    border-color: var(--success);
+  }
+  50% {
+    background-color: var(--white, #fff);
+    border-color: var(--white, #fff);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .fixed-workspace-header .header-action[data-state="active"]::before,
+  .operation-status[data-state="active"]::before,
+  .status[data-state="active"] #status-dot {
+    animation: none;
+  }
 }

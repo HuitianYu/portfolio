@@ -18,6 +18,8 @@
     "ui/styles/labs/view-controls.css",
     "ui/styles/labs/responsive.css",
     "ui/styles/labs/states.css",
-    "ui/styles/labs/display.css"
+    "ui/styles/labs/display.css",
+    "ui/styles/labs/shell.css",
+    "ui/styles/labs/progress.css"
   ]
 }

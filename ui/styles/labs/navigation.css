@@ -471,7 +471,7 @@ html body .fixed-workspace-header.mobile-controls-collapsed > .mobile-controls-t
 html body .fixed-workspace-header > .workspace-site-toggle {
   position: absolute;
   top: auto !important;
-  bottom: 6px !important;
+  bottom: 3px !important;
   right: 12px !important;
   width: 32px !important;
   height: var(--ui-control-compact) !important;

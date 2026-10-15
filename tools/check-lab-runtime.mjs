@@ -109,6 +109,30 @@ export async function checkLabRuntime(root) {
   parent.buttons[1].disabled = true;
   assert.equal(parent.control.select(parent.buttons[1]), false);
   assert.equal(parent.panels[0].hidden, false);
+  const sectionButtons = ["overview", "parameters", "results"].map((key) => {
+    const button = new Element();
+    button.dataset.section = key;
+    return button;
+  });
+  const sectionPanels = sectionButtons.map(() => new Element());
+  sectionPanels.forEach((panel, index) => {
+    panel.id = "wrapper-" + index;
+  });
+  const innerForm = new Element();
+  innerForm.id = "parameters";
+  context.document.body = { dataset: {} };
+  context.document.querySelectorAll = () => sectionButtons;
+  context.document.querySelector = (selector) => {
+    const key = selector.match(/data-section-panel="([^"]+)"/)[1];
+    return sectionPanels[sectionButtons.findIndex((button) => button.dataset.section === key)];
+  };
+  context.document.getElementById = () => innerForm;
+  assert.equal(LabWorkspace.selectSection("parameters"), true);
+  assert.equal(sectionPanels[1].hidden, false);
+  assert.equal(sectionPanels[0].hidden, true);
+  assert.equal(innerForm.hidden, false, "The parameter form is content, not the panel wrapper");
+  assert.equal(sectionButtons[1].attributes["aria-controls"], "wrapper-1");
+  assert.equal(LabWorkspace.selectSection("missing"), false);
   const playback = new Element();
   LabUI.playback(playback, { active: false });
   assert.equal(playback.textContent, "Play");
@@ -119,4 +143,32 @@ export async function checkLabRuntime(root) {
   LabUI.playback(playback, { active: false, label: "Resume", disabled: true });
   assert.equal(playback.textContent, "Resume");
   assert.equal(playback.disabled, true);
+  const progressTrack = new Element();
+  const progressMessage = new Element();
+  const progressDetail = new Element();
+  const progressFill = { style: {} };
+  const progressRoot = {
+    dataset: {},
+    querySelector(selector) {
+      return {
+        "[data-progress-message]": progressMessage,
+        "[data-progress-detail]": progressDetail,
+        '[role="progressbar"]': progressTrack,
+        "[data-progress-fill]": progressFill,
+      }[selector];
+    },
+  };
+  LabUI.progress(progressRoot, {
+    state: "paused",
+    value: 25,
+    message: "Paused",
+    detail: "25 / 100 steps",
+  });
+  assert.equal(progressRoot.dataset.state, "paused");
+  assert.equal(progressFill.style.width, "25%");
+  assert.equal(progressTrack.attributes["aria-valuetext"], "25 / 100 steps");
+  assert.equal(progressMessage.textContent, "Paused");
+  LabUI.progress(progressRoot, { state: "complete", value: 150 });
+  assert.equal(progressTrack.attributes["aria-valuenow"], "100");
+  assert.equal(progressDetail.textContent, "100%");
 }

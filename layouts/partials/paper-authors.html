@@ -1,0 +1,18 @@
+{{ with .Params.authors }}
+  <p class="authors">
+    {{ range $index, $author := . }}
+      {{ if $index }},{{ end }}{{ if eq $author "Huitian Yu" }}
+        <span class="author-owner">{{ $author }}</span>
+      {{ else }}
+        {{ $author }}
+      {{ end }}
+    {{ end }}
+  </p>
+{{ end }}
+{{ with .Params.role }}
+  <p class="author-role">
+    Huitian Yu ·
+    <span class="author-role-label">{{ . }}</span>
+  </p>
+{{ end }}
+{{ with .Params.contributionNote }}<p class="contribution-note">{{ . }}</p>{{ end }}

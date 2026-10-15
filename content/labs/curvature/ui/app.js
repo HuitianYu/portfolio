@@ -152,6 +152,7 @@ function list() {
   filtered = catalog.filter(
     (c) =>
       ($("group").value === "all" || c.group === $("group").value) &&
+      ($("source-filter").value === "all" || crystalSourceKey(c) === $("source-filter").value) &&
       (!q || c.name.toLowerCase().includes(q) || String(c.roundness).includes(q)),
   );
   filtered.sort((a, b) =>
@@ -213,7 +214,11 @@ function rows() {
     const roundness = document.createElement("td");
     roundness.textContent = c.roundness.toString();
     const source = document.createElement("td");
-    source.textContent = crystalSource(c);
+    const badge = document.createElement("span");
+    badge.className = "source-badge";
+    badge.dataset.source = crystalSourceKey(c);
+    badge.textContent = crystalSource(c);
+    source.append(badge);
     const inspect = document.createElement("td");
     inspect.append(
       action(
@@ -231,7 +236,7 @@ function rows() {
   $("prev").disabled = page === 0;
   $("next").disabled = (page + 1) * 20 >= filtered.length;
 }
-for (const id of ["group", "sort", "search"])
+for (const id of ["group", "sort", "search", "source-filter"])
   $(id).addEventListener(id === "search" ? "input" : "change", list);
 $("prev").onclick = () => {
   page--;
@@ -241,10 +246,14 @@ $("next").onclick = () => {
   page++;
   rows();
 };
+const rememberedCrystals = new Map();
 function crystalOptions(g, id) {
   $("crystal").replaceChildren();
-  for (const c of catalog.filter((c) => c.group === g))
-    $("crystal").add(new Option(c.name + " · " + crystalSource(c), c.id));
+  for (const c of catalog.filter((c) => c.group === g)) {
+    const option = new Option(c.name, c.id);
+    option.dataset.source = crystalSourceKey(c);
+    $("crystal").add(option);
+  }
   if (id) $("crystal").value = id;
 }
 function clearSurface() {
@@ -286,7 +295,9 @@ async function select(c) {
   const token = ++loadToken;
   loadingData = true;
   selected = c;
+  rememberedCrystals.set(c.group, c.id);
   const source = crystalSourceKey(c);
+  $("crystal").dataset.source = source;
   $("data-source").dataset.source = source;
   $("data-source").textContent = crystalSource(c);
   $("data-source").title = window.LAB_CONFIG.ui.dataSources[source].description;
@@ -323,9 +334,7 @@ async function select(c) {
     loadingData = false;
     clearSurface();
     setProgress(0, "Unable to load crystal data", "error");
-    $("data-error").textContent = e.message;
-    $("data-error").hidden = false;
-    $("data-error").dataset.error = "true";
+    window.LabUI.dataFailure($("data-error"), e.message);
   }
 }
 
@@ -391,7 +400,13 @@ function setMesh() {
   else calculate();
 }
 $("viewgroup").onchange = () => {
-  crystalOptions($("viewgroup").value);
+  const group = $("viewgroup").value;
+  const candidates = catalog.filter((c) => c.group === group);
+  const preferred =
+    candidates.find((c) => c.id === rememberedCrystals.get(group)) ||
+    candidates.find((c) => crystalSourceKey(c) === "local") ||
+    candidates[0];
+  crystalOptions(group, preferred?.id);
   select(catalog.find((c) => c.id === $("crystal").value));
 };
 $("crystal").onchange = () => select(catalog.find((c) => c.id === $("crystal").value));
@@ -1413,10 +1428,13 @@ function setProgress(
   message,
   state = value >= 100 ? "complete" : value > 0 ? "running" : "ready",
 ) {
+  window.LabUI.progress($("analysis-progress"), { state, value, message });
   $("status").textContent = message;
-  $("analysis-progress").hidden = state !== "running" && state !== "cancelled";
-  $("progress-track").hidden = state !== "running";
-  $("progress-percent").hidden = state !== "running";
+  $("analysis-progress").hidden = false;
+  $("analysis-progress").dataset.state = state;
+  $("progress-track").hidden = false;
+  $("progress-percent").hidden = false;
+  $("progress-percent").style.visibility = state === "running" ? "visible" : "hidden";
   $("data-error").hidden = state !== "error";
   if (state === "error") $("data-error").textContent = message;
   operationBusy = state === "running";
@@ -1431,7 +1449,7 @@ function setProgress(
         ? "Calculate curvature"
         : "Download crystal data",
   );
-  $("recalculate").dataset.state = state;
+  window.LabUI.operationState($("recalculate"), state, message, value);
   $("recalculate").style.setProperty("--run-progress", Math.max(0, Math.min(100, value)) + "%");
   $("recalculate").setAttribute("aria-busy", String(operationBusy));
   $("recalculate").title = message;

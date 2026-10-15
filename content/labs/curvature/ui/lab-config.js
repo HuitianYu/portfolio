@@ -57,5 +57,24 @@ window.LAB_CONFIG = {
       headerHint:
         "Hide the fixed controls and tabs inside this lab. Website navigation stays visible. Press Escape to restore.",
     },
+    footers: {
+      curvature: {
+        identity: "Curvature Lab / Simulated crystals",
+        description: "Mesh geometry · Local curvature · Shape analysis",
+      },
+      mpcrystal: {
+        identity: "MPCrystal Lab / Simulation",
+        description: "Growth kinetics · State estimation · Predictive control",
+      },
+      orbitalflatness: {
+        identity: "OrbitalFlatness Lab / Multivariate PBM",
+        description: "Crystal population · Reverse design · Reconstruction",
+        guide: "README.txt",
+      },
+      stablegsensor: {
+        identity: "StableGSensor Lab / Recorded sequences",
+        description: "Image registration · Front displacement · Transformation",
+      },
+    },
   },
 };

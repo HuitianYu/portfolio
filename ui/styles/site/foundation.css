@@ -123,7 +123,7 @@ img {
 .wordmark-name {
   display: inline-block;
   position: relative;
-  padding-right: 34px;
+  padding-right: 40px;
   font: inherit;
 }
 .header-logo,
@@ -131,8 +131,8 @@ img {
   position: absolute;
   right: 0;
   top: 50%;
-  width: 24px;
-  height: 24px;
+  width: 32px;
+  height: 32px;
   transform: translateY(-50%);
   background-color: var(--teal);
   -webkit-mask: var(--brand-mark) center / contain no-repeat;
@@ -477,7 +477,7 @@ img {
 }
 .footer-name {
   position: relative;
-  padding-right: 34px;
+  padding-right: 40px;
   font: 20px var(--serif);
   color: var(--ink);
 }
@@ -757,9 +757,7 @@ img {
   border: 0;
   background: var(--paper);
 }
-.lab-route .site-footer {
-  display: none;
-}
+
 @media (min-width: 1500px) {
   .home-hero {
     gap: 75px;
@@ -771,7 +769,7 @@ img {
 @media (max-width: 1000px) {
   .container {
     padding-left: 30px;
-    padding-right: 34px;
+    padding-right: 40px;
   }
   .header-inner {
     padding: 20px 30px;
@@ -829,12 +827,20 @@ img {
     font-size: 24px;
   }
   .menu-toggle {
-    display: flex;
-    gap: 18px;
-    background: none;
-    border: 0;
-    color: var(--ink);
-    font-size: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 46px;
+    width: 46px;
+    height: 46px;
+    padding: 0;
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    background: transparent;
+    color: var(--teal);
+  }
+  .menu-toggle[aria-expanded="true"] {
+    background: var(--pale);
   }
   #site-nav {
     display: none;

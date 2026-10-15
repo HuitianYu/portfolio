@@ -1,0 +1,106 @@
+/* Structural contract: one content container, sibling panels, one persistent footer. */
+html:root body main.lab-content {
+  box-sizing: border-box;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 1600px;
+  min-height: calc(100dvh - var(--lab-chrome-height, 160px));
+  margin: 0 auto;
+  padding: 24px clamp(14px, 3vw, 36px) 20px !important;
+  gap: 0;
+}
+html:root body .lab-content > [data-section-panel] {
+  box-sizing: border-box;
+  flex: 1 0 auto;
+  width: 100%;
+  min-width: 0;
+  max-width: none;
+  margin: 0;
+  padding: 0 !important;
+}
+html:root body .lab-content > [data-section-panel][hidden] {
+  display: none !important;
+}
+html:root body .lab-content > .lab-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px 24px;
+  box-sizing: border-box;
+  width: 100%;
+  margin: 40px 0 0;
+  padding: 20px 0 0;
+  border: 0;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font: 12px/1.6 var(--sans);
+}
+.lab-footer-identity {
+  text-transform: uppercase;
+  font-size: 11px;
+}
+.lab-footer-description {
+  margin-left: auto;
+}
+.lab-footer-guide {
+  color: var(--teal);
+  text-underline-offset: 3px;
+}
+@media (max-width: 650px) {
+  html:root body main.lab-content {
+    padding-top: 20px !important;
+  }
+  .lab-footer-description {
+    margin-left: 0;
+  }
+}
+
+.recording-library {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 16px;
+}
+.recording-case {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+}
+.recording-case h2,
+.recording-case p {
+  grid-column: 1 / -1;
+  margin: 0;
+}
+.recording-case button {
+  min-height: var(--ui-control-standard);
+  padding: 0 12px;
+  justify-self: end;
+}
+
+/* Embedded apps delegate the site footer to their host. */
+body.embedded-lab .lab-footer {
+  display: none !important;
+}
+.media-error {
+  padding: 16px;
+  color: var(--ink);
+}
+
+html:root body #library .filter {
+  flex-wrap: wrap;
+  gap: 16px;
+}
+html:root body #library .filter .search {
+  flex: 1 1 220px;
+}
+html:root body .data-label-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+html:root body .recording-case > .source-badge {
+  justify-self: start;
+}

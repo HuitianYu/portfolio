@@ -90,8 +90,8 @@
         <button data-section="display">Display</button>
       </nav>
     </div>
-    <main>
-      <section class="workspace-page" id="operations">
+    <main class="lab-content">
+      <section class="workspace-page" data-section-panel="operations" id="operations">
         <section aria-label="Simulation controls" class="common-controls" id="simulation-controls">
           <div class="control-row playback-row">
             <div class="playback-actions">
@@ -249,7 +249,7 @@
           <button class="button" data-ui-action="true" id="view-display">View live display</button>
         </div>
       </section>
-      <section class="workspace-page" hidden="" id="overview">
+      <section class="workspace-page" hidden="" data-section-panel="overview" id="overview">
         <div class="page-introduction">
           <div>
             <span class="eyebrow">Control</span>
@@ -340,7 +340,7 @@
           </p>
         </section>
       </section>
-      <section class="workspace-page" hidden="" id="parameters">
+      <section class="workspace-page" hidden="" data-section-panel="parameters" id="parameters">
         <div class="page-introduction workspace-introduction">
           <div>
             <span class="eyebrow">Model</span>
@@ -394,7 +394,7 @@
           </p>
         </details>
       </section>
-      <section class="workspace-page" hidden="" id="display">
+      <section class="workspace-page" hidden="" data-section-panel="display" id="display">
         <div class="page-introduction workspace-introduction">
           <div>
             <span class="eyebrow">Simulation</span>
@@ -408,6 +408,22 @@
             <span class="eyebrow">Time</span>
             <strong id="display-time">0.00 min</strong>
             <span id="display-step">0 / 900 steps</span>
+          </div>
+        </div>
+        <div id="simulation-progress" class="progress-status analysis-progress">
+          <div class="progress-caption">
+            <span data-progress-message role="status">Simulation progress</span>
+            <span data-progress-detail>0%</span>
+          </div>
+          <div
+            class="progress-track"
+            role="progressbar"
+            aria-label="Simulation progress"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            aria-valuenow="0"
+          >
+            <div data-progress-fill></div>
           </div>
         </div>
         <section class="headline-metrics" id="headline-metrics"></section>
@@ -459,10 +475,7 @@
         <div class="plot-grid" id="plot-grid"></div>
       </section>
       <div aria-live="polite" hidden="" id="message" role="status"></div>
-      <footer>
-        <span>MPCRYSTAL LAB / SIMULATION</span>
-        <p>Growth kinetics · State estimation · Predictive control</p>
-      </footer>
+      <!-- LAB_FOOTER -->
     </main>
     <script data-lab-interface="" defer="" src="lab-interface.js"></script>
   </body>
