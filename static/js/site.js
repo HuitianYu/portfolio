@@ -349,6 +349,18 @@ function initializeResponsiveHeader() {
     },
     { passive: true },
   );
+  let previousLabY = 0;
+  function followLabScroll(y) {
+    if (!Number.isFinite(y)) return;
+    const next = Math.max(0, y);
+    const delta = next - previousLabY;
+    previousLabY = next;
+    // Returning through an embedded workspace also leaves the outer footer.
+    // Clamp to the document top; never position or hide the footer itself.
+    if (delta < 0 && scrollY > 0)
+      window.scrollBy({ top: Math.max(-scrollY, delta), behavior: "instant" });
+    followScroll(next);
+  }
   addEventListener("message", (event) => {
     if (
       event.origin === location.origin &&
@@ -358,7 +370,7 @@ function initializeResponsiveHeader() {
       if (event.data.type === "lab:layout") {
         transitionUntil = performance.now() + 350;
         travel = 0;
-      } else followScroll(event.data.y);
+      } else followLabScroll(event.data.y);
     }
   });
   addEventListener("message", (event) => {

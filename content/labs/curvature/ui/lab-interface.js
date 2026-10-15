@@ -363,6 +363,83 @@
     new ResizeObserver(viewport.schedule).observe(document.documentElement);
     addEventListener("resize", viewport.schedule);
     reportViewport();
+    // Transfer an unconsumed gesture across the iframe boundary immediately.
+    // Ordinary pages/posts keep their single native document scroller.
+    function handoff(event, delta) {
+      if (!event.cancelable || !Number.isFinite(delta) || !delta) return;
+      let host;
+      try {
+        host = parent.document.scrollingElement;
+      } catch {
+        return;
+      }
+      if (!host) return;
+      for (let node = event.target; node && node !== document.body; node = node.parentElement) {
+        if (
+          node.scrollHeight > node.clientHeight + 1 &&
+          /auto|scroll/.test(getComputedStyle(node).overflowY)
+        ) {
+          const room =
+            delta > 0 ? node.scrollHeight - node.clientHeight - node.scrollTop : node.scrollTop;
+          if (room > 1) return;
+        }
+      }
+      const local = document.scrollingElement;
+      const localRoom = Math.max(0, local.scrollHeight - local.clientHeight - local.scrollTop);
+      const hostRoom =
+        delta > 0 ? host.scrollHeight - host.clientHeight - host.scrollTop : host.scrollTop;
+      if (hostRoom <= 0 || (delta > 0 && delta <= localRoom)) return;
+      if (delta < 0 && host.scrollTop <= 0) return;
+      event.preventDefault();
+      if (delta > 0 && localRoom > 0) {
+        local.scrollTop += localRoom;
+        delta -= localRoom;
+      }
+      parent.scrollBy({
+        top: Math.sign(delta) * Math.min(Math.abs(delta), hostRoom),
+        behavior: "instant",
+      });
+    }
+    addEventListener(
+      "wheel",
+      (event) => {
+        if (event.ctrlKey || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY))
+          return;
+        const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
+        handoff(event, event.deltaY * scale);
+      },
+      { passive: false },
+    );
+    let touch = null;
+    addEventListener(
+      "touchstart",
+      (event) => {
+        touch =
+          event.touches.length === 1
+            ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
+            : null;
+      },
+      { passive: true },
+    );
+    addEventListener(
+      "touchmove",
+      (event) => {
+        if (!touch || event.touches.length !== 1) return;
+        const next = event.touches[0];
+        const dy = touch.y - next.clientY,
+          dx = touch.x - next.clientX;
+        touch = { x: next.clientX, y: next.clientY };
+        if (Math.abs(dy) > Math.abs(dx)) handoff(event, dy);
+      },
+      { passive: false },
+    );
+    addEventListener(
+      "touchend",
+      () => {
+        touch = null;
+      },
+      { passive: true },
+    );
     let scrollPosition = 0;
     const scroll = window.UIControls.frameTask(() => {
       parent.postMessage({ type: "lab:scroll", y: scrollPosition }, location.origin);

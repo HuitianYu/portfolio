@@ -263,4 +263,62 @@ export async function checkLabRuntime(root) {
       );
     }
   }
+  const hostSource = await fs.readFile(new URL("static/js/site.js", root), "utf8");
+  const bridgeStart = hostSource.indexOf("  let previousLabY = 0;");
+  const bridgeEnd = hostSource.indexOf('  addEventListener("message"', bridgeStart);
+  const host = {
+    scrollY: 180,
+    followScroll() {},
+    window: {
+      scrollBy({ top }) {
+        host.scrollY += top;
+      },
+    },
+  };
+  vm.createContext(host);
+  vm.runInContext(hostSource.slice(bridgeStart, bridgeEnd), host);
+  vm.runInContext("followLabScroll(1000); followLabScroll(900);", host);
+  assert.equal(host.scrollY, 80, "Scrolling back through a Lab must leave the outer footer");
+  vm.runInContext("followLabScroll(700);", host);
+  assert.equal(host.scrollY, 0, "Outer scroll must clamp at the document top");
+  vm.runInContext("followLabScroll(600); followLabScroll(NaN);", host);
+  assert.equal(host.scrollY, 0, "Inner scrolling must not overscroll the host");
+  const interfaceSource = await fs.readFile(new URL("static/js/lab-interface.js", root), "utf8");
+  const handoffStart = interfaceSource.indexOf("    function handoff(");
+  const handoffEnd = interfaceSource.indexOf("    addEventListener(", handoffStart);
+  const outer = { scrollTop: 0, scrollHeight: 1000, clientHeight: 800 };
+  const inner = { scrollTop: 90, scrollHeight: 600, clientHeight: 500 };
+  let prevented = 0;
+  const edge = {
+    document: { scrollingElement: inner, body: {} },
+    parent: {
+      document: { scrollingElement: outer },
+      scrollBy({ top }) {
+        outer.scrollTop += top;
+      },
+    },
+    event: {
+      cancelable: true,
+      target: null,
+      preventDefault() {
+        prevented++;
+      },
+    },
+  };
+  vm.createContext(edge);
+  vm.runInContext(interfaceSource.slice(handoffStart, handoffEnd), edge);
+  vm.runInContext("handoff(event, 60)", edge);
+  assert.equal(inner.scrollTop, 100);
+  assert.equal(
+    outer.scrollTop,
+    50,
+    "A gesture crossing the iframe bottom must transfer its remainder immediately",
+  );
+  vm.runInContext("handoff(event, -30)", edge);
+  assert.equal(outer.scrollTop, 20, "Reverse gestures leave the footer before moving the Lab");
+  vm.runInContext("handoff(event, -100)", edge);
+  assert.equal(outer.scrollTop, 0);
+  const consumed = prevented;
+  vm.runInContext("handoff(event, -30)", edge);
+  assert.equal(prevented, consumed, "Inner scrolling stays native once the host is at its top");
 }
