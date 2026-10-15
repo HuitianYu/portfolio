@@ -1,115 +1,88 @@
-# Interface ownership
+# Interface architecture
 
-## Styles
+## Ownership
 
-Edit `ui/styles/`, never the generated `static/css/site.css` or `design-system.css`.
-`manifest.json` lists modules in cascade order. `tokens.css` owns shared colours,
-type, and dimensions. The photo theme overrides colour roles at runtime.
+| Layer | Source of truth | Responsibility |
+|---|---|---|
+| Site/Lab shell | layouts/_default/baseof.html, labs-data.html, lab-app.html | Shared header/footer, existing page relationships, standalone delivery |
+| Interaction | static/js/ui-controls.js | Disclosures, outside clicks, touch timing, roving keyboard focus |
+| Workspace context | static/js/lab-interface.js | Tabs, toolbar layout, resize bridge, suspension; no scientific state |
+| Task presentation | static/js/lab-runtime.js | Isolated task snapshots, source labels, progress, button fill, accessible state, synchronized lights |
+| Media transport | static/js/lab-media.js | Playback intent, time, synchronized videos, seek, buffering and stale play requests |
+| Data adapters | recording-sources.js, Curvature data-loader.js | Source policy and format-specific loading; no playback or calculations |
+| Lab application | Each app.js | Connect model/adapter state to shared presentation and user commands |
+| Scientific model | Each engine.js / schema.js / chart-schema.js | Numerical model, parameters, units and scientific chart definitions |
 
-`npm run sync:shared` builds both browser stylesheets and copies shared assets
-into each standalone Lab. Generated delivery remains two flat CSS files: no
-additional imports, network requests, or offline dependency are introduced.
-`npm run check:shared` rejects either stale generated CSS or stale Lab copies.
+## Unified task contract
 
-The source modules preserve the existing cascade. Some legacy overrides remain
-inside them; move or remove a rule only after checking its desktop, narrow, and
-embedded contexts. Do not append another global override to fix one local card.
+Use `LabUI.task({root, button, kind, state, value, message, detail, present})`.
+The kinds are download, calculation and playback. They are independent snapshots:
+`LabUI.taskState(owner, kind)`. A background update with `present: false` cannot
+replace the current progress UI. `value: null` means an honest percentage is unavailable.
 
-## Runtime layers
+The visible caption contains exactly one Local/Cloud badge on the left. Fully local
+calculations show Local. Status text and the right-aligned percent/step/frame detail
+use the same component across all Labs. Task kind is internal, not another badge.
+Idle controls are dark and actionable, running/paused controls show light-to-dark progress, completed tasks
+are dark. Cancel/retry and pause/resume are model-specific commands, not aliases.
 
-- `static/js/ui-controls.js`: disclosure timing, outside/touch handling, and roving
-  arrow-key focus for both static and rebuilt choice rows.
-- `static/js/lab-runtime.js`: section/panel selection, plot font, playback presentation.
-- `static/js/lab-math.js`: formula readiness, readable failure fallback and chart-label fallback.
-- `static/js/lab-interface.js`: workspace layout, keyboard navigation, menus,
-  resize reporting, and page lifecycle. It owns no scientific state.
-- Each Lab `app.js`: application state, rendering, and scientific orchestration.
-- Each Lab engine/schema: model definitions and calculations. UI code must not
-  silently change numerical precision, units, parameters, or solver behaviour.
+`LabMedia.create` owns one playback clock. Seeking preserves playing/paused intent;
+synchronization does not fight in-flight seeking. A new Play request can load first
+and start once playable. Case changes, cancellation and suspension revoke that request.
+`LabMedia.availability` distinguishes playable media from continuously buffered full
+recordings. `canplay` never proves a complete download. Buffering belongs to playback
+and does not replace the seek slider with an initial download screen. Full buffering
+is recorded independently; no fictional byte-download percentage is shown.
 
-`connectPanels` connects one sibling group at a time. Child selection survives
-parent navigation. `selectSection` owns top-level sections. Both set panel
-visibility and accessible relationships; keyboard handling lives in the interface.
+## Layout and style sources
 
-`LabUI.playback` keeps label, pressed state, colour state and disabled state together.
-It does not start timers or simulation: the application remains responsible for
-start, pause, resume, reset and cancellation.
+Edit ui/styles/ only. manifest.json owns cascade order; generated site.css and
+design-system.css are delivery artifacts. shell.css owns containers/library layout;
+progress.css owns task/source presentation; states.css owns status lights. tokens.css
+owns dimensions and theme roles. Source palette appears in one shared module.
 
-`LabCharts.config` owns local Plotly defaults and removes cloud-share controls.
-Views retain their export format/size and additional modebar exclusions. Never
-change chart units or data precision through presentation defaults.
+Controls are 32px compact, 36px standard and 44px fields/CTA. Preserve scientific
+values rather than truncating them for layout. The global footer stays in ordinary
+document flow after main. The Lab frame and host use the same --site-header-size;
+never add an independent larger iframe minimum height.
 
-## Layout and copy
+Controller off/reset makes all module lights inactive; pause stops breathing.
+Active lights share a wall-clock phase with no recurring JS timer. Seed/Refresh
+feedback uses the same smooth 2.2 second background round trip. Reduced-motion
+turns animations off.
 
-- Workspace actions: compact 32px. Standard controls: 36px. Parameter fields/CTA:
-  44px. Use token names; do not force every type of control to the same height.
-- Keep related controls together. Wrapped utility groups align left; groups that
-  fit share the right edge. Local tab rows may scroll; the document must not.
-- Keep changing button labels in a reserved footprint. Give icon-only actions an
-  accessible name. Use text or an icon, except restrained external/return marks.
-- Short sentence-case labels explain a group; omit labels that merely repeat the
-  heading. Keep model terms and units precise. Never truncate scientific values
-  to make a card fit; allow the value region to adapt.
+## Optional content
 
-## Verification
+Checks discover actual Lab folders; only present Labs receive model-specific checks.
+Remove the entire Lab folder to exclude it. Incomplete retained Labs still fail.
+Paper/Lab associations use site.GetPage. Missing local Markdown content links become
+plain text; missing related-paper links in generated workspaces are also guarded.
+The update installer skips files belonging to already-removed Labs.
 
-Run `npm run format`, `npm run sync:shared`, `npm run format:check`,
-`npm run check:shared`, `npm run check`, then a clean Hugo build.
-Check 320px portrait, 844px landscape, and 1440px desktop; include nested tabs,
-open menus, running/paused states, and independent Lab pages.
+## Scientific boundaries and assets
 
-## Curvature boundaries
+Curvature engine.js owns pure geometry, smoothing, classification and weighting;
+worker.js imports that engine. Do not serialize scientific functions into workers.
+MPCrystal schema.js owns parameters, chart-schema.js owns chart definitions, and its
+engine owns simulation history. Do not seek simulated steps using a media transport.
+OrbitalFlatness reports actual solver progress. UI changes must not alter precision,
+units, solver rules or data.
 
-`content/labs/curvature/ui/engine.js` owns pure geometry, smoothing, classification
-and weighting functions. `worker.js` imports that same engine and defines the
-four-operation message protocol. `app.js` owns DOM events, task cancellation,
-progress and view state. Do not serialize functions into worker source strings.
-The engine runs without browser globals and has scale-law and worker-parity checks.
+Large datasets/MP4 recordings dominate the source package. Abstraction reduces
+coupling, not media bytes. Do not delete assets or reintroduce Base64 copies.
+StableGSensor uses Cloud except Case 3. Reserved DOI: 10.5281/zenodo.23324825.
+Public files must match recording-sources.js naming; never put credentials in config.
 
-## Large assets
+## Build and verification
 
-Crystal examples and recorded experiments account for most source size; splitting
-application code does not compress these resources. Keep scientific datasets and
-recordings separate from interface modules. StableGSensor uses the MP4 files in
-`assets/`; the obsolete unreferenced Base64 duplicate has been removed after
-byte-for-byte verification. Do not reintroduce embedded copies of those videos.
+Use Hugo extended 0.167.0 on PATH and run npm run build. It synchronizes generated
+assets, checks formatting/shared copies, tests runtime and scientific models, then
+builds the site. Test 320/390px portrait, low-height landscape and 1440px desktop;
+include first Play, Display-only navigation, playing/paused seek, unavailable Cloud,
+calc cancel, simulation pause/step, reset, footer flow and reduced-motion.
+Tests also cover absent Labs/related articles. No Lab or post is removed from the
+working copy as part of a cleanup.
 
-MPCrystal chart names, units, curve styles, colours and panel grouping live in
-`chart-schema.js`. Parameter definitions stay in `schema.js`; simulation state
-and redraw scheduling stay in `app.js`.
+Execution commands never switch the selected Lab section. A first media Play may load and then play, but keeps the current section; viewing Display is always an explicit navigation action.
 
-## Release and maintenance plan
-
-- Edit shared layout in `ui/styles/`; build output in `static/css/` and Lab copies
-  is generated by `npm run sync:shared`. Keep one canonical rule per component;
-  remove superseded overrides only with desktop and mobile comparisons.
-- Keep interface changes separate from scientific engines. Next substantial
-  cleanup should consolidate legacy per-Lab toolbar CSS into the shared modules,
-  one Lab per change, with screenshots and numerical checks at each step.
-- Large datasets and MP4 recordings are retained. Consider external versioned
-  storage only as a separate migration with checksums and offline/error behaviour;
-  splitting JavaScript alone does not reduce the media payload.
-- Use Node 22 and the Hugo version in `netlify.toml`. Run `npm ci` after moving
-  source, then `npm run build`. Publish `public/`; keep dependencies and build
-  output out of source archives.
-- CSS/script references use content versions. An already-open document retains
-  its loaded HTML and styles until navigation/reload; avoid forced reloads that
-  would discard a running experiment. After deployment, reload once to inspect
-  the new header and controls.
-
-
-## Shared Lab structure
-
-All four Labs use one `main.lab-content` with sibling `data-section-panel` panels. Keep the footer outside these panels; `layouts/partials/lab-footer.html` renders the `LAB_FOOTER` marker from `data/lab-ui.json`. Shared spacing belongs in `ui/styles/labs/shell.css`. Preserve inner form IDs when changing panel wrappers. Runtime checks enforce these boundaries.
-
-Paper cards and detail pages share `layouts/partials/paper-authors.html`. Author order is unchanged; role and equal-contribution notes come from each paper's metadata.
-
-StableGSensor keeps all recordings local. Reserved DOI: 10.5281/zenodo.23324825. `remoteEnabled` remains false. After publication with publicly downloadable files, verify actual filenames and HTTPS fileBaseURL before enabling remote sources. The planned remote filename is case_1_loftr_image_correction_animation.mp4 (case prefix plus original filename); adapt the resolver to the published files if necessary. Case 3 always stays local. Never place private access tokens in the public configuration.
-
-Build environment: validated with Hugo extended 0.167.0. Ensure `hugo version` selects this version before `npm run build`; the system Hugo 0.123.8 cannot render the current data templates.
-
-Update: remoteEnabled is now true for StableGSensor; only Case 3 is local. The reserved unpublished record can return unavailable. Public flat filenames must match the source resolver. Shared LabUI.dataFailure handles load-error presentation; StableGSensor includes Retry. Embedded Lab pages use the global site footer. Conference contribution labels use the owner-supplied 2022 threshold.
-
-## Progress ownership
-
-`LabUI.progress` in static/js/lab-runtime.js owns progress captions, ARIA values and determinate fills; `LabUI.operationState` synchronizes task buttons. Shared progress, source badge and breathing-light styles live in ui/styles/labs/progress.css. Curvature reports actual download/calculation values. OrbitalFlatness reports worker calculation values. MPCrystal reports completed history steps / configured steps and supports pause/step, not destructive timeline seeking. StableGSensor replaces its loading track with a seekable native range once visible videos can play; no byte-download percentage is invented. Reduce-motion disables all new breathing animations.
+Section navigation never starts media loading. StableGSensor loads recordings through Play or an explicit case/method selection; first Display remains ready without a transient Cancel state.

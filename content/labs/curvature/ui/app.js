@@ -168,7 +168,7 @@ function crystalSourceKey(c) {
   return window.EMBEDDED?.[c.id] || window.EMBEDDED_INDEX?.[c.id] ? "local" : "cloud";
 }
 function crystalSource(c) {
-  return window.LAB_CONFIG.ui.dataSources[crystalSourceKey(c)].label;
+  return window.LabUI.sourceInfo(crystalSourceKey(c)).label;
 }
 function openLibraryCrystal(crystal, geometry = "single") {
   $("geometry").value = geometry;
@@ -216,8 +216,7 @@ function rows() {
     const source = document.createElement("td");
     const badge = document.createElement("span");
     badge.className = "source-badge";
-    badge.dataset.source = crystalSourceKey(c);
-    badge.textContent = crystalSource(c);
+    window.LabUI.source(badge, crystalSourceKey(c));
     source.append(badge);
     const inspect = document.createElement("td");
     inspect.append(
@@ -251,7 +250,7 @@ function crystalOptions(g, id) {
   $("crystal").replaceChildren();
   for (const c of catalog.filter((c) => c.group === g)) {
     const option = new Option(c.name, c.id);
-    option.dataset.source = crystalSourceKey(c);
+    window.LabUI.source(option, crystalSourceKey(c), { text: false });
     $("crystal").add(option);
   }
   if (id) $("crystal").value = id;
@@ -297,10 +296,8 @@ async function select(c) {
   selected = c;
   rememberedCrystals.set(c.group, c.id);
   const source = crystalSourceKey(c);
-  $("crystal").dataset.source = source;
-  $("data-source").dataset.source = source;
-  $("data-source").textContent = crystalSource(c);
-  $("data-source").title = window.LAB_CONFIG.ui.dataSources[source].description;
+  window.LabUI.source($("crystal"), source, { text: false });
+  window.LabUI.source($("data-source"), source);
   clearSurface();
   $("viewgroup").value = c.group;
   crystalOptions(c.group, c.id);
@@ -1428,13 +1425,18 @@ function setProgress(
   message,
   state = value >= 100 ? "complete" : value > 0 ? "running" : "ready",
 ) {
-  window.LabUI.progress($("analysis-progress"), { state, value, message });
-  $("status").textContent = message;
+  window.LabUI.task({
+    root: $("analysis-progress"),
+    button: $("recalculate"),
+    kind: loadingData ? "download" : "calculation",
+    state,
+    value,
+    message,
+  });
   $("analysis-progress").hidden = false;
-  $("analysis-progress").dataset.state = state;
   $("progress-track").hidden = false;
   $("progress-percent").hidden = false;
-  $("progress-percent").style.visibility = state === "running" ? "visible" : "hidden";
+  $("progress-percent").style.visibility = "visible";
   $("data-error").hidden = state !== "error";
   if (state === "error") $("data-error").textContent = message;
   operationBusy = state === "running";
@@ -1449,16 +1451,8 @@ function setProgress(
         ? "Calculate curvature"
         : "Download crystal data",
   );
-  window.LabUI.operationState($("recalculate"), state, message, value);
-  $("recalculate").style.setProperty("--run-progress", Math.max(0, Math.min(100, value)) + "%");
-  $("recalculate").setAttribute("aria-busy", String(operationBusy));
-  $("recalculate").title = message;
-  $("progress-fill").style.width = Math.max(0, Math.min(100, value)) + "%";
-  $("progress-percent").textContent = Math.round(value) + "%";
-  $("progress-track").setAttribute("aria-valuenow", String(Math.round(value)));
+
   $("recalculate").disabled = !mesh && !selected;
-  $("progress-track").setAttribute("aria-valuetext", message);
-  $("progress-track").setAttribute("aria-busy", String(operationBusy));
 }
 $("recalculate").onclick = () => {
   if (operationBusy) {

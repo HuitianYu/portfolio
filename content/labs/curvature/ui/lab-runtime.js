@@ -95,9 +95,16 @@
     element.dataset.error = "true";
     element.setAttribute("role", "status");
   }
-  function operationState(button, state, message, progress = 0) {
+  function operationState(
+    button,
+    state,
+    message,
+    progress = 0,
+    { busy = state === "running" } = {},
+  ) {
     button.dataset.state = state;
-    button.setAttribute("aria-busy", String(state === "running"));
+    button.dataset.progressControl = "true";
+    button.setAttribute("aria-busy", String(busy));
     button.style.setProperty("--run-progress", Math.max(0, Math.min(100, progress)) + "%");
     button.title = message;
   }
@@ -109,8 +116,8 @@
     const info = root.querySelector("[data-progress-detail]");
     const track = root.querySelector('[role="progressbar"]');
     const fill = root.querySelector("[data-progress-fill]");
-    if (caption) caption.textContent = message;
-    if (info) info.textContent = detail || Math.round(percent) + "%";
+    if (caption) text(caption, message);
+    if (info) text(info, detail || Math.round(percent) + "%");
     if (track) {
       track.setAttribute("aria-valuenow", String(percent));
       track.setAttribute("aria-valuetext", detail || message);
@@ -118,5 +125,89 @@
     }
     if (fill) fill.style.width = percent + "%";
   }
-  window.LabUI = Object.freeze({ text, playback, dataFailure, operationState, progress });
+  const tasks = new WeakMap();
+  const taskKinds = new Set(["download", "calculation", "playback"]);
+  function taskState(owner, kind) {
+    return tasks.get(owner)?.[kind] || null;
+  }
+  function task({ root, button, kind, state, value = null, message, detail = "", present = true }) {
+    if (!taskKinds.has(kind)) throw Error("Unknown task kind");
+    state = { pending: "running", active: "running" }[state] || state;
+    if (
+      ![
+        "idle",
+        "ready",
+        "running",
+        "buffering",
+        "paused",
+        "complete",
+        "cancelled",
+        "error",
+      ].includes(state)
+    )
+      throw Error("Unknown task state");
+    const owner = root || button;
+    if (owner)
+      tasks.set(owner, {
+        ...tasks.get(owner),
+        [kind]: Object.freeze({ kind, state, value, message, detail }),
+      });
+    if (!present) return;
+    if (root) {
+      root.dataset.kind = kind;
+      root.dataset.indeterminate = String(value === null && state === "running");
+
+      progress(root, { state, value: value ?? 0, message, detail });
+      if (value === null) {
+        root.querySelector('[role="progressbar"]')?.removeAttribute("aria-valuenow");
+        const info = root.querySelector("[data-progress-detail]");
+        if (info) text(info, detail);
+      }
+    }
+    if (button) {
+      button.dataset.kind = kind;
+      operationState(button, state, message, value ?? 0, {
+        busy: kind !== "playback" && state === "running",
+      });
+    }
+  }
+  const lightStates = new WeakMap();
+  function syncStatusLights(root = document) {
+    const phase = -((performance.timeOrigin + performance.now()) % 2400) + "ms";
+    for (const light of root.querySelectorAll(".header-action, .operation-status, .status")) {
+      const state = light.dataset.state;
+      if (lightStates.get(light) === state) continue;
+      lightStates.set(light, state);
+      if (state === "active") light.style.setProperty("--lab-light-phase", phase);
+      else light.style.removeProperty("--lab-light-phase");
+    }
+  }
+  function sourceInfo(key) {
+    if (!["local", "cloud"].includes(key)) throw Error("Unknown data source");
+    return (
+      window.LAB_CONFIG?.ui?.dataSources?.[key] || {
+        label: key === "local" ? "Local" : "Cloud",
+        description: key === "local" ? "Supplied with this Lab" : "Requires network access",
+      }
+    );
+  }
+  function source(element, key, { text: replaceText = true } = {}) {
+    const info = sourceInfo(key);
+    element.dataset.source = key;
+    if (replaceText) element.textContent = info.label;
+    element.title = info.description;
+    return element;
+  }
+  window.LabUI = Object.freeze({
+    text,
+    playback,
+    dataFailure,
+    operationState,
+    task,
+    taskState,
+    progress,
+    syncStatusLights,
+    sourceInfo,
+    source,
+  });
 })();

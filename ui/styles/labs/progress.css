@@ -119,18 +119,6 @@ html:root body .analysis-progress[data-state="complete"] #progress-fill,
 html:root body [data-state="complete"] .recording-track > div {
   background: var(--teal);
 }
-html:root body .fixed-workspace-header #recalculate[data-state="running"] {
-  background-image: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--teal), var(--paper) 65%) var(--run-progress),
-    var(--paper) var(--run-progress)
-  ) !important;
-  color: var(--ink) !important;
-}
-html:root body .fixed-workspace-header #recalculate[data-state="complete"] {
-  background: var(--teal) !important;
-  color: var(--paper) !important;
-}
 html:root body .fixed-workspace-header #play.download-pending {
   background-image: linear-gradient(
     110deg,
@@ -141,10 +129,6 @@ html:root body .fixed-workspace-header #play.download-pending {
   color: var(--ink) !important;
   background-size: 200% 100%;
   animation: recording-button-loading 1.5s linear infinite;
-}
-html:root body .fixed-workspace-header #play[data-state="complete"][aria-pressed="false"] {
-  background: var(--teal) !important;
-  color: var(--paper) !important;
 }
 /* One enclosing border avoids overlapping edges between image-mode segments. */
 html:root body .image-mode {
@@ -189,23 +173,6 @@ html:root body .progress-playback[hidden],
 html:root body .recording-track[hidden] {
   display: none !important;
 }
-html:root
-  body
-  :is(#pause, .header-playback-action[data-action="pause"]):is(
-    [data-state="running"],
-    [data-state="paused"]
-  ) {
-  background: linear-gradient(
-    90deg,
-    color-mix(in srgb, var(--teal), var(--paper) 65%) var(--run-progress),
-    var(--paper) var(--run-progress)
-  ) !important;
-  color: var(--ink) !important;
-}
-html:root body :is(#pause, .header-playback-action[data-action="pause"])[data-state="complete"] {
-  background: var(--teal) !important;
-  color: var(--paper) !important;
-}
 /* Progressive enhancement: native option colours depend on the browser/OS. */
 html:root body :is(select, option)[data-source="local"] {
   background-color: #e7eee3 !important;
@@ -214,4 +181,79 @@ html:root body :is(select, option)[data-source="local"] {
 html:root body :is(select, option)[data-source="cloud"] {
   background-color: #f3ead5 !important;
   color: #75591e !important;
+}
+
+/* All task types share button fill; media seeking never changes download UI. */
+html:root
+  body
+  .fixed-workspace-header
+  :is(
+    #play,
+    #pause,
+    #recalculate,
+    #run,
+    #calculation-mode,
+    #mode-summary,
+    .header-playback-action
+  )[data-progress-control]:is(
+    [data-state="running"],
+    [data-state="paused"],
+    [data-state="buffering"],
+    [data-state="buffering"]
+  ):not(.download-pending) {
+  background: linear-gradient(
+    90deg,
+    color-mix(in srgb, var(--teal), var(--paper) 65%) var(--run-progress),
+    var(--paper) var(--run-progress)
+  ) !important;
+  color: var(--ink) !important;
+}
+html:root
+  body
+  .fixed-workspace-header
+  :is(
+    #play,
+    #pause,
+    #recalculate,
+    #run,
+    #calculation-mode,
+    #mode-summary,
+    .header-playback-action
+  )[data-progress-control][data-state="complete"] {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
+}
+
+/* Shared caption geometry: phase/source left, live information right. */
+html:root body .progress-caption > :is([data-progress-detail], #frame, #progress-percent) {
+  flex: none;
+  margin-left: auto;
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+html:root body .analysis-progress[data-state="buffering"] {
+  opacity: 1;
+}
+
+/* Ready, completed and retry actions use the same dark actionable state. */
+html:root
+  body
+  .fixed-workspace-header
+  :is(
+    #play,
+    #pause,
+    #recalculate,
+    #run,
+    #calculation-mode,
+    #mode-summary,
+    .header-playback-action
+  )[data-progress-control]:is(
+    [data-state="idle"],
+    [data-state="ready"],
+    [data-state="cancelled"],
+    [data-state="error"]
+  ) {
+  background: var(--teal) !important;
+  color: var(--paper) !important;
 }

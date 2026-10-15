@@ -1,8 +1,8 @@
 import { checkCurvatureEngine } from "./check-curvature-engine.mjs";
 import { checkCurvaturePresentation } from "./check-curvature-presentation.mjs";
 import { checkCurvatureCamera } from "./check-curvature-camera.mjs";
-import "./check-crystal-data.mjs";
 import { checkUIControls } from "./check-ui-controls.mjs";
+import { checkLabMedia } from "./check-lab-media.mjs";
 import { checkLabRuntime } from "./check-lab-runtime.mjs";
 import fs from "node:fs/promises";
 import path from "node:path";
@@ -56,6 +56,7 @@ for (const file of files) {
 }
 await checkUIControls(new URL("../", import.meta.url));
 await checkLabRuntime(new URL("../", import.meta.url));
+await checkLabMedia(new URL("../", import.meta.url));
 if (labs.includes("stablegsensor")) {
   const recordingContext = { window: { LAB_CONFIG: { data: {} } }, URL };
   vm.runInNewContext(
@@ -90,104 +91,119 @@ if (labs.includes("stablegsensor")) {
   console.log("StableGSensor source checks skipped (Lab not present).");
 }
 
-await checkCurvatureEngine(new URL("../", import.meta.url));
-await checkCurvatureCamera(new URL("../", import.meta.url));
-await checkCurvaturePresentation(new URL("../", import.meta.url));
-// A stalled local asset must reject and allow a new attempt, rather than stay at 5%.
-const loaderTimers = [],
-  loaderScripts = [];
-const loaderContext = {
-  AbortController,
-  window: { EMBEDDED_INDEX: { example: "example.js" } },
-  document: {
-    createElement: () => ({ remove() {} }),
-    head: {
-      append(script) {
-        loaderScripts.push(script);
+if (labs.includes("curvature")) {
+  await import("./check-crystal-data.mjs");
+  await checkCurvatureEngine(new URL("../", import.meta.url));
+  await checkCurvatureCamera(new URL("../", import.meta.url));
+  await checkCurvaturePresentation(new URL("../", import.meta.url));
+  // A stalled local asset must reject and allow a new attempt, rather than stay at 5%.
+  const loaderTimers = [],
+    loaderScripts = [];
+  const loaderContext = {
+    AbortController,
+    window: { EMBEDDED_INDEX: { example: "example.js" } },
+    document: {
+      createElement: () => ({ remove() {} }),
+      head: {
+        append(script) {
+          loaderScripts.push(script);
+        },
       },
     },
-  },
-  setTimeout(callback) {
-    loaderTimers.push(callback);
-    return loaderTimers.length;
-  },
-  clearTimeout() {},
-};
-vm.runInNewContext(
-  await fs.readFile(path.join(root, "content/labs/curvature/ui/data-loader.js"), "utf8"),
-  loaderContext,
-);
-const stalledLoad = loaderContext.window.CrystalData.load("example");
-const timeoutCheck = assert.rejects(stalledLoad, /timed out/);
-loaderTimers[0]();
-await timeoutCheck;
-const retryLoad = loaderContext.window.CrystalData.load("example");
-const retryCheck = assert.rejects(retryLoad, /could not be loaded/);
-assert.equal(loaderScripts.length, 2);
-loaderScripts[1].onerror();
-await retryCheck;
-const cancelledLocal = loaderContext.window.CrystalData.load("example");
-const cancelCheck = assert.rejects(cancelledLocal, { name: "AbortError" });
-loaderContext.window.CrystalData.cancel();
-await cancelCheck;
-const chartContext = { window: {} };
-vm.runInNewContext(
-  await fs.readFile(path.join(root, "content/labs/mpcrystal/ui/chart-schema.js"), "utf8"),
-  chartContext,
-);
-const chartSchema = chartContext.window.MPCChartSchema;
-assert.equal(new Set(chartSchema.panels.map((panel) => panel.id)).size, chartSchema.panels.length);
-for (const panel of chartSchema.panels)
-  for (const key of panel.keys) assert.ok(chartSchema.curves[key], `Missing chart curve: ${key}`);
-for (const [, colour] of Object.values(chartSchema.curves))
-  assert.ok(chartSchema.coloursDefault[colour], `Missing chart colour: ${colour}`);
-const mpc = require("../content/labs/mpcrystal/ui/engine.js");
-const schemaContext = { window: {} };
-vm.runInNewContext(
-  await fs.readFile(path.join(root, "content/labs/mpcrystal/ui/schema.js"), "utf8"),
-  schemaContext,
-);
-const fields = schemaContext.window.PARAMETER_GROUPS.flatMap((group) => group.fields);
-const fieldKeys = fields.map((field) => field.key);
-if (new Set(fieldKeys).size !== fieldKeys.length) throw Error("Duplicate MPC parameter fields");
-for (const key of ["params.K_I_T", "params.K_I_T_sigma", "params.K_I_T_G", "params.K_P_T_applied"])
-  if (!fieldKeys.includes(key)) throw Error(`Missing temperature gain: ${key}`);
-for (const target of ["sigma", "G"]) {
-  const derived = mpc.derive(
-    { ...mpc.defaults, "params.K_I_T_sigma": 0.12, "params.K_I_T_G": 0.34 },
-    target,
+    setTimeout(callback) {
+      loaderTimers.push(callback);
+      return loaderTimers.length;
+    },
+    clearTimeout() {},
+  };
+  vm.runInNewContext(
+    await fs.readFile(path.join(root, "content/labs/curvature/ui/data-loader.js"), "utf8"),
+    loaderContext,
   );
-  for (const field of fields) {
-    if (!(field.key in derived)) throw Error(`Unresolved MPC parameter: ${field.key}`);
-    if (typeof derived[field.key] === "number" && !Number.isFinite(derived[field.key]))
-      throw Error(`Non-finite MPC parameter: ${field.key}`);
-  }
-  if (derived["params.K_I_T"] !== (target === "sigma" ? 0.12 : 0.34))
-    throw Error("Temperature integral gain did not follow target");
+  const stalledLoad = loaderContext.window.CrystalData.load("example");
+  const timeoutCheck = assert.rejects(stalledLoad, /timed out/);
+  loaderTimers[0]();
+  await timeoutCheck;
+  const retryLoad = loaderContext.window.CrystalData.load("example");
+  const retryCheck = assert.rejects(retryLoad, /could not be loaded/);
+  assert.equal(loaderScripts.length, 2);
+  loaderScripts[1].onerror();
+  await retryCheck;
+  const cancelledLocal = loaderContext.window.CrystalData.load("example");
+  const cancelCheck = assert.rejects(cancelledLocal, { name: "AbortError" });
+  loaderContext.window.CrystalData.cancel();
+  await cancelCheck;
 }
-for (const mode of ["MPC", "PI"])
+
+if (labs.includes("mpcrystal")) {
+  const chartContext = { window: {} };
+  vm.runInNewContext(
+    await fs.readFile(path.join(root, "content/labs/mpcrystal/ui/chart-schema.js"), "utf8"),
+    chartContext,
+  );
+  const chartSchema = chartContext.window.MPCChartSchema;
+  assert.equal(
+    new Set(chartSchema.panels.map((panel) => panel.id)).size,
+    chartSchema.panels.length,
+  );
+  for (const panel of chartSchema.panels)
+    for (const key of panel.keys) assert.ok(chartSchema.curves[key], `Missing chart curve: ${key}`);
+  for (const [, colour] of Object.values(chartSchema.curves))
+    assert.ok(chartSchema.coloursDefault[colour], `Missing chart colour: ${colour}`);
+  const mpc = require("../content/labs/mpcrystal/ui/engine.js");
+  const schemaContext = { window: {} };
+  vm.runInNewContext(
+    await fs.readFile(path.join(root, "content/labs/mpcrystal/ui/schema.js"), "utf8"),
+    schemaContext,
+  );
+  const fields = schemaContext.window.PARAMETER_GROUPS.flatMap((group) => group.fields);
+  const fieldKeys = fields.map((field) => field.key);
+  if (new Set(fieldKeys).size !== fieldKeys.length) throw Error("Duplicate MPC parameter fields");
+  for (const key of [
+    "params.K_I_T",
+    "params.K_I_T_sigma",
+    "params.K_I_T_G",
+    "params.K_P_T_applied",
+  ])
+    if (!fieldKeys.includes(key)) throw Error(`Missing temperature gain: ${key}`);
   for (const target of ["sigma", "G"]) {
-    const simulation = new mpc.Simulation(mpc.defaults, { mode, target });
-    while (simulation.step()) {}
-    if (simulation.history.length !== simulation.p.steps) throw Error("Incomplete MPC run");
+    const derived = mpc.derive(
+      { ...mpc.defaults, "params.K_I_T_sigma": 0.12, "params.K_I_T_G": 0.34 },
+      target,
+    );
+    for (const field of fields) {
+      if (!(field.key in derived)) throw Error(`Unresolved MPC parameter: ${field.key}`);
+      if (typeof derived[field.key] === "number" && !Number.isFinite(derived[field.key]))
+        throw Error(`Non-finite MPC parameter: ${field.key}`);
+    }
+    if (derived["params.K_I_T"] !== (target === "sigma" ? 0.12 : 0.34))
+      throw Error("Temperature integral gain did not follow target");
   }
-// Switching targets after the former sigma limit must preserve the run budget.
-const switchedRun = new mpc.Simulation(
-  { ...mpc.defaults, steps: 1100 },
-  { mode: "PI", target: "G" },
-);
-for (let i = 0; i < 1000; i++) assert.ok(switchedRun.step());
-switchedRun.update(switchedRun.values, { target: "sigma" });
-assert.equal(switchedRun.p.steps, 1100);
-assert.ok(switchedRun.step());
-switchedRun.update(switchedRun.values, { target: "G" });
-assert.equal(switchedRun.p.steps, 1100);
-while (switchedRun.step()) {}
-assert.equal(switchedRun.history.length, 1100);
-assert.ok(fieldKeys.includes("steps"));
-assert.ok(!fieldKeys.includes("steps_sigma") && !fieldKeys.includes("steps_G"));
-assert.throws(() => mpc.validate({ ...mpc.defaults, steps: 0 }));
-assert.throws(() => mpc.validate({ ...mpc.defaults, steps: 1.5 }));
+  for (const mode of ["MPC", "PI"])
+    for (const target of ["sigma", "G"]) {
+      const simulation = new mpc.Simulation(mpc.defaults, { mode, target });
+      while (simulation.step()) {}
+      if (simulation.history.length !== simulation.p.steps) throw Error("Incomplete MPC run");
+    }
+  // Switching targets after the former sigma limit must preserve the run budget.
+  const switchedRun = new mpc.Simulation(
+    { ...mpc.defaults, steps: 1100 },
+    { mode: "PI", target: "G" },
+  );
+  for (let i = 0; i < 1000; i++) assert.ok(switchedRun.step());
+  switchedRun.update(switchedRun.values, { target: "sigma" });
+  assert.equal(switchedRun.p.steps, 1100);
+  assert.ok(switchedRun.step());
+  switchedRun.update(switchedRun.values, { target: "G" });
+  assert.equal(switchedRun.p.steps, 1100);
+  while (switchedRun.step()) {}
+  assert.equal(switchedRun.history.length, 1100);
+  assert.ok(fieldKeys.includes("steps"));
+  assert.ok(!fieldKeys.includes("steps_sigma") && !fieldKeys.includes("steps_G"));
+  assert.throws(() => mpc.validate({ ...mpc.defaults, steps: 0 }));
+  assert.throws(() => mpc.validate({ ...mpc.defaults, steps: 1.5 }));
+}
+
 if (labs.includes("orbitalflatness")) {
   const orbital = require("../content/labs/orbitalflatness/ui/engine.js");
   for (const dimension of [1, 2, 3]) {
@@ -207,5 +223,5 @@ if (labs.includes("orbitalflatness")) {
   }
 }
 console.log(
-  `${files.length} scripts passed syntax checks; default MPC/PI runs completed${labs.includes("orbitalflatness") ? "; three Orbital dimensions completed" : "; Orbital checks skipped (Lab not present)"}.`,
+  `${files.length} scripts passed syntax checks; checks completed for present Labs: ${labs.join(", ") || "none"}.`,
 );

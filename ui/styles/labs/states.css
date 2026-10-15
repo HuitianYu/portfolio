@@ -246,6 +246,7 @@ html:root body .fixed-workspace-header .header-module > .module-popover {
 .operation-status[data-state="active"]::before,
 .status[data-state="active"] #status-dot {
   animation: lab-status-breathe 2.4s ease-in-out infinite;
+  animation-delay: var(--lab-light-phase, 0ms);
 }
 @keyframes lab-status-breathe {
   0%,

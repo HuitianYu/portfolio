@@ -412,6 +412,7 @@
         </div>
         <div id="simulation-progress" class="progress-status analysis-progress">
           <div class="progress-caption">
+            <span class="source-badge" data-source="local">Local</span>
             <span data-progress-message role="status">Simulation progress</span>
             <span data-progress-detail>0%</span>
           </div>

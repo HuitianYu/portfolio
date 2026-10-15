@@ -659,7 +659,7 @@
           <div class="progress-caption">
             <span class="data-source source-badge" data-source="local" id="data-source">Local</span>
             <span id="status" data-progress-message role="status">Ready</span>
-            <span id="progress-percent">0%</span>
+            <span id="progress-percent" data-progress-detail>0%</span>
           </div>
           <div
             aria-valuemax="100"

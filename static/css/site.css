@@ -2320,9 +2320,44 @@ body.lab-workspace {
 body.lab-workspace > .site-footer {
   flex: none;
 }
+/* The frame and its containing main must use the same measured header height.
+   Prevent frame overflow from placing the global footer over the workspace. */
+body.lab-workspace > #main {
+  flex: none;
+  height: auto !important;
+  min-height: 0;
+}
+body.lab-workspace .lab-shell {
+  flex: none;
+  height: auto;
+}
 body.lab-workspace .lab-shell iframe {
-  height: calc(100dvh - var(--site-header-height, 160px)) !important;
-  min-height: 560px !important;
+  flex: none;
+  height: max(280px, calc(100dvh - var(--site-header-size, 160px))) !important;
+  min-height: 0 !important;
+}
+
+/* Global document flow: footer never inherits workspace/header positioning. */
+body {
+  min-height: 100dvh;
+  display: flex;
+  flex-direction: column;
+}
+body > #main {
+  flex: 1 0 auto;
+  min-width: 0;
+}
+body > .site-footer {
+  position: static;
+  inset: auto;
+  transform: none;
+  flex: 0 0 auto;
+  width: 100%;
+  margin: 0 auto;
+  clear: both;
+}
+body.lab-workspace > #main {
+  flex: 0 0 auto;
 }
 
 /* Source: ui/styles/site/navigation.css */

@@ -623,18 +623,16 @@
       n >= p.steps ? "complete" : running ? (paused ? "paused" : "running") : "ready";
     const progressMessage =
       n >= p.steps ? "Complete" : running ? (paused ? "Paused" : "Simulating…") : "Ready";
-    window.LabUI.progress($("simulation-progress"), {
+    window.LabUI.task({
+      root: $("simulation-progress"),
+      button: $("pause"),
+      kind: "calculation",
       state: progressState,
       value: progressValue,
       message: progressMessage,
       detail: `${n} / ${p.steps} steps`,
     });
-    window.LabUI.operationState(
-      $("pause"),
-      progressState,
-      `${progressMessage} · ${n} / ${p.steps} steps`,
-      progressValue,
-    );
+
     $("step").disabled = !sim || !paused;
     $("sensor").disabled = !running;
     $("seed").disabled = !running;
@@ -653,13 +651,20 @@
     $("sensor-note").classList.toggle("active-status", sensor);
     $("sensor-note").dataset.state = moduleState(sensor);
     $("adapt-note").dataset.state = moduleState(adaptive);
-    $("seed-note").dataset.state = sim?.seedPending
-      ? "pending"
-      : sim?.sizes.length
-        ? "complete"
-        : "inactive";
+    $("seed-note").dataset.state = !running
+      ? "inactive"
+      : paused && (sim?.seedPending || sim?.sizes.length)
+        ? "paused"
+        : sim?.seedPending
+          ? "pending"
+          : sim?.sizes.length
+            ? "complete"
+            : "inactive";
     $("adapt-note").classList.toggle("active-status", adaptive);
-    $("seed-note").classList.toggle("active-status", !!(sim?.seedPending || sim?.sizes.length));
+    $("seed-note").classList.toggle(
+      "active-status",
+      !!(running && (sim?.seedPending || sim?.sizes.length)),
+    );
     $("sensor").textContent = sensor ? "Stop GSensor" : "Start GSensor";
     $("sensor").classList.toggle("on", sensor);
     $("sensor").setAttribute("aria-pressed", sensor);
@@ -690,12 +695,13 @@
       b.title = main.textContent;
       b.disabled = main.disabled;
       if (b.dataset.action === "pause") {
-        window.LabUI.operationState(
-          b,
-          progressState,
-          `${progressMessage} · ${n} / ${p.steps} steps`,
-          progressValue,
-        );
+        window.LabUI.task({
+          button: b,
+          kind: "calculation",
+          state: progressState,
+          value: progressValue,
+          message: `${progressMessage} · ${n} / ${p.steps} steps`,
+        });
         b.dataset.playbackState = running && !paused ? "playing" : "paused";
         b.setAttribute("aria-pressed", String(running && !paused));
       }
@@ -723,11 +729,12 @@
       b.classList.toggle("stop-action", main.classList.contains("stop-action"));
       b.disabled = main.disabled;
       const note = b.closest(".header-module")?.querySelector("small,.status");
-      b.dataset.state = note?.dataset.state || "ready";
+      b.dataset.state = running ? note?.dataset.state || "ready" : "inactive";
       b.title = [main.title, note?.textContent.trim()].filter(Boolean).join(" · ");
       if (b.dataset.action === "seed") b.removeAttribute("aria-pressed");
       else b.setAttribute("aria-pressed", main.getAttribute("aria-pressed") || "false");
     });
+    window.LabUI.syncStatusLights();
     const r = sim?.history.at(-1);
     const metrics = [
       [

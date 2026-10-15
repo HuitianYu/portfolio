@@ -1,0 +1,11 @@
+{{ $destination := .Destination }}
+{{ $url := urls.Parse $destination }}
+{{ $pagePath := $url.Path }}
+{{ $isContent := and (not $url.IsAbs) (ne $pagePath "") (eq (path.Ext $pagePath) "") }}
+{{ if and $isContent (not (.Page.GetPage $pagePath)) }}
+  {{ .Text | safeHTML }}
+{{ else }}
+  <a href="{{ $destination | safeURL }}" {{ with .Title }}title="{{ . }}"{{ end }}>
+    {{ .Text | safeHTML }}
+  </a>
+{{ end }}

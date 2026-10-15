@@ -14,6 +14,9 @@ export async function checkLabRuntime(root) {
       contains: (name) => this.classes.has(name),
       toggle: (name, active) => (active ? this.classes.add(name) : this.classes.delete(name)),
     };
+    removeAttribute(name) {
+      delete this.attributes[name];
+    }
     setAttribute(name, value) {
       this.attributes[name] = value;
     }
@@ -171,4 +174,93 @@ export async function checkLabRuntime(root) {
   LabUI.progress(progressRoot, { state: "complete", value: 150 });
   assert.equal(progressTrack.attributes["aria-valuenow"], "100");
   assert.equal(progressDetail.textContent, "100%");
+  let clock = 1000;
+  context.performance = { timeOrigin: 0, now: () => clock };
+  function light() {
+    const properties = {};
+    return {
+      dataset: { state: "inactive" },
+      properties,
+      style: {
+        setProperty: (name, value) => (properties[name] = value),
+        removeProperty: (name) => delete properties[name],
+      },
+    };
+  }
+  const controller = light(),
+    sensor = light();
+  const lights = { querySelectorAll: () => [controller, sensor] };
+  controller.dataset.state = "active";
+  LabUI.syncStatusLights(lights);
+  assert.equal(controller.properties["--lab-light-phase"], "-1000ms");
+  clock = 1300;
+  sensor.dataset.state = "active";
+  LabUI.syncStatusLights(lights);
+  assert.equal(controller.properties["--lab-light-phase"], "-1000ms");
+  assert.equal(sensor.properties["--lab-light-phase"], "-1300ms");
+  assert.equal(
+    300 - parseFloat(controller.properties["--lab-light-phase"]),
+    -parseFloat(sensor.properties["--lab-light-phase"]),
+  );
+  for (const state of ["paused", "inactive"]) {
+    controller.dataset.state = sensor.dataset.state = state;
+    LabUI.syncStatusLights(lights);
+    assert.equal(controller.properties["--lab-light-phase"], undefined);
+    assert.equal(sensor.properties["--lab-light-phase"], undefined);
+  }
+  LabUI.task({ root: progressRoot, kind: "download", state: "running", message: "Loading" });
+  LabUI.task({
+    root: progressRoot,
+    kind: "playback",
+    state: "paused",
+    value: 40,
+    message: "Paused",
+    detail: "Frame 040 / 100",
+  });
+  assert.equal(LabUI.taskState(progressRoot, "download").state, "running");
+  assert.equal(LabUI.taskState(progressRoot, "playback").value, 40);
+  LabUI.task({
+    root: progressRoot,
+    kind: "download",
+    state: "complete",
+    value: 100,
+    message: "Buffered",
+    present: false,
+  });
+  assert.equal(
+    progressRoot.dataset.kind,
+    "playback",
+    "Background download must not replace playback UI",
+  );
+  assert.equal(progressMessage.textContent, "Paused");
+  assert.equal(progressDetail.textContent, "Frame 040 / 100");
+  assert.equal(LabUI.taskState(progressRoot, "download").state, "complete");
+  // Presenting task progress never invents a Play/Pause/Cancel command.
+  for (const kind of ["download", "calculation", "playback"]) {
+    const button = new Element();
+    const properties = {};
+    button.style = { setProperty: (key, value) => (properties[key] = value) };
+    button.textContent = kind === "calculation" ? "Calculate" : "Play";
+    const label = button.textContent;
+    for (const [state, value] of [
+      ["ready", 0],
+      ["running", 35],
+      ["paused", 35],
+      ["complete", 100],
+      ["ready", 0],
+    ]) {
+      LabUI.task({ button, kind, state, value, message: state });
+      assert.equal(
+        button.textContent,
+        label,
+        "Progress presentation must not change command intent",
+      );
+      assert.equal(button.dataset.state, state);
+      assert.equal(properties["--run-progress"], value + "%");
+      assert.equal(
+        button.attributes["aria-busy"],
+        String(kind !== "playback" && state === "running"),
+      );
+    }
+  }
 }
