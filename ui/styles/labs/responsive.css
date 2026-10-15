@@ -178,9 +178,9 @@ html:root body #parameters .parameter-card {
 }
 
 @media (max-width: 380px) {
-  html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
-    width: 90px !important;
-    flex-basis: 90px !important;
+  html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-curvature {
+    width: 64px !important;
+    flex-basis: 64px !important;
   }
   html:root body .fixed-workspace-header .crystal-toolbar .crystal-options > summary {
     padding-inline: 8px !important;

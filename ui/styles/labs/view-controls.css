@@ -439,7 +439,7 @@ html body .crystal-toolbar .crystal-control-crystal {
 html body .crystal-toolbar .crystal-control-geometry {
   flex: 0 1 140px;
 }
-html body .crystal-toolbar .crystal-control-render-mode {
+html body .crystal-toolbar .crystal-control-curvature {
   flex: 0 1 110px;
 }
 html body .fixed-workspace-header .crystal-toolbar select {
@@ -663,9 +663,16 @@ html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-geometr
   flex: 0 0 94px !important;
   width: 94px;
 }
-html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
-  flex: 0 0 100px !important;
-  width: 100px;
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-curvature {
+  flex: 0 0 64px !important;
+  width: 64px;
+}
+
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-estimator {
+  flex: 0 0 110px !important;
+  width: 110px;
+  min-width: 0;
+  align-self: center;
 }
 html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) > .secondary-controls {
   order: 2;
@@ -695,10 +702,10 @@ html:root body .fixed-workspace-header .crystal-toolbar .crystal-picker .crystal
 html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) {
   align-items: center !important;
 }
-html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-curvature {
   align-self: center;
-  width: 112px;
-  flex: 0 0 112px !important;
+  width: 64px;
+  flex: 0 0 64px !important;
 }
 
 html:root body .fixed-workspace-header #calculation-mode {
@@ -945,7 +952,7 @@ html:root
   body
   #parameters
   #curvature-calculation
-  :is(#field-trigger, select, input:not([type="checkbox"])) {
+  :is(#field-trigger, #normalization-trigger, select, input:not([type="checkbox"])) {
   height: var(--ui-field) !important;
   min-height: var(--ui-field) !important;
   box-sizing: border-box;
@@ -1255,4 +1262,43 @@ html:root body .fixed-workspace-header .mode-toggle[data-progress-state="running
 }
 html:root body .fixed-workspace-header .mode-toggle[data-progress-state="complete"] {
   background-image: none;
+}
+
+/* The formula control follows the neighbouring native select dimensions. */
+html:root body .fixed-workspace-header #toolbar-field-trigger {
+  box-sizing: border-box;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  max-height: var(--ui-control-compact) !important;
+  padding: 0 10px !important;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--teal);
+  font: 12px / normal var(--sans);
+}
+html:root body #toolbar-field-trigger::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  margin-left: auto;
+}
+html:root body #toolbar-field-trigger:focus,
+html:root body #toolbar-field-trigger:focus-visible {
+  box-shadow: none !important;
+  outline: 2px solid var(--teal);
+  outline-offset: -2px !important;
+}
+
+.normalization-control > .parameter-label {
+  display: block;
+  margin-bottom: 8px;
+}
+#parameters #normalization-trigger {
+  display: flex;
+  align-items: center;
 }

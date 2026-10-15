@@ -9,6 +9,8 @@ html body .plot-display-controls .plot-rotation-controls {
 html body .plot-display-controls :is(.view-control-group, .plot-rotation-controls > label) {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
   gap: 5px;
   margin: 0;
   font-size: 12px;

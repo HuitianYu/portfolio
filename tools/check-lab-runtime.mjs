@@ -27,6 +27,36 @@ export async function checkLabRuntime(root) {
   const context = { window: {}, document: {} };
   vm.runInNewContext(await fs.readFile(new URL("static/js/lab-runtime.js", root), "utf8"), context);
   const { LabWorkspace, LabUI } = context.window;
+  const { LabMath } = context.window;
+  assert.equal(LabMath.plain(String.raw`\kappa_{1} \cdot d_{\mathrm e}`), "κ_1 · d_e");
+  const textNode = {
+    nodeValue: String.raw`Value $\gamma_1$ and \(N_{\mathrm v}\)`,
+    parentElement: { closest: () => null },
+  };
+  context.NodeFilter = { SHOW_TEXT: 4 };
+  context.document.createTreeWalker = () => {
+    let read = false;
+    return { currentNode: textNode, nextNode: () => !read && (read = true) };
+  };
+  await LabMath.typeset([{}]);
+  assert.equal(textNode.nodeValue, "Value γ_1 and N_v");
+  const scientific = [1, 2, 3];
+  await LabMath.plot(
+    (element, data, layout, config) => {
+      assert.equal(data[0].name, "γ_1");
+      assert.equal(data[0].x, scientific);
+      assert.equal(layout.yaxis.title.text, "N_v");
+      assert.equal(config.typesetMath, false);
+    },
+    {},
+    [{ name: String.raw`$\gamma_1$`, x: scientific }],
+    { yaxis: { title: { text: String.raw`$N_{\mathrm v}$` } } },
+    {},
+  );
+  context.setTimeout = setTimeout;
+  context.clearTimeout = clearTimeout;
+  await assert.rejects(LabMath.bounded(new Promise(() => {}), 5), /timed out/);
+
   const removedButtons = ["lasso2d", "sendDataToCloud"];
   const chartOptions = { format: "svg", width: 1100 };
   const chartConfig = context.window.LabCharts.config({

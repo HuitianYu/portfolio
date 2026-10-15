@@ -83,7 +83,7 @@
               </button>
             </div>
           </div>
-          <div aria-label="Crystal and rendering selection" class="crystal-toolbar" role="group">
+          <div aria-label="Crystal and calculation selection" class="crystal-toolbar" role="group">
             <details class="toolbar-options crystal-options">
               <summary>Crystal</summary>
               <div class="crystal-picker">
@@ -108,12 +108,46 @@
                 </label>
               </div>
             </details>
-            <label class="crystal-control crystal-control-render-mode">
-              <select aria-label="Rendering" id="render-mode" title="Rendering">
-                <option value="solid">Surface</option>
-                <option selected="" value="continuous">Curvature</option>
-                <option value="discrete">Classes</option>
-                <option value="weights">Weights</option>
+            <div class="crystal-control crystal-control-curvature math-select toolbar-math-select">
+              <button
+                id="toolbar-field-trigger"
+                type="button"
+                role="combobox"
+                aria-label="Curvature calculation"
+                aria-haspopup="listbox"
+                aria-controls="toolbar-field-menu"
+                aria-expanded="false"
+              >
+                <span class="inline-formula formula-pending">H</span>
+              </button>
+              <div
+                id="toolbar-field-menu"
+                class="math-menu"
+                role="listbox"
+                aria-label="Curvature calculation"
+                hidden
+              ></div>
+              <select
+                hidden
+                aria-hidden="true"
+                id="toolbar-curvature"
+                aria-label="Curvature calculation"
+                title="Curvature calculation"
+              >
+                <option value="H" selected>H</option>
+                <option value="K">K</option>
+                <option value="k1">κ₁</option>
+                <option value="k2">κ₂</option>
+              </select>
+            </div>
+            <label class="crystal-control crystal-control-estimator">
+              <select
+                id="toolbar-estimator"
+                aria-label="Roundness estimator"
+                title="Roundness estimator"
+              >
+                <option value="weights" selected>Weighted</option>
+                <option value="discrete">Classified</option>
               </select>
             </label>
           </div>
@@ -466,6 +500,33 @@
                   <option value="discrete">Discrete classified</option>
                 </select>
               </label>
+              <div class="normalization-control">
+                <span class="parameter-label">Normalization</span>
+                <div class="math-select">
+                  <button
+                    id="normalization-trigger"
+                    type="button"
+                    role="combobox"
+                    aria-label="Normalization"
+                    aria-haspopup="listbox"
+                    aria-controls="normalization-menu"
+                    aria-expanded="false"
+                  >
+                    <span class="inline-formula formula-pending">dₑ</span>
+                  </button>
+                  <div
+                    class="math-menu"
+                    id="normalization-menu"
+                    role="listbox"
+                    aria-label="Normalization"
+                    hidden
+                  ></div>
+                  <select id="scale" hidden aria-hidden="true">
+                    <option value="native">No</option>
+                    <option value="normalized" selected>dₑ</option>
+                  </select>
+                </div>
+              </div>
               <div hidden="" id="otsu-settings">
                 <label>
                   Number of classes
@@ -634,22 +695,26 @@
               <div>
                 <span>
                   Vertices
-                  <i>N</i>
-                  <sub>v</sub>
+                  <span class="metric-symbol formula-pending" id="vertices-symbol">
+                    <i>N</i>
+                    <sub>v</sub>
+                  </span>
                   [#]
                 </span>
                 <strong id="vertices">—</strong>
-                <small>Original surface</small>
+                <small>Mesh vertices</small>
               </div>
               <div>
                 <span>
                   Triangles
-                  <i>N</i>
-                  <sub>f</sub>
+                  <span class="metric-symbol formula-pending" id="faces-symbol">
+                    <i>N</i>
+                    <sub>f</sub>
+                  </span>
                   [#]
                 </span>
                 <strong id="faces">—</strong>
-                <small>No decimation</small>
+                <small>Mesh triangles</small>
               </div>
               <div aria-hidden="true" hidden="">
                 <span>Geometry</span>
@@ -660,6 +725,15 @@
             <div class="plotcard">
               <div aria-label="Surface appearance" class="plot-display-controls" role="group">
                 <label>
+                  Rendering
+                  <select aria-label="Rendering" id="render-mode" title="Rendering">
+                    <option value="solid">Surface</option>
+                    <option selected="" value="continuous">Curvature</option>
+                    <option value="discrete">Classes</option>
+                    <option value="weights">Weights</option>
+                  </select>
+                </label>
+                <label>
                   Colour scale
                   <select id="palette">
                     <option>Rainbow</option>
@@ -667,32 +741,6 @@
                     <option>RdBu</option>
                     <option>Turbo</option>
                   </select>
-                </label>
-                <label>
-                  Coordinates
-                  <select aria-hidden="true" hidden="" id="scale">
-                    <option value="normalized">Normalised</option>
-                    <option value="native">Original</option>
-                  </select>
-                  <span hidden="" id="coordinate-note"></span>
-                  <div aria-label="Coordinates" class="coordinate-toggle" role="group">
-                    <button
-                      aria-pressed="true"
-                      data-coordinate="normalized"
-                      title="Coordinates normalised by equivalent diameter"
-                      type="button"
-                    >
-                      Normalised
-                    </button>
-                    <button
-                      aria-pressed="false"
-                      data-coordinate="native"
-                      title="Original coordinates"
-                      type="button"
-                    >
-                      Original
-                    </button>
-                  </div>
                 </label>
                 <div
                   aria-label="3D view controls"

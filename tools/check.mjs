@@ -1,3 +1,5 @@
+import { checkCurvaturePresentation } from "./check-curvature-presentation.mjs";
+import { checkCurvatureCamera } from "./check-curvature-camera.mjs";
 import "./check-crystal-data.mjs";
 import { checkUIControls } from "./check-ui-controls.mjs";
 import { checkLabRuntime } from "./check-lab-runtime.mjs";
@@ -41,6 +43,8 @@ for (const file of files) {
 }
 await checkUIControls(new URL("../", import.meta.url));
 await checkLabRuntime(new URL("../", import.meta.url));
+await checkCurvatureCamera(new URL("../", import.meta.url));
+await checkCurvaturePresentation(new URL("../", import.meta.url));
 // A stalled local asset must reject and allow a new attempt, rather than stay at 5%.
 const loaderTimers = [],
   loaderScripts = [];

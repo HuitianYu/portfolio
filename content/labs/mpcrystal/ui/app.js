@@ -341,8 +341,7 @@
     mathQueue = mathQueue
       .catch(() => {})
       .then(async () => {
-        if (window.MathJax?.startup?.promise) await MathJax.startup.promise;
-        if (MathJax.typesetPromise) await MathJax.typesetPromise(nodes);
+        await window.LabMath.typeset(nodes);
       });
     return mathQueue;
   }
@@ -1229,7 +1228,8 @@
             showgrid: false,
             zeroline: false,
           };
-        await Plotly.react(
+        await window.LabMath.plot(
+          Plotly.react,
           $("plot-" + panel.id),
           traces,
           layout,

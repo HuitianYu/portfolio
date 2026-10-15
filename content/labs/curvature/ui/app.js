@@ -118,7 +118,6 @@ let filtered = [],
   roundnessInfo = null,
   baseMesh = null,
   rotating = !matchMedia("(prefers-reduced-motion: reduce)").matches,
-  theta = 0,
   loadToken = 0;
 let loadingData = false,
   operationBusy = false;
@@ -690,6 +689,17 @@ for (const id of ["smooth-iterations", "smooth-final", "smooth-strength"])
         300,
       );
   };
+const WEIGHT_COLORSCALE = [
+  [0, "rgb(247,251,255)"],
+  [0.125, "rgb(222,235,247)"],
+  [0.25, "rgb(198,219,239)"],
+  [0.375, "rgb(158,202,225)"],
+  [0.5, "rgb(107,174,214)"],
+  [0.625, "rgb(66,146,198)"],
+  [0.75, "rgb(33,113,181)"],
+  [0.875, "rgb(8,81,156)"],
+  [1, "rgb(8,48,107)"],
+];
 const CLASS_COLOURS = [
   "#1e90ff",
   "#32cd32",
@@ -927,7 +937,8 @@ function drawHistogram(classified) {
     "}\\;" +
     curvatureLabel(axisField, true) +
     "$";
-  Plotly.react(
+  window.LabMath.plot(
+    Plotly.react,
     "histogram",
     traces,
     {
@@ -1023,12 +1034,9 @@ async function updateColourTitle(classified) {
     return;
   }
   try {
-    await MathJax.startup.promise;
+    const tex = classified ? "\\text{Curvature class}" : curvatureLabel($("field").value, true);
+    await renderFormula(element, tex);
     if (token !== colourTitleToken) return;
-    const tex = classified ? "\\text{Curvature class}" : curvatureLabel($("field").value, true),
-      rendered = await MathJax.tex2svgPromise(tex, { display: false });
-    if (token !== colourTitleToken) return;
-    element.replaceChildren(rendered);
     const fill = $("plot").querySelector(".cbfill");
     if (!fill) {
       element.hidden = true;
@@ -1049,7 +1057,6 @@ async function updateColourTitle(classified) {
 }
 let colourMapping = null;
 function draw() {
-  syncCoordinateButtons();
   if (!mesh) return;
   updateMathField();
   $("lighting").disabled = $("field").value !== "solid";
@@ -1059,14 +1066,6 @@ function draw() {
   for (const id of ["cut-left", "cut-right"])
     $(id).disabled = $("limits").disabled || $("limits").value === "full";
   for (const o of $("field").options) if (o.value !== "solid") o.text = curvatureLabel(o.value);
-  const coordinateNote = $("coordinate-note");
-  if ($("scale").value === "normalized") {
-    coordinateNote.replaceChildren(document.createTextNode("Coordinates are divided by "));
-    const symbol = document.createElement("span");
-    coordinateNote.append(symbol);
-    renderFormula(symbol, "d_{\\mathrm{e}}");
-    coordinateNote.append(document.createTextNode("; curvature labels are dimensionless."));
-  } else coordinateNote.textContent = "Coordinate unit: " + nativeUnit() + ".";
   $("discrete").disabled = false;
   const classificationData = classificationForCurrent();
   const classified = $("render-mode").value === "discrete" ? classificationData : null;
@@ -1140,7 +1139,7 @@ function draw() {
   if (field === "weights" && values) {
     trace.cmin = 0;
     trace.cmax = 1;
-    trace.colorscale = "Blues";
+    trace.colorscale = WEIGHT_COLORSCALE;
   }
   colourMapping = { scale: trace.colorscale, lo: trace.cmin, hi: trace.cmax };
   const lightingPresets = {
@@ -1196,7 +1195,8 @@ function draw() {
       gridcolor: "#e6ebe4",
       zeroline: false,
     });
-  Plotly.react(
+  window.LabMath.plot(
+    Plotly.react,
     "plot",
     traces,
     {
@@ -1208,7 +1208,7 @@ function draw() {
         xaxis: axis($("scale").value === "normalized" ? "x/dₑ [–]" : "x [" + nativeUnit() + "]"),
         yaxis: axis($("scale").value === "normalized" ? "y/dₑ [–]" : "y [" + nativeUnit() + "]"),
         zaxis: axis($("scale").value === "normalized" ? "z/dₑ [–]" : "z [" + nativeUnit() + "]"),
-        camera: { eye: { x: 1.5, y: 1.5, z: 1.1 } },
+        camera: readCamera() || { eye: { x: 1.5, y: 1.5, z: 1.1 } },
       },
       uirevision: "surface-camera",
     },
@@ -1240,6 +1240,30 @@ $("rotate").onclick = () => {
 };
 let last = 0,
   rotationFrame = null;
+let rotationUpdating = false,
+  rotationInteractionUntil = 0;
+const rotationPointers = new Set();
+$("plot").addEventListener("pointerdown", (event) => rotationPointers.add(event.pointerId), {
+  passive: true,
+  capture: true,
+});
+for (const eventName of ["pointerup", "pointercancel"])
+  window.addEventListener(
+    eventName,
+    (event) => {
+      if (rotationPointers.delete(event.pointerId))
+        rotationInteractionUntil = performance.now() + 150;
+    },
+    { passive: true, capture: true },
+  );
+$("plot").addEventListener(
+  "wheel",
+  () => {
+    rotationInteractionUntil = performance.now() + 250;
+  },
+  { passive: true, capture: true },
+);
+window.addEventListener("blur", () => rotationPointers.clear());
 function canRotate() {
   return !document.hidden && rotating && mesh && !$("display").hidden;
 }
@@ -1249,19 +1273,47 @@ function syncRotationLoop() {
   last = 0;
   if (canRotate()) rotationFrame = requestAnimationFrame(animate);
 }
+function readCamera() {
+  // Layout camera values may lag behind wheel, drag and touch interactions.
+  return $("plot")._fullLayout?.scene?._scene?.getCamera();
+}
+function rotateCamera(camera, angle) {
+  const cos = Math.cos(angle),
+    sin = Math.sin(angle);
+  const rotate = (v) => ({ x: v.x * cos - v.y * sin, y: v.x * sin + v.y * cos, z: v.z });
+  // Rotate the whole camera frame around the immutable world Z axis through
+  // (0, 0, 0). Neither a panned target nor the camera's up vector defines it.
+  return {
+    ...camera,
+    eye: rotate(camera.eye),
+    center: rotate(camera.center),
+    up: rotate(camera.up),
+  };
+}
 function animate(t) {
   rotationFrame = null;
   if (!canRotate()) return;
   if (!last) last = t;
-  if (t - last > 60) {
-    theta += (numericInput("speed") * (t - last)) / 1000;
-    Plotly.relayout("plot", {
-      "scene.camera.eye": { x: 2 * Math.cos(theta), y: 2 * Math.sin(theta), z: 0.9 },
-    });
+  if (rotationPointers.size || t < rotationInteractionUntil || rotationUpdating) last = t;
+  else if (t - last > 60) {
+    const camera = readCamera();
+    if (camera) {
+      rotationUpdating = true;
+      Promise.resolve(
+        Plotly.relayout("plot", {
+          "scene.camera": rotateCamera(camera, (numericInput("speed") * (t - last)) / 1000),
+        }),
+      )
+        .catch(() => {})
+        .finally(() => {
+          rotationUpdating = false;
+        });
+    }
     last = t;
   }
   rotationFrame = requestAnimationFrame(animate);
 }
+
 document.addEventListener("visibilitychange", syncRotationLoop);
 function nativeUnit() {
   return "µm";
@@ -1425,24 +1477,40 @@ $("positive-only").onchange = () => {
 };
 
 const formulaCache = new Map();
-async function renderFormula(element, tex) {
+async function renderFormula(element, tex, fallback = window.LabMath.plain(tex)) {
   element.dataset.tex = tex;
+  if (!element.querySelector("mjx-container")) element.classList.add("formula-pending");
   try {
-    await MathJax.startup.promise;
+    await window.LabMath.ready();
     if (!formulaCache.has(tex))
       formulaCache.set(tex, MathJax.tex2svgPromise(tex, { display: false }));
-    const node = await formulaCache.get(tex);
+    const node = await window.LabMath.bounded(formulaCache.get(tex));
     if (element.dataset.tex !== tex) return;
     element.replaceChildren(node.cloneNode(true));
+    delete element.dataset.mathFallback;
+    element.title = "";
   } catch (e) {
-    element.textContent = "Formula unavailable";
+    formulaCache.delete(tex);
+    if (element.dataset.tex !== tex) return;
+    element.dataset.mathFallback = "true";
+    element.textContent = fallback;
     element.title = "Formula rendering could not be loaded. Reload the page to retry.";
+  } finally {
+    if (element.dataset.tex === tex) element.classList.remove("formula-pending");
   }
 }
+renderFormula($("vertices-symbol"), "N_{\\mathrm{v}}", "Nᵥ");
+renderFormula($("faces-symbol"), "N_{\\mathrm{f}}", "N𝒻");
+const mathPickers = [
+  { trigger: "field-trigger", menu: "field-menu", compact: false },
+  { trigger: "toolbar-field-trigger", menu: "toolbar-field-menu", compact: true },
+  { trigger: "normalization-trigger", menu: "normalization-menu", normalization: true },
+];
 let mathFieldKey = "";
 function updateMathField() {
+  syncCalculationControls();
   const source = $("curvature-source").value,
-    key = source + "|" + $("scale").value + "|" + nativeUnit();
+    key = source + "|" + $("scale").value;
   if (key === mathFieldKey) return;
   mathFieldKey = key;
   updateWeightFormula();
@@ -1452,36 +1520,94 @@ function updateMathField() {
     k1: "Principal curvature",
     k2: "Principal curvature",
   };
-  function content(e, v) {
-    e.replaceChildren(
-      document.createTextNode(
-        e.id === "field-trigger"
-          ? { H: "Mean", K: "Gaussian", k1: "Principal 1", k2: "Principal 2" }[v]
-          : names[v],
-      ),
-    );
+  const symbols = { H: "H", K: "K", k1: "κ₁", k2: "κ₂" };
+  const texSymbols = { H: "H", K: "K", k1: "\\kappa_1", k2: "\\kappa_2" };
+  async function content(e, v, compact) {
+    const token = `${v}|${compact}|${key}`;
+    e.dataset.contentToken = token;
+    const fragment = document.createDocumentFragment();
+    if (!compact)
+      fragment.append(
+        document.createTextNode(
+          e.id === "field-trigger"
+            ? { H: "Mean", K: "Gaussian", k1: "Principal 1", k2: "Principal 2" }[v]
+            : names[v],
+        ),
+      );
     const f = document.createElement("span");
     f.className = "inline-formula";
-    e.append(f);
-    renderFormula(f, curvatureLabel(v, true));
+    await renderFormula(f, texSymbols[v], symbols[v]);
+    fragment.append(f);
+    if (e.dataset.contentToken === token) e.replaceChildren(fragment);
   }
-  content($("field-trigger"), source);
-  $("field-menu").replaceChildren();
-  for (const value of ["H", "K", "k1", "k2"]) {
-    const b = document.createElement("button");
-    b.type = "button";
-    b.dataset.value = value;
-    b.setAttribute("role", "option");
-    b.setAttribute("aria-selected", value === source);
-    content(b, value);
-    b.onclick = () => {
-      $("curvature-source").value = value;
-      $("field-menu").hidden = true;
-      $("field-trigger").setAttribute("aria-expanded", "false");
-      $("field-trigger").focus();
-      syncCalculationMode();
-    };
-    $("field-menu").append(b);
+  for (const picker of mathPickers) {
+    const trigger = $(picker.trigger),
+      menu = $(picker.menu);
+    if (picker.normalization) {
+      const active = $("scale").value;
+      async function normalizationContent(element, value) {
+        element.dataset.normalization = value;
+        if (value === "native") {
+          element.textContent = "No";
+          return;
+        }
+        const formula = document.createElement("span");
+        formula.className = "inline-formula";
+        await renderFormula(formula, "d_{\\mathrm{e}}", "dₑ");
+        if (element.dataset.normalization === value) element.replaceChildren(formula);
+      }
+      normalizationContent(trigger, active);
+      menu.replaceChildren();
+      for (const value of ["native", "normalized"]) {
+        const option = document.createElement("button");
+        option.type = "button";
+        option.setAttribute("role", "option");
+        option.setAttribute("aria-selected", String(value === active));
+        option.setAttribute(
+          "aria-label",
+          value === "native" ? "No normalization" : "Normalize by equivalent diameter",
+        );
+        normalizationContent(option, value);
+        option.onclick = () => {
+          menu.hidden = true;
+          trigger.setAttribute("aria-expanded", "false");
+          trigger.focus();
+          if (value === $("scale").value) return;
+          $("scale").value = value;
+          mathFieldKey = "";
+          updateMathField();
+          $("scale").onchange();
+        };
+        menu.append(option);
+      }
+      continue;
+    }
+    content(trigger, source, picker.compact);
+    menu.replaceChildren();
+    for (const value of ["H", "K", "k1", "k2"]) {
+      const b = document.createElement("button");
+      b.type = "button";
+      b.dataset.value = value;
+      b.setAttribute("role", "option");
+      b.setAttribute("aria-selected", value === source);
+      b.setAttribute(
+        "aria-label",
+        value === "k1"
+          ? "First principal curvature"
+          : value === "k2"
+            ? "Second principal curvature"
+            : names[value],
+      );
+      content(b, value, picker.compact);
+      b.onclick = () => {
+        $("curvature-source").value = value;
+        menu.hidden = true;
+        trigger.setAttribute("aria-expanded", "false");
+        trigger.focus();
+        syncCalculationMode();
+      };
+      menu.append(b);
+    }
   }
 }
 
@@ -1500,55 +1626,65 @@ function showMathMethod() {
     "Mixed Voronoi vertex areas, angle-weighted normals, angle-defect Gaussian curvature and the signed cotangent Laplacian. Principal curvatures: ";
   const formula = document.createElement("span");
   note.append(formula);
-  renderFormula(formula, "\\kappa_{1,2}=H\\pm\\sqrt{\\max(H^2-K,0)}");
+  renderFormula(formula, "\\kappa_{1,2}=H\\pm\\sqrt{\\max(H^2-K,0)}", "κ₁,₂ = H ± √max(H² − K, 0)");
   note.append(document.createTextNode(". Colour clipping affects display only."));
 }
-$("field-trigger").onclick = (e) => {
-  e.preventDefault();
-  e.stopPropagation();
-  $("field-menu").hidden = !$("field-menu").hidden;
-  $("field-trigger").setAttribute("aria-expanded", String(!$("field-menu").hidden));
-};
-document.addEventListener("click", (e) => {
-  if (!e.target.closest(".math-select")) {
-    $("field-menu").hidden = true;
-    $("field-trigger").setAttribute("aria-expanded", "false");
-  }
-});
-$("field-trigger").onkeydown = (e) => {
-  if (e.key === "Escape") {
-    $("field-menu").hidden = true;
-    $("field-trigger").setAttribute("aria-expanded", "false");
-  }
-  if (e.key === "ArrowDown") {
-    e.preventDefault();
-    $("field-menu").hidden = false;
-    $("field-trigger").setAttribute("aria-expanded", "true");
-    (
-      $("field-menu").querySelector('[aria-selected="true"]') ||
-      $("field-menu").querySelector("button")
-    )?.focus();
-  }
-};
-$("field-menu").onkeydown = (e) => {
-  const options = [...$("field-menu").querySelectorAll("button")],
-    index = options.indexOf(document.activeElement);
-  if (e.key === "ArrowDown" || e.key === "ArrowUp") {
-    e.preventDefault();
-    options[(index + (e.key === "ArrowDown" ? 1 : options.length - 1)) % options.length]?.focus();
-  }
-  if (e.key === "Home" || e.key === "End") {
-    e.preventDefault();
-    options[e.key === "Home" ? 0 : options.length - 1]?.focus();
-  }
-  if (e.key === "Escape") {
+for (const picker of mathPickers) {
+  const trigger = $(picker.trigger),
+    menu = $(picker.menu);
+  trigger.onclick = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    $("field-menu").hidden = true;
-    $("field-trigger").setAttribute("aria-expanded", "false");
-    $("field-trigger").focus();
-  }
-};
+    for (const other of mathPickers) {
+      if (other !== picker) {
+        $(other.menu).hidden = true;
+        $(other.trigger).setAttribute("aria-expanded", "false");
+      }
+    }
+    menu.hidden = !menu.hidden;
+    trigger.setAttribute("aria-expanded", String(!menu.hidden));
+  };
+  document.addEventListener("click", (e) => {
+    if (!trigger.parentElement.contains(e.target)) {
+      menu.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+    }
+  });
+  trigger.onkeydown = (e) => {
+    if (e.key === "Escape") {
+      menu.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+    }
+    if (e.key === "ArrowDown") {
+      e.preventDefault();
+      menu.hidden = false;
+      trigger.setAttribute("aria-expanded", "true");
+      (menu.querySelector('[aria-selected="true"]') || menu.querySelector("button"))?.focus();
+    }
+  };
+  menu.onkeydown = (e) => {
+    const options = [...menu.querySelectorAll("button")],
+      index = options.indexOf(document.activeElement);
+    if (e.key === "ArrowDown" || e.key === "ArrowUp") {
+      e.preventDefault();
+      options[(index + (e.key === "ArrowDown" ? 1 : options.length - 1)) % options.length]?.focus();
+    }
+    if (e.key === "Home" || e.key === "End") {
+      e.preventDefault();
+      options[e.key === "Home" ? 0 : options.length - 1]?.focus();
+    }
+    if (e.key === "Escape") {
+      e.preventDefault();
+      e.stopPropagation();
+      menu.hidden = true;
+      trigger.setAttribute("aria-expanded", "false");
+      trigger.focus();
+    }
+  };
+}
+
+// Render the calculation pickers immediately; crystal downloads need not finish first.
+updateMathField();
 
 function setProgress(
   value,
@@ -1640,7 +1776,6 @@ select(defaultCrystal);
 
 $("reset-all").onclick = async () => {
   rotating = !matchMedia("(prefers-reduced-motion: reduce)").matches;
-  theta = 0;
   renderRotationButton();
   $("rotate").setAttribute("aria-label", rotating ? "Pause rotation" : "Start rotation");
   clearTimeout(smoothTimer);
@@ -1679,6 +1814,7 @@ $("reset-all").onclick = async () => {
   const mode = $("calculation-mode");
   mode.value =
     [...mode.options].find((option) => option.defaultSelected)?.value || mode.options[0].value;
+  syncCalculationControls();
   for (const id of ["sigma-ratio", "weight-order", "cut-left", "cut-right"])
     $(id).value = $(id).defaultValue;
   document.querySelectorAll("input").forEach((input) => {
@@ -1738,7 +1874,12 @@ function updateRoundnessMetric(classified) {
       k2: "second principal curvature",
     }[$("curvature-source").value];
 }
+function syncCalculationControls() {
+  $("toolbar-curvature").value = $("curvature-source").value;
+  $("toolbar-estimator").value = $("calculation-mode").value;
+}
 function syncCalculationMode() {
+  syncCalculationControls();
   const mode = $("calculation-mode").value;
   const rendering = $("render-mode").value;
   $("field").value =
@@ -1760,6 +1901,15 @@ function syncCalculationMode() {
   else draw();
 }
 $("calculation-mode").onchange = syncCalculationMode;
+$("toolbar-curvature").onchange = () => {
+  $("curvature-source").value = $("toolbar-curvature").value;
+  syncCalculationMode();
+};
+$("toolbar-estimator").onchange = () => {
+  $("calculation-mode").value = $("toolbar-estimator").value;
+  syncCalculationMode();
+};
+
 $("render-mode").onchange = () => {
   const mode = $("render-mode").value;
   $("field").value =
@@ -1781,6 +1931,7 @@ function updateWeightFormula() {
     "\\begin{aligned}&w(c;r,n)=1-\\exp\\!\\left[-\\left(\\frac{\\max(c,0)}{\\sqrt{2}\\sigma}\\right)^n\\right]\\\\[4pt]&c=" +
       c +
       ",\\qquad\\sigma=r\\max(c)\\end{aligned}",
+    "w(c; r, n) = 1 − exp[−(max(c, 0) / (√2 σ))^n]; σ = r max(c)",
   );
 }
 updateWeightFormula();
@@ -1837,21 +1988,6 @@ window.addEventListener("lab:suspend", (event) => {
 function renderRotationButton() {
   window.LabUI.playback($("rotate"), { active: rotating, idleLabel: "Rotate" });
 }
-
-function syncCoordinateButtons() {
-  document.querySelectorAll("[data-coordinate]").forEach((button) => {
-    button.setAttribute("aria-pressed", String(button.dataset.coordinate === $("scale").value));
-  });
-}
-document.querySelectorAll("[data-coordinate]").forEach((button) => {
-  button.onclick = () => {
-    if ($("scale").value === button.dataset.coordinate) return;
-    $("scale").value = button.dataset.coordinate;
-    syncCoordinateButtons();
-    $("scale").onchange();
-  };
-});
-syncCoordinateButtons();
 
 for (const [buttonKey, panelKey, selector] of [
   ["parameterPage", "parameterPanel", "[data-parameter-page]"],

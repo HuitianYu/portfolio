@@ -685,6 +685,14 @@ button[data-ui-action].stop-action {
   vertical-align: middle;
 }
 
+/* Formula placeholders reserve their geometry without exposing temporary fonts. */
+.formula-pending {
+  visibility: hidden;
+}
+[data-math-fallback="true"] {
+  font-family: var(--serif);
+}
+
 /* Source: ui/styles/labs/workspace.css */
 /* Working views favour the data; Overview retains the editorial introduction. */
 .workspace-introduction {
@@ -3736,7 +3744,7 @@ html body .crystal-toolbar .crystal-control-crystal {
 html body .crystal-toolbar .crystal-control-geometry {
   flex: 0 1 140px;
 }
-html body .crystal-toolbar .crystal-control-render-mode {
+html body .crystal-toolbar .crystal-control-curvature {
   flex: 0 1 110px;
 }
 html body .fixed-workspace-header .crystal-toolbar select {
@@ -3960,9 +3968,16 @@ html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-geometr
   flex: 0 0 94px !important;
   width: 94px;
 }
-html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
-  flex: 0 0 100px !important;
-  width: 100px;
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-curvature {
+  flex: 0 0 64px !important;
+  width: 64px;
+}
+
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-estimator {
+  flex: 0 0 110px !important;
+  width: 110px;
+  min-width: 0;
+  align-self: center;
 }
 html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) > .secondary-controls {
   order: 2;
@@ -3992,10 +4007,10 @@ html:root body .fixed-workspace-header .crystal-toolbar .crystal-picker .crystal
 html:root body .fixed-workspace-header .headright:has(.crystal-toolbar) {
   align-items: center !important;
 }
-html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
+html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-curvature {
   align-self: center;
-  width: 112px;
-  flex: 0 0 112px !important;
+  width: 64px;
+  flex: 0 0 64px !important;
 }
 
 html:root body .fixed-workspace-header #calculation-mode {
@@ -4242,7 +4257,7 @@ html:root
   body
   #parameters
   #curvature-calculation
-  :is(#field-trigger, select, input:not([type="checkbox"])) {
+  :is(#field-trigger, #normalization-trigger, select, input:not([type="checkbox"])) {
   height: var(--ui-field) !important;
   min-height: var(--ui-field) !important;
   box-sizing: border-box;
@@ -4554,6 +4569,45 @@ html:root body .fixed-workspace-header .mode-toggle[data-progress-state="complet
   background-image: none;
 }
 
+/* The formula control follows the neighbouring native select dimensions. */
+html:root body .fixed-workspace-header #toolbar-field-trigger {
+  box-sizing: border-box;
+  height: var(--ui-control-compact) !important;
+  min-height: var(--ui-control-compact) !important;
+  max-height: var(--ui-control-compact) !important;
+  padding: 0 10px !important;
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--paper);
+  color: var(--teal);
+  font: 12px / normal var(--sans);
+}
+html:root body #toolbar-field-trigger::after {
+  content: "";
+  width: 6px;
+  height: 6px;
+  flex: none;
+  border-right: 1.5px solid currentColor;
+  border-bottom: 1.5px solid currentColor;
+  transform: translateY(-2px) rotate(45deg);
+  margin-left: auto;
+}
+html:root body #toolbar-field-trigger:focus,
+html:root body #toolbar-field-trigger:focus-visible {
+  box-shadow: none !important;
+  outline: 2px solid var(--teal);
+  outline-offset: -2px !important;
+}
+
+.normalization-control > .parameter-label {
+  display: block;
+  margin-bottom: 8px;
+}
+#parameters #normalization-trigger {
+  display: flex;
+  align-items: center;
+}
+
 /* Source: ui/styles/labs/responsive.css */
 /* Responsive foundation for all four Labs. Width controls columns; height controls chrome. */
 :root {
@@ -4735,9 +4789,9 @@ html:root body #parameters .parameter-card {
 }
 
 @media (max-width: 380px) {
-  html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-render-mode {
-    width: 90px !important;
-    flex-basis: 90px !important;
+  html:root body .fixed-workspace-header .crystal-toolbar .crystal-control-curvature {
+    width: 64px !important;
+    flex-basis: 64px !important;
   }
   html:root body .fixed-workspace-header .crystal-toolbar .crystal-options > summary {
     padding-inline: 8px !important;
@@ -5229,6 +5283,8 @@ html body .plot-display-controls .plot-rotation-controls {
 html body .plot-display-controls :is(.view-control-group, .plot-rotation-controls > label) {
   display: flex;
   flex-direction: column;
+  align-items: flex-start;
+  text-align: left;
   gap: 5px;
   margin: 0;
   font-size: 12px;

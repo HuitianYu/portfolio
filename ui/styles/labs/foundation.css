@@ -658,3 +658,11 @@ button[data-ui-action].stop-action {
   margin-right: 6px;
   vertical-align: middle;
 }
+
+/* Formula placeholders reserve their geometry without exposing temporary fonts. */
+.formula-pending {
+  visibility: hidden;
+}
+[data-math-fallback="true"] {
+  font-family: var(--serif);
+}

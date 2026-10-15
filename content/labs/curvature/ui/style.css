@@ -1291,3 +1291,29 @@ input[readonly] {
 .analysis-progress #progress-fill {
   background: var(--teal);
 }
+
+/* Compact formula picker uses the same mathematics and keyboard model as Parameters. */
+.fixed-workspace-header .toolbar-math-select {
+  margin-top: 0;
+}
+.fixed-workspace-header .toolbar-math-select > button {
+  height: var(--ui-control-compact);
+  min-height: var(--ui-control-compact);
+  padding: 0 8px;
+  gap: 4px;
+}
+.toolbar-math-select .inline-formula {
+  margin-left: 0;
+}
+.fixed-workspace-header .toolbar-math-select .math-menu {
+  z-index: 140;
+  max-height: calc(100dvh - 140px);
+  overflow-y: auto;
+}
+.toolbar-math-select .math-menu button {
+  min-height: var(--ui-control-compact);
+  padding: 6px 10px;
+}
+.metric-symbol mjx-container {
+  margin: 0 !important;
+}
