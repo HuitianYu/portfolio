@@ -1,3 +1,4 @@
+{{ $siteIcon := printf "%s?v=%s" ("icons/site-icon.svg" | relURL) (readFile "static/icons/site-icon.svg" | md5) }}
 <!doctype html>
 <html lang="en">
   <head>
@@ -24,15 +25,27 @@
     <meta property="og:image" content="{{ $shareImage | absURL }}" />
     <meta property="og:image:alt" content="{{ .Params.alt | default "Huitian Yu" }}" />
     <meta name="twitter:card" content="summary_large_image" />
-    <link rel="icon" href="{{ "favicon.ico" | relURL }}" sizes="any" />
-    <link rel="icon" href="{{ "icons/site-icon.svg" | relURL }}" type="image/svg+xml" />
-    <link rel="icon" href="{{ "icons/favicon-32.png" | relURL }}" type="image/png" sizes="32x32" />
+    <link
+      rel="icon"
+      href="{{ printf "%s?v=%s" ("favicon.ico" | relURL) (readFile "static/favicon.ico" | md5) }}"
+      sizes="any"
+    />
+    <link rel="icon" href="{{ $siteIcon }}" type="image/svg+xml" />
+    <link
+      rel="icon"
+      href="{{ printf "%s?v=%s" ("icons/favicon-32.png" | relURL) (readFile "static/icons/favicon-32.png" | md5) }}"
+      type="image/png"
+      sizes="32x32"
+    />
     <link
       rel="apple-touch-icon"
-      href="{{ "icons/apple-touch-icon.png" | relURL }}"
+      href="{{ printf "%s?v=%s" ("icons/apple-touch-icon.png" | relURL) (readFile "static/icons/apple-touch-icon.png" | md5) }}"
       sizes="180x180"
     />
-    <link rel="manifest" href="{{ "icons/site.webmanifest" | relURL }}" />
+    <link
+      rel="manifest"
+      href="{{ printf "%s?v=%s" ("icons/site.webmanifest" | relURL) (readFile "static/icons/site.webmanifest" | md5) }}"
+    />
     <link
       rel="stylesheet"
       href="{{ "css/site.css" | relURL }}?v={{ readFile "static/css/site.css" | md5 }}&amp;ui=responsive-20261013"
@@ -63,7 +76,17 @@
     <header class="site-header" id="site-header">
       <div class="header-inner">
         <a class="wordmark" href="{{ "/" | relURL }}">
-          Huitian Yu
+          <b class="wordmark-name">
+            Huitian Yu
+            <img
+              class="header-logo"
+              src="{{ $siteIcon }}"
+              width="20"
+              height="20"
+              alt=""
+              aria-hidden="true"
+            />
+          </b>
           <span>RESEARCH & COMPUTATION</span>
         </a>
         <button
@@ -95,7 +118,17 @@
     </header>
     <main id="main">{{ block "main" . }}{{ end }}</main>
     <footer class="site-footer">
-      <a class="footer-name" href="{{ "/" | relURL }}">Huitian Yu</a>
+      <a class="footer-name" href="{{ "/" | relURL }}">
+        Huitian Yu
+        <img
+          class="footer-logo"
+          src="{{ $siteIcon }}"
+          width="20"
+          height="20"
+          alt=""
+          aria-hidden="true"
+        />
+      </a>
       <span>Crystallization · Control · Scientific computing</span>
       <div>
         <a href="mailto:{{ site.Params.email }}">Email {{ partial "external-link-mark.html" . }}</a>

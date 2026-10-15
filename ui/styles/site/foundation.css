@@ -120,6 +120,22 @@ img {
   letter-spacing: -0.8px;
   white-space: nowrap;
 }
+.wordmark-name {
+  display: inline-block;
+  position: relative;
+  padding-right: 30px;
+  font: inherit;
+}
+.header-logo,
+.footer-logo {
+  position: absolute;
+  right: 0;
+  top: 50%;
+  width: 20px;
+  height: 20px;
+  transform: translateY(-50%);
+  border-radius: 4px;
+}
 .wordmark span {
   display: block;
   font: 8px/1 var(--sans);
@@ -458,6 +474,8 @@ img {
   color: var(--muted);
 }
 .footer-name {
+  position: relative;
+  padding-right: 30px;
   font: 20px var(--serif);
   color: var(--ink);
 }
