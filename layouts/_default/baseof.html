@@ -78,14 +78,11 @@
         <a class="wordmark" href="{{ "/" | relURL }}">
           <b class="wordmark-name">
             Huitian Yu
-            <img
+            <i
               class="header-logo"
-              src="{{ $siteIcon }}"
-              width="20"
-              height="20"
-              alt=""
+              style="--brand-mark: url('{{ $siteIcon }}')"
               aria-hidden="true"
-            />
+            ></i>
           </b>
           <span>RESEARCH & COMPUTATION</span>
         </a>
@@ -120,14 +117,7 @@
     <footer class="site-footer">
       <a class="footer-name" href="{{ "/" | relURL }}">
         Huitian Yu
-        <img
-          class="footer-logo"
-          src="{{ $siteIcon }}"
-          width="20"
-          height="20"
-          alt=""
-          aria-hidden="true"
-        />
+        <i class="footer-logo" style="--brand-mark: url('{{ $siteIcon }}')" aria-hidden="true"></i>
       </a>
       <span>Crystallization · Control · Scientific computing</span>
       <div>

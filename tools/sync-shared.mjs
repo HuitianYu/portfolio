@@ -6,6 +6,7 @@ import * as prettier from "prettier";
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const check = process.argv.includes("--check");
 const shared = [
+  ["static/js/lab-math.js", "lab-math.js", ["curvature", "mpcrystal", "orbitalflatness"]],
   ["static/js/ui-controls.js", "ui-controls.js"],
   ["static/js/lab-interface.js", "lab-interface.js"],
   ["static/js/lab-runtime.js", "lab-runtime.js"],
@@ -36,7 +37,8 @@ for (const lab of await fs.readdir(path.join(root, "content/labs"), { withFileTy
     else await fs.writeFile(configPath, generated);
   }
 
-  for (const [source, filename] of shared) {
+  for (const [source, filename, labs] of shared) {
+    if (labs && !labs.includes(lab.name)) continue;
     const target = path.join(root, "content/labs", lab.name, "ui", filename);
     const canonical = await fs.readFile(path.join(root, source));
     const existing = await fs.readFile(target).catch(() => null);

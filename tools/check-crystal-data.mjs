@@ -20,7 +20,7 @@ const mesh = {
 const bytes = gzipSync(
   JSON.stringify({ single: mesh, padding: randomBytes(2400000).toString("base64") }),
 );
-function setup(fetch) {
+function setup(fetch, overrides = {}) {
   const window = {
     LAB_CONFIG: { data: { remoteEnabled: true, recordURL: "https://example.test/records/1" } },
     ARCHIVE_INDEX: { test: { archive: "sample.zip", start: 123, length: bytes.length } },
@@ -31,11 +31,13 @@ function setup(fetch) {
     Blob,
     Uint8Array,
     DecompressionStream,
-    AbortSignal,
+    // Simulate an older runtime without AbortSignal.any/timeout.
+    AbortSignal: {},
     AbortController,
     atob,
     setTimeout,
     clearTimeout,
+    ...overrides,
   });
   return window.CrystalData;
 }
@@ -85,6 +87,30 @@ const cancellation = assert.rejects(cancelled, { name: "AbortError" });
 await Promise.resolve();
 cancellable.cancel();
 await cancellation;
+const deadlines = [],
+  cleared = [];
+const timeoutLoader = setup(
+  (_, options) =>
+    new Promise((resolve, reject) => {
+      options.signal.addEventListener("abort", () => reject(options.signal.reason), { once: true });
+    }),
+  {
+    setTimeout(callback) {
+      deadlines.push(callback);
+      return deadlines.length;
+    },
+    clearTimeout(timer) {
+      cleared.push(timer);
+    },
+  },
+);
+const timedOut = assert.rejects(timeoutLoader.load("test"), /Zenodo timed out/);
+await new Promise((resolve) => setImmediate(resolve));
+deadlines[0]();
+await new Promise((resolve) => setImmediate(resolve));
+deadlines[1]();
+await timedOut;
+assert.deepEqual(cleared, [1, 2]);
 console.log(
   "Cloud ranges, interrupted-part retry, decoded cache, progress, full-archive rejection and incomplete response passed.",
 );

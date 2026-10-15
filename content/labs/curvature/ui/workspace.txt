@@ -28,6 +28,7 @@
     <script defer="" src="vendor/mathjax.js"></script>
     <script src="vendor/plotly.min.js"></script>
     <script src="catalog.js"></script>
+    <script src="engine.js"></script>
     <script defer="" src="app.js?v=20261012-29"></script>
     <script src="archive-index.js"></script>
     <script>
@@ -52,6 +53,7 @@
     <script src="data-loader.js"></script>
     <link data-design-system="" href="design-system.css" rel="stylesheet" />
     <script src="lab-runtime.js"></script>
+    <script src="lab-math.js"></script>
     <script src="ui-controls.js"></script>
   </head>
   <body>
@@ -354,20 +356,9 @@
               <button class="" data-display-parameter="surface">Curvature</button>
             </nav>
             <div data-display-panel="mesh">
-              <details class="input-guide">
-                <summary>Input guide</summary>
-                <p>
-                  Use numbers, scientific notation or scalar expressions, for example
-                  <code>0.5</code>
-                  or
-                  <code>np.pi/6</code>
-                  . Units are shown beside each parameter; coordinate normalisation is controlled
-                  separately.
-                </p>
-              </details>
-              <h3 class="settings-subtitle mesh-smoothing-heading">
-                Mesh smoothing
+              <h3 class="settings-subtitle smoothing-heading">
                 <label class="smoothing-header-toggle" title="Smooth mesh automatically">
+                  Mesh smoothing
                   <input
                     aria-label="Smooth mesh automatically"
                     checked=""
@@ -422,19 +413,18 @@
               </div>
             </div>
             <div data-display-panel="surface" hidden="">
-              <div class="surface-smoothing">
-                <h4 class="settings-subtitle">
+              <h3 class="settings-subtitle smoothing-heading">
+                <label class="smoothing-header-toggle" title="Smooth curvature values">
                   Curvature smoothing
-                  <label class="smoothing-header-toggle" title="Smooth curvature values">
-                    <input
-                      aria-label="Smooth curvature values"
-                      checked=""
-                      id="surface-smooth"
-                      type="checkbox"
-                    />
-                  </label>
-                </h4>
-              </div>
+                  <input
+                    aria-label="Smooth curvature values"
+                    checked=""
+                    id="surface-smooth"
+                    type="checkbox"
+                  />
+                </label>
+              </h3>
+
               <div class="curvature-parameter-fields">
                 <label>
                   Curvature smoothing rule
@@ -636,6 +626,18 @@
             <div class="note weight-formula-note"><span id="weight-formula"></span></div>
           </article>
         </div>
+        <details class="input-guide parameter-help">
+          <summary>Input guide</summary>
+          <p>
+            Enter numbers, scientific notation or scalar expressions, such as
+            <code>0.5</code>
+            ,
+            <code>1e-3</code>
+            or
+            <code>np.pi/6</code>
+            . Units are shown beside each parameter. Set normalisation under Curvature.
+          </p>
+        </details>
       </section>
       <section hidden="" id="display">
         <div class="intro workspace-introduction">

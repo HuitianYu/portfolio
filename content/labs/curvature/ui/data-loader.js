@@ -2,6 +2,25 @@
   const cache = new Map(),
     pending = new Map();
   let activeDownload;
+  // Link cancellation and a per-part deadline without newer AbortSignal helpers.
+  function timedRequest(parent, milliseconds) {
+    const controller = new AbortController();
+    const cancel = () => controller.abort(parent.reason);
+    if (parent.aborted) cancel();
+    else parent.addEventListener("abort", cancel, { once: true });
+    const timer = setTimeout(() => {
+      const error = Error("Download timed out.");
+      error.name = "TimeoutError";
+      controller.abort(error);
+    }, milliseconds);
+    return {
+      signal: controller.signal,
+      dispose() {
+        clearTimeout(timer);
+        parent.removeEventListener("abort", cancel);
+      },
+    };
+  }
   async function loadLocal(id, signal) {
     if (window.EMBEDDED?.[id] || !window.EMBEDDED_INDEX?.[id]) return;
     if (!pending.has(id))
@@ -144,12 +163,13 @@
       const length = Math.min(partSize, entry.length - offset);
       let part;
       for (let attempt = 0; attempt < 2; attempt++) {
+        const request = timedRequest(signal, 90000);
         try {
           const start = entry.start + offset,
             end = start + length - 1;
           const response = await fetch(url, {
             headers: { Range: `bytes=${start}-${end}` },
-            signal: AbortSignal.any([signal, AbortSignal.timeout(90000)]),
+            signal: request.signal,
           });
           if (response.status !== 206) {
             await response.body?.cancel();
@@ -189,6 +209,8 @@
             throw Error(
               `Cloud download failed at ${Math.round((offset / entry.length) * 100)}%. Retry, or choose a Local example. ${error.name === "TimeoutError" ? "Zenodo timed out." : error.message}`,
             );
+        } finally {
+          request.dispose();
         }
       }
       chunks.push(part);

@@ -20,6 +20,7 @@ embedded contexts. Do not append another global override to fix one local card.
 - `static/js/ui-controls.js`: disclosure timing, outside/touch handling, and roving
   arrow-key focus for both static and rebuilt choice rows.
 - `static/js/lab-runtime.js`: section/panel selection, plot font, playback presentation.
+- `static/js/lab-math.js`: formula readiness, readable failure fallback and chart-label fallback.
 - `static/js/lab-interface.js`: workspace layout, keyboard navigation, menus,
   resize reporting, and page lifecycle. It owns no scientific state.
 - Each Lab `app.js`: application state, rendering, and scientific orchestration.
@@ -56,3 +57,23 @@ Run `npm run format`, `npm run sync:shared`, `npm run format:check`,
 `npm run check:shared`, `npm run check`, then a clean Hugo build.
 Check 320px portrait, 844px landscape, and 1440px desktop; include nested tabs,
 open menus, running/paused states, and independent Lab pages.
+
+## Curvature boundaries
+
+`content/labs/curvature/ui/engine.js` owns pure geometry, smoothing, classification
+and weighting functions. `worker.js` imports that same engine and defines the
+four-operation message protocol. `app.js` owns DOM events, task cancellation,
+progress and view state. Do not serialize functions into worker source strings.
+The engine runs without browser globals and has scale-law and worker-parity checks.
+
+## Large assets
+
+Crystal examples and recorded experiments account for most source size; splitting
+application code does not compress these resources. Keep scientific datasets and
+recordings separate from interface modules. StableGSensor uses the MP4 files in
+`assets/`; the obsolete unreferenced Base64 duplicate has been removed after
+byte-for-byte verification. Do not reintroduce embedded copies of those videos.
+
+MPCrystal chart names, units, curve styles, colours and panel grouping live in
+`chart-schema.js`. Parameter definitions stay in `schema.js`; simulation state
+and redraw scheduling stay in `app.js`.

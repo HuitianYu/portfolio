@@ -773,11 +773,6 @@ input[readonly] {
 .surface-settings label:has(select:disabled) {
   color: var(--muted);
 }
-.surface-smoothing,
-.surface-coordinates {
-  border-left: 1px solid var(--line);
-  padding-left: 24px;
-}
 .surface-settings > div > label:first-child {
   margin-top: 0;
 }
@@ -785,21 +780,10 @@ input[readonly] {
   .surface-settings {
     grid-template-columns: 1fr 1fr;
   }
-  .surface-coordinates {
-    grid-column: 1/-1;
-    border-left: 0;
-    border-top: 1px solid var(--line);
-    padding: 18px 0 0;
-  }
 }
 @media (max-width: 600px) {
   .surface-settings {
     grid-template-columns: 1fr;
-  }
-  .surface-smoothing {
-    border-left: 0;
-    border-top: 1px solid var(--line);
-    padding: 18px 0 0;
   }
 }
 
@@ -820,12 +804,6 @@ input[readonly] {
 .surface-settings {
   grid-template-columns: 1.2fr 1fr 1fr;
   gap: 32px;
-}
-.surface-smoothing input[type="number"] {
-  max-width: 180px;
-}
-.surface-smoothing select {
-  max-width: 240px;
 }
 .surface-settings label {
   margin-top: 20px;
@@ -901,9 +879,6 @@ input[readonly] {
   border-radius: 5px;
   background: var(--paper);
   color: var(--ink);
-}
-.surface-smoothing input[type="text"] {
-  max-width: 180px;
 }
 .metrics {
   grid-template-columns: repeat(5, minmax(0, 1fr));
@@ -1062,11 +1037,6 @@ input[readonly] {
 .surface-settings input[type="text"] {
   height: 37px;
 }
-.surface-smoothing select,
-.surface-smoothing input[type="text"] {
-  width: 100%;
-  max-width: none;
-}
 .surface-settings > div > label.check {
   height: 62px;
   margin: 18px 0 0;
@@ -1074,28 +1044,6 @@ input[readonly] {
 }
 .surface-settings .tail-limits label {
   margin-top: 12px;
-}
-
-.mesh-smoothing-heading {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  min-height: 24px;
-}
-.mesh-smoothing-heading .smoothing-header-toggle {
-  display: flex;
-  align-items: center;
-  margin: 0;
-  padding: 0;
-}
-.surface-settings .surface-coordinates > label.check {
-  padding-top: 24px;
-  box-sizing: border-box;
-  justify-content: flex-start;
-}
-.surface-coordinates > label.check input {
-  margin-top: 0;
-  margin-bottom: 0;
 }
 
 .card select:disabled {
@@ -1107,12 +1055,6 @@ input[readonly] {
 }
 .card label:has(select:disabled) {
   color: var(--muted);
-}
-
-.surface-coordinates .coordinate-hint {
-  margin-top: 8px;
-  margin-bottom: 0;
-  line-height: 1.7;
 }
 
 #data-error {

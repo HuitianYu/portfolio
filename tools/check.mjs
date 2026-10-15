@@ -1,3 +1,4 @@
+import { checkCurvatureEngine } from "./check-curvature-engine.mjs";
 import { checkCurvaturePresentation } from "./check-curvature-presentation.mjs";
 import { checkCurvatureCamera } from "./check-curvature-camera.mjs";
 import "./check-crystal-data.mjs";
@@ -43,6 +44,7 @@ for (const file of files) {
 }
 await checkUIControls(new URL("../", import.meta.url));
 await checkLabRuntime(new URL("../", import.meta.url));
+await checkCurvatureEngine(new URL("../", import.meta.url));
 await checkCurvatureCamera(new URL("../", import.meta.url));
 await checkCurvaturePresentation(new URL("../", import.meta.url));
 // A stalled local asset must reject and allow a new attempt, rather than stay at 5%.
@@ -82,6 +84,17 @@ const cancelledLocal = loaderContext.window.CrystalData.load("example");
 const cancelCheck = assert.rejects(cancelledLocal, { name: "AbortError" });
 loaderContext.window.CrystalData.cancel();
 await cancelCheck;
+const chartContext = { window: {} };
+vm.runInNewContext(
+  await fs.readFile(path.join(root, "content/labs/mpcrystal/ui/chart-schema.js"), "utf8"),
+  chartContext,
+);
+const chartSchema = chartContext.window.MPCChartSchema;
+assert.equal(new Set(chartSchema.panels.map((panel) => panel.id)).size, chartSchema.panels.length);
+for (const panel of chartSchema.panels)
+  for (const key of panel.keys) assert.ok(chartSchema.curves[key], `Missing chart curve: ${key}`);
+for (const [, colour] of Object.values(chartSchema.curves))
+  assert.ok(chartSchema.coloursDefault[colour], `Missing chart colour: ${colour}`);
 const mpc = require("../content/labs/mpcrystal/ui/engine.js");
 const schemaContext = { window: {} };
 vm.runInNewContext(

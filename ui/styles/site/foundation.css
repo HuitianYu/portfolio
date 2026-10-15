@@ -123,7 +123,7 @@ img {
 .wordmark-name {
   display: inline-block;
   position: relative;
-  padding-right: 30px;
+  padding-right: 34px;
   font: inherit;
 }
 .header-logo,
@@ -131,10 +131,12 @@ img {
   position: absolute;
   right: 0;
   top: 50%;
-  width: 20px;
-  height: 20px;
+  width: 24px;
+  height: 24px;
   transform: translateY(-50%);
-  border-radius: 4px;
+  background-color: var(--teal);
+  -webkit-mask: var(--brand-mark) center / contain no-repeat;
+  mask: var(--brand-mark) center / contain no-repeat;
 }
 .wordmark span {
   display: block;
@@ -475,7 +477,7 @@ img {
 }
 .footer-name {
   position: relative;
-  padding-right: 30px;
+  padding-right: 34px;
   font: 20px var(--serif);
   color: var(--ink);
 }
@@ -769,7 +771,7 @@ img {
 @media (max-width: 1000px) {
   .container {
     padding-left: 30px;
-    padding-right: 30px;
+    padding-right: 34px;
   }
   .header-inner {
     padding: 20px 30px;

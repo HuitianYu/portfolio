@@ -1827,6 +1827,8 @@ body > .lab-header-toggle {
 }
 
 .input-guide.parameter-help {
+  margin: 24px 0 0;
+  grid-column: 1 / -1;
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;
@@ -3632,8 +3634,7 @@ html body #parameters .parameter-cards {
 html body #parameters .parameter-card {
   min-width: 0;
 }
-html body #parameters .parameter-card > label,
-html body #parameters .surface-smoothing > label {
+html body #parameters .parameter-card > label {
   display: block;
   margin: 12px 0;
 }
@@ -4606,6 +4607,56 @@ html:root body #toolbar-field-trigger:focus-visible {
 #parameters #normalization-trigger {
   display: flex;
   align-items: center;
+}
+
+/* Keep each checkbox beside its title to make the association clear. */
+html body #parameters .smoothing-heading {
+  margin: 0 0 16px;
+  min-height: 24px;
+}
+html body #parameters .smoothing-heading .smoothing-header-toggle {
+  display: inline-flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: auto;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  line-height: 1.4;
+}
+html
+  body
+  :is(
+    .check,
+    .check-label,
+    .smoothing-header-toggle,
+    .choice-options > label,
+    .recording-settings fieldset label
+  ):not([hidden]) {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 8px;
+}
+html
+  body
+  :is(
+    .check,
+    .check-label,
+    .smoothing-header-toggle,
+    .choice-options > label,
+    .recording-settings fieldset label
+  )
+  > input:is([type="checkbox"], [type="radio"]) {
+  flex: 0 0 14px;
+  width: 14px;
+  height: 14px;
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+}
+html body label:is(.check, .check-label, .smoothing-header-toggle)[hidden] {
+  display: none !important;
 }
 
 /* Source: ui/styles/labs/responsive.css */

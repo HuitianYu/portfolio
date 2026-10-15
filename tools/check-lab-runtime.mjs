@@ -26,6 +26,7 @@ export async function checkLabRuntime(root) {
   }
   const context = { window: {}, document: {} };
   vm.runInNewContext(await fs.readFile(new URL("static/js/lab-runtime.js", root), "utf8"), context);
+  vm.runInNewContext(await fs.readFile(new URL("static/js/lab-math.js", root), "utf8"), context);
   const { LabWorkspace, LabUI } = context.window;
   const { LabMath } = context.window;
   assert.equal(LabMath.plain(String.raw`\kappa_{1} \cdot d_{\mathrm e}`), "κ_1 · d_e");

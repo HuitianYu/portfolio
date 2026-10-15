@@ -720,6 +720,8 @@ body > .lab-header-toggle {
 }
 
 .input-guide.parameter-help {
+  margin: 24px 0 0;
+  grid-column: 1 / -1;
   border: 0 !important;
   background: transparent !important;
   box-shadow: none !important;

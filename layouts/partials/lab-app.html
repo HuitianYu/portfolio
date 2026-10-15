@@ -14,7 +14,7 @@
 {{ $document = replace $document "href=\"design-system.css\"" (printf "href=\"%s\"" $shared) }}
 {{ $script := printf "%s?v=%s" ("js/lab-interface.js" | relURL) (readFile "static/js/lab-interface.js" | md5) }}
 {{ $document = replace $document "src=\"lab-interface.js\"" (printf "src=\"%s\"" $script) }}
-{{ range slice "app.js" "style.css" "engine.js" "schema.js" "data-loader.js" "lab-config.js" }}
+{{ range slice "app.js" "style.css" "engine.js" "schema.js" "chart-schema.js" "data-loader.js" "lab-config.js" }}
   {{ $file := . }}{{ with $page.Resources.GetMatch (printf "ui/%s" $file) }}
     {{ $versioned := printf "%s?v=%s" $file (.Content | md5) }}
     {{ $document = replaceRE (printf "(src|href)=\"%s(?:\\?[^\"]*)?\"" (replace $file "." "\\.")) (printf "${1}=\"%s\"" $versioned) $document }}
@@ -22,6 +22,8 @@
 {{ end }}
 {{ $sharedRuntime := printf "%s?v=%s" ("js/lab-runtime.js" | relURL) (readFile "static/js/lab-runtime.js" | md5) }}
 {{ $document = replace $document "src=\"lab-runtime.js\"" (printf "src=\"%s\"" $sharedRuntime) }}
+{{ $math := printf "%s?v=%s" ("js/lab-math.js" | relURL) (readFile "static/js/lab-math.js" | md5) }}
+{{ $document = replace $document "src=\"lab-math.js\"" (printf "src=\"%s\"" $math) }}
 {{ $controls := printf "%s?v=%s" ("js/ui-controls.js" | relURL) (readFile "static/js/ui-controls.js" | md5) }}
 {{ $document = replace $document "src=\"ui-controls.js\"" (printf "src=\"%s\"" $controls) }}
 {{ $app := resources.FromString (printf "labs/%s/ui/index.html" $page.Params.id) $document }}

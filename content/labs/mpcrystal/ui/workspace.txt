@@ -42,9 +42,11 @@
     <script defer="" src="vendor/plotly.min.js"></script>
     <script defer="" src="engine.js"></script>
     <script defer="" src="schema.js"></script>
+    <script defer="" src="chart-schema.js"></script>
     <script defer="" src="app.js"></script>
     <link data-design-system="" href="design-system.css" rel="stylesheet" />
     <script src="lab-runtime.js"></script>
+    <script src="lab-math.js"></script>
     <script src="ui-controls.js"></script>
   </head>
   <body>
@@ -366,16 +368,6 @@
             <option>MPC</option>
             <option>PI</option>
           </select>
-          <details class="input-guide parameter-help">
-            <summary>Input guide</summary>
-            <p>
-              Use numbers, scientific notation or scalar expressions, for example
-              <code>3e-8</code>
-              or
-              <code>np.pi/6</code>
-              . Enter temperatures in kelvin; plots use °C. Shaded inputs are calculated.
-            </p>
-          </details>
         </section>
         <div class="parameter-toolbar">
           <nav aria-label="Parameter categories" class="parameter-tabs" id="parameter-tabs"></nav>
@@ -391,6 +383,16 @@
         ></nav>
         <div id="parameter-groups"></div>
         <p hidden="" id="no-results">No matching parameters.</p>
+        <details class="input-guide parameter-help">
+          <summary>Input guide</summary>
+          <p>
+            Use numbers, scientific notation or scalar expressions, for example
+            <code>3e-8</code>
+            or
+            <code>np.pi/6</code>
+            . Enter temperatures in kelvin; plots use °C. Shaded inputs are calculated.
+          </p>
+        </details>
       </section>
       <section class="workspace-page" hidden="" id="display">
         <div class="page-introduction workspace-introduction">

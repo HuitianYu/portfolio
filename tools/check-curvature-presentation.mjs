@@ -18,6 +18,7 @@ export async function checkCurvaturePresentation(root) {
   ctx.window = ctx;
   vm.createContext(ctx);
   vm.runInContext(await fs.readFile(new URL("static/js/lab-runtime.js", root), "utf8"), ctx);
+  vm.runInContext(await fs.readFile(new URL("static/js/lab-math.js", root), "utf8"), ctx);
   vm.runInContext(
     source.slice(
       source.indexOf("const formulaCache ="),
