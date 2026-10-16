@@ -2,17 +2,22 @@
   "name": "research-portfolio",
   "private": true,
   "scripts": {
-    "build": "npm run sync:shared && npm run format:check && npm run check:shared && npm run check && hugo --minify --cleanDestinationDir",
+    "build": "npm run sync:shared && npm run format:check && npm run check:shared && npm run check && hugo --minify --cleanDestinationDir && npm run check:output",
     "build:styles": "node tools/build-styles.mjs",
     "check:styles": "node tools/build-styles.mjs --check",
     "format": "node tools/format.mjs",
     "format:check": "node tools/format.mjs --check",
-    "sync:shared": "npm run build:styles && node tools/sync-shared.mjs",
-    "check:shared": "npm run check:styles && node tools/sync-shared.mjs --check",
-    "check": "node tools/check.mjs"
+    "sync:shared": "npm run build:styles && npm run build:qr && node tools/sync-shared.mjs",
+    "check:shared": "npm run check:styles && npm run check:qr && node tools/sync-shared.mjs --check",
+    "check": "node tools/check.mjs",
+    "build:qr": "node tools/generate-homepage-qr.mjs",
+    "check:qr": "node tools/generate-homepage-qr.mjs --check",
+    "check:output": "node tools/check-output.mjs"
   },
   "devDependencies": {
     "prettier": "3.6.2",
-    "prettier-plugin-go-template": "0.0.15"
+    "prettier-plugin-go-template": "0.0.15",
+    "qrcode": "^1.5.4",
+    "yaml": "^2.9.1"
   }
 }

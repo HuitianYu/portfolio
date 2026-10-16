@@ -235,37 +235,21 @@
   line-height: 1.5;
 }
 
-/* Workspace height follows actual header/toolbar layout, including mobile wrapping. */
-body.lab-workspace {
-  min-height: 100dvh;
-  height: auto;
-  display: flex;
-  flex-direction: column;
-}
-.lab-workspace > .site-header {
-  flex: none;
-}
-.lab-workspace > main {
-  display: flex;
-  flex-direction: column;
-  flex: 1;
-  min-height: 0;
-}
-.lab-workspace .lab-shell {
-  flex: 1;
-  min-height: 0;
-}
-.lab-workspace .lab-toolbar {
+.lab-toolbar {
   flex-wrap: wrap;
 }
-.lab-workspace .lab-toolbar > div {
+.lab-toolbar > div {
   flex-wrap: wrap;
   min-width: 0;
 }
-.lab-workspace .lab-shell iframe {
-  height: 0 !important;
-  min-height: 0 !important;
-  min-width: 0;
+.lab-shell {
+  width: 100%;
+}
+.lab-shell iframe {
+  display: block;
+  width: 100%;
+  height: 300px;
+  border: 0;
 }
 
 .lab-toolbar-brand {
@@ -524,26 +508,6 @@ body.lab-workspace {
   font: 12px/1.6 var(--sans);
 }
 
-body.lab-workspace > .site-footer {
-  flex: none;
-}
-/* The frame and its containing main must use the same measured header height.
-   Prevent frame overflow from placing the global footer over the workspace. */
-body.lab-workspace > #main {
-  flex: none;
-  height: auto !important;
-  min-height: 0;
-}
-body.lab-workspace .lab-shell {
-  flex: none;
-  height: auto;
-}
-body.lab-workspace .lab-shell iframe {
-  flex: none;
-  height: max(280px, calc(100dvh - var(--site-header-size, 160px))) !important;
-  min-height: 0 !important;
-}
-
 /* Global document flow: footer never inherits workspace/header positioning. */
 body {
   min-height: 100dvh;
@@ -563,6 +527,20 @@ body > .site-footer {
   margin: 0 auto;
   clear: both;
 }
-body.lab-workspace > #main {
-  flex: 0 0 auto;
+
+/* The shared homepage code is centered; its circular silhouette is made of marks. */
+.site-qr {
+  margin: 32px auto 0;
+  display: grid;
+  place-items: center;
+}
+.site-qr-code {
+  display: block;
+  width: 220px;
+  height: 220px;
+}
+.site-qr-art {
+  display: block;
+  width: 100%;
+  height: 100%;
 }

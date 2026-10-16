@@ -486,7 +486,6 @@ img {
   gap: 20px;
 }
 .page-container {
-  min-height: calc(100vh - 190px);
   padding-top: 60px;
   padding-bottom: 90px;
 }
@@ -749,14 +748,6 @@ img {
   font-size: 11px;
   padding: 6px 12px;
 }
-.lab-shell iframe {
-  display: block;
-  width: 100%;
-  height: calc(100dvh - 144px);
-  min-height: 650px;
-  border: 0;
-  background: var(--paper);
-}
 
 @media (min-width: 1500px) {
   .home-hero {
@@ -1006,10 +997,7 @@ img {
   .lab-toolbar a {
     font-size: 10px;
   }
-  .lab-shell iframe {
-    height: calc(100dvh - 140px);
-    min-height: 600px;
-  }
+
   .hero-actions .button {
     padding: 12px 15px;
     gap: 15px;
@@ -1256,4 +1244,12 @@ img {
   font-size: 12px;
   border-bottom: 1px solid #176c6040;
   padding-bottom: 3px;
+}
+
+/* Keep content width stable when short Lab panels change page height. */
+html {
+  scrollbar-gutter: stable;
+}
+#lab-frame {
+  overflow-anchor: none;
 }

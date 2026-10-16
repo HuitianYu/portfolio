@@ -1,3 +1,4 @@
+{{/* Both content levels share this single header, main and footer document. */}}
 {{ $siteIcon := printf "%s?v=%s" ("icons/site-icon.svg" | relURL) (readFile "static/icons/site-icon.svg" | md5) }}
 <!doctype html>
 <html lang="en">
@@ -46,24 +47,15 @@
       rel="manifest"
       href="{{ printf "%s?v=%s" ("icons/site.webmanifest" | relURL) (readFile "static/icons/site.webmanifest" | md5) }}"
     />
-    <link
-      rel="stylesheet"
-      href="{{ "css/site.css" | relURL }}?v={{ readFile "static/css/site.css" | md5 }}&amp;ui=responsive-20261013"
-    />
-    <link
-      rel="stylesheet"
-      href="{{ "css/design-system.css" | relURL }}?v={{ readFile "static/css/design-system.css" | md5 }}"
-    />
+    <link rel="stylesheet" href="{{ partial "asset-url.html" "css/site.css" }}" />
+    <link rel="stylesheet" href="{{ partial "asset-url.html" "css/design-system.css" }}" />
     {{ partial "photo-theme.html" . }}
     <link rel="canonical" href="{{ .Permalink }}" />
-    <script
-      defer
-      src="{{ "js/ui-controls.js" | relURL }}?v={{ readFile "static/js/ui-controls.js" | md5 }}"
-    ></script>
-    <script
-      defer
-      src="{{ "js/site.js" | relURL }}?v={{ readFile "static/js/site.js" | md5 }}"
-    ></script>
+    <script defer src="{{ partial "asset-url.html" "js/ui-controls.js" }}"></script>
+    <script defer src="{{ partial "asset-url.html" "js/site.js" }}"></script>
+    {{ if and .IsPage (eq .Section "labs") }}
+      <script defer src="{{ partial "asset-url.html" "js/lab-host.js" }}"></script>
+    {{ end }}
     {{ block "head" . }}{{ end }}
   </head>
   {{ $bodyClasses := slice }}

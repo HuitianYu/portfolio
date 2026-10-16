@@ -1,0 +1,4 @@
+{{/* One dependency-aware URL for shared UI assets. */}}
+{{ $asset := resources.Get . }}
+{{ if not $asset }}{{ errorf "Missing shared asset: %s" . }}{{ end }}
+{{ return ($asset | fingerprint "md5").RelPermalink }}

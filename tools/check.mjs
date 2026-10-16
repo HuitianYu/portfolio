@@ -2,6 +2,7 @@ import { checkCurvatureEngine } from "./check-curvature-engine.mjs";
 import { checkCurvaturePresentation } from "./check-curvature-presentation.mjs";
 import { checkCurvatureCamera } from "./check-curvature-camera.mjs";
 import { checkUIControls } from "./check-ui-controls.mjs";
+import { checkLabData } from "./check-lab-data.mjs";
 import { checkLabMedia } from "./check-lab-media.mjs";
 import { checkLabRuntime } from "./check-lab-runtime.mjs";
 import fs from "node:fs/promises";
@@ -36,6 +37,12 @@ for (const lab of labs) {
       workspace.includes(`data-section-panel="${key}"`),
       `Panel wrapper missing: ${lab}/${key}`,
     );
+  for (const [, relative] of workspace.matchAll(
+    /<(?:script|link)\b[^>]*(?:src|href)=["']([^"']+)["']/g,
+  )) {
+    if (/^(?:https?:|data:|#|\/)/.test(relative)) continue;
+    await fs.access(path.join(directory, relative.split(/[?#]/)[0]));
+  }
   const app = await fs.readFile(path.join(directory, "app.js"), "utf8");
   const generated = new Set(
     [...app.matchAll(/\bid\s*=\s*["']([^"']+)["']/g)].map((match) => match[1]),
@@ -56,6 +63,7 @@ for (const file of files) {
 }
 await checkUIControls(new URL("../", import.meta.url));
 await checkLabRuntime(new URL("../", import.meta.url));
+await checkLabData(new URL("../", import.meta.url));
 await checkLabMedia(new URL("../", import.meta.url));
 if (labs.includes("stablegsensor")) {
   const recordingContext = { window: { LAB_CONFIG: { data: {} } }, URL };
@@ -67,6 +75,16 @@ if (labs.includes("stablegsensor")) {
     recordingContext,
   );
   const recordingSource = recordingContext.window.RecordingSources.source;
+  const catalogContext = { window: {} };
+  vm.runInNewContext(
+    await fs.readFile(path.join(root, "content/labs/stablegsensor/ui/catalog.js"), "utf8"),
+    catalogContext,
+  );
+  for (const name of Object.keys(catalogContext.window.CATALOG.case_3)) {
+    const file = path.join(root, "content/labs/stablegsensor/ui/assets/case_3", name + ".mp4");
+    assert.ok((await fs.stat(file)).size > 8, `Bundled video is empty: ${name}`);
+  }
+
   const videoFile = "loftr_image_correction_animation.mp4";
   assert.equal(recordingSource("case_1", videoFile), `assets/case_1/${videoFile}`);
   const remoteRecordings = { remoteEnabled: true, fileBaseURL: "https://example.org/files/" };
@@ -96,43 +114,6 @@ if (labs.includes("curvature")) {
   await checkCurvatureEngine(new URL("../", import.meta.url));
   await checkCurvatureCamera(new URL("../", import.meta.url));
   await checkCurvaturePresentation(new URL("../", import.meta.url));
-  // A stalled local asset must reject and allow a new attempt, rather than stay at 5%.
-  const loaderTimers = [],
-    loaderScripts = [];
-  const loaderContext = {
-    AbortController,
-    window: { EMBEDDED_INDEX: { example: "example.js" } },
-    document: {
-      createElement: () => ({ remove() {} }),
-      head: {
-        append(script) {
-          loaderScripts.push(script);
-        },
-      },
-    },
-    setTimeout(callback) {
-      loaderTimers.push(callback);
-      return loaderTimers.length;
-    },
-    clearTimeout() {},
-  };
-  vm.runInNewContext(
-    await fs.readFile(path.join(root, "content/labs/curvature/ui/data-loader.js"), "utf8"),
-    loaderContext,
-  );
-  const stalledLoad = loaderContext.window.CrystalData.load("example");
-  const timeoutCheck = assert.rejects(stalledLoad, /timed out/);
-  loaderTimers[0]();
-  await timeoutCheck;
-  const retryLoad = loaderContext.window.CrystalData.load("example");
-  const retryCheck = assert.rejects(retryLoad, /could not be loaded/);
-  assert.equal(loaderScripts.length, 2);
-  loaderScripts[1].onerror();
-  await retryCheck;
-  const cancelledLocal = loaderContext.window.CrystalData.load("example");
-  const cancelCheck = assert.rejects(cancelledLocal, { name: "AbortError" });
-  loaderContext.window.CrystalData.cancel();
-  await cancelCheck;
 }
 
 if (labs.includes("mpcrystal")) {

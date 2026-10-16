@@ -263,62 +263,58 @@ export async function checkLabRuntime(root) {
       );
     }
   }
-  const hostSource = await fs.readFile(new URL("static/js/site.js", root), "utf8");
-  const bridgeStart = hostSource.indexOf("  let previousLabY = 0;");
-  const bridgeEnd = hostSource.indexOf('  addEventListener("message"', bridgeStart);
-  const host = {
-    scrollY: 180,
-    followScroll() {},
-    window: {
-      scrollBy({ top }) {
-        host.scrollY += top;
-      },
-    },
-  };
-  vm.createContext(host);
-  vm.runInContext(hostSource.slice(bridgeStart, bridgeEnd), host);
-  vm.runInContext("followLabScroll(1000); followLabScroll(900);", host);
-  assert.equal(host.scrollY, 80, "Scrolling back through a Lab must leave the outer footer");
-  vm.runInContext("followLabScroll(700);", host);
-  assert.equal(host.scrollY, 0, "Outer scroll must clamp at the document top");
-  vm.runInContext("followLabScroll(600); followLabScroll(NaN);", host);
-  assert.equal(host.scrollY, 0, "Inner scrolling must not overscroll the host");
+
   const interfaceSource = await fs.readFile(new URL("static/js/lab-interface.js", root), "utf8");
-  const handoffStart = interfaceSource.indexOf("    function handoff(");
-  const handoffEnd = interfaceSource.indexOf("    addEventListener(", handoffStart);
-  const outer = { scrollTop: 0, scrollHeight: 1000, clientHeight: 800 };
-  const inner = { scrollTop: 90, scrollHeight: 600, clientHeight: 500 };
-  let prevented = 0;
-  const edge = {
-    document: { scrollingElement: inner, body: {} },
-    parent: {
-      document: { scrollingElement: outer },
-      scrollBy({ top }) {
-        outer.scrollTop += top;
-      },
-    },
-    event: {
-      cancelable: true,
-      target: null,
-      preventDefault() {
-        prevented++;
-      },
-    },
+  assert.ok(!interfaceSource.includes('addEventListener("wheel"'));
+  assert.ok(!interfaceSource.includes('type: "lab:scroll"'));
+  let contentHeight = 1200,
+    frameTop = 132;
+  const controls = { offsetHeight: 100, style: {} };
+  const body = {
+    dataset: { section: "overview" },
+    getBoundingClientRect: () => ({ height: contentHeight }),
+    querySelector: () => controls,
   };
-  vm.createContext(edge);
-  vm.runInContext(interfaceSource.slice(handoffStart, handoffEnd), edge);
-  vm.runInContext("handoff(event, 60)", edge);
-  assert.equal(inner.scrollTop, 100);
+  const frame = {
+    style: {},
+    contentDocument: { body, readyState: "complete" },
+    addEventListener() {},
+    getBoundingClientRect: () => ({ top: frameTop }),
+  };
+  const header = { getBoundingClientRect: () => ({ bottom: 80 }), addEventListener() {} };
+  const listeners = {};
+  const sizing = {
+    document: { querySelector: (selector) => (selector === "#lab-frame" ? frame : header) },
+    window: { UIControls: { frameTask: (callback) => ({ schedule: callback }) } },
+    MutationObserver: class {
+      constructor() {}
+      observe() {}
+      disconnect() {}
+    },
+    ResizeObserver: class {
+      constructor() {}
+      observe() {}
+      disconnect() {}
+    },
+    addEventListener: (event, callback) => (listeners[event] = callback),
+  };
+  vm.runInNewContext(await fs.readFile(new URL("static/js/lab-host.js", root), "utf8"), sizing);
+  assert.equal(frame.style.height, "1200px");
+  contentHeight = 420;
+  listeners.resize();
+  assert.equal(frame.style.height, "420px", "Shorter tabs shrink natural content height");
+  frameTop = -100;
+  listeners.scroll();
   assert.equal(
-    outer.scrollTop,
-    50,
-    "A gesture crossing the iframe bottom must transfer its remainder immediately",
+    controls.style.transform,
+    "translateY(180px)",
+    "Lab controls pin below the shared site header",
   );
-  vm.runInContext("handoff(event, -30)", edge);
-  assert.equal(outer.scrollTop, 20, "Reverse gestures leave the footer before moving the Lab");
-  vm.runInContext("handoff(event, -100)", edge);
-  assert.equal(outer.scrollTop, 0);
-  const consumed = prevented;
-  vm.runInContext("handoff(event, -30)", edge);
-  assert.equal(prevented, consumed, "Inner scrolling stays native once the host is at its top");
+  frameTop = -1000;
+  listeners.scroll();
+  assert.equal(
+    controls.style.transform,
+    "translateY(320px)",
+    "Pinned controls stop at the Lab boundary before the footer",
+  );
 }

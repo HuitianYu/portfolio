@@ -928,13 +928,6 @@ html:root body .fixed-workspace-header #calculation-mode option {
   font-size: 14px !important;
 }
 /* Align math fields with ordinary parameter labels and controls. */
-html:root body #parameters #curvature-calculation .field-math-wrapper {
-  display: flex !important;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0 !important;
-  padding: 0 !important;
-}
 html:root body #parameters #curvature-calculation .parameter-label {
   display: block;
   font-family: var(--sans);

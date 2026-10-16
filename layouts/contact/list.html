@@ -51,5 +51,9 @@
       <h2 id="profiles-title">Profiles</h2>
       <div class="contact-profiles">{{ partial "contact-links.html" slice }}</div>
     </section>
+    <section class="contact-panel" aria-labelledby="homepage-qr-title">
+      <h2 id="homepage-qr-title">Homepage QR Code</h2>
+      {{ partial "site-qr.html" . }}
+    </section>
   </div>
 {{ end }}

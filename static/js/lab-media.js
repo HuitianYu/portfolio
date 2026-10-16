@@ -92,6 +92,51 @@
       seek,
     });
   }
+  function loadVideo(video, { local, cloud, signal, onSource }) {
+    function attempt(url, timeout = 90000) {
+      const task = window.LabData.deadline(signal, timeout);
+      return new Promise((resolve, reject) => {
+        function finish(error) {
+          task.dispose();
+          video.removeEventListener("canplay", ready);
+          video.removeEventListener("error", failed);
+          task.signal.removeEventListener("abort", aborted);
+          error ? reject(error) : resolve(video);
+        }
+        const ready = () => finish();
+        const failed = () => finish(Error("The video could not be loaded."));
+        const aborted = () => {
+          video.pause();
+          video.removeAttribute("src");
+          video.load();
+          finish(task.signal.reason);
+        };
+        video.addEventListener("canplay", ready, { once: true });
+        video.addEventListener("error", failed, { once: true });
+        task.signal.addEventListener("abort", aborted, { once: true });
+        if (task.signal.aborted) {
+          aborted();
+          return;
+        }
+        video.src = url;
+      });
+    }
+    return window.LabData.load({
+      local: local
+        ? async () => {
+            try {
+              return await attempt(local, 45000);
+            } catch (error) {
+              if (signal.aborted || error.name === "AbortError") throw error;
+              return attempt(local, 45000);
+            }
+          }
+        : null,
+      cloud: cloud ? () => attempt(cloud) : null,
+      signal,
+      onSource,
+    });
+  }
   function availability(videos) {
     const fullyBuffered =
       videos.length > 0 &&
@@ -109,5 +154,5 @@
       fullyBuffered,
     };
   }
-  window.LabMedia = Object.freeze({ create, availability });
+  window.LabMedia = Object.freeze({ create, availability, loadVideo });
 })();

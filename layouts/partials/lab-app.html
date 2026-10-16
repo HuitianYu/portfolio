@@ -1,4 +1,4 @@
-{{/* Render one workspace; metadata and paper relationships stay in labs-data.html. */}}
+{{/* Render an isolated content document; natural height belongs to the shared host layout. Metadata and paper relationships stay in labs-data.html. */}}
 {{ $page := .page }}
 {{ $source := .source }}
 {{ $icon := .icon }}
@@ -19,22 +19,24 @@
 {{ $configScript := printf "<script>window.LAB_CONFIG=%s;if(window.parent!==window)document.documentElement.classList.add('embedded-workspace');</script>" ($runtime | jsonify) }}
 {{ $document = replace $document "</head>" (printf "%s</head>" (partial "photo-theme.html" $page)) }}
 {{ $document = replace $document "<script src=\"lab-config.js\"></script>" $configScript }}
-{{ $shared := printf "%s?v=%s" ("css/design-system.css" | relURL) (readFile "static/css/design-system.css" | md5) }}
+{{ $shared := partial "asset-url.html" "css/design-system.css" }}
 {{ $document = replace $document "href=\"design-system.css\"" (printf "href=\"%s\"" $shared) }}
-{{ $script := printf "%s?v=%s" ("js/lab-interface.js" | relURL) (readFile "static/js/lab-interface.js" | md5) }}
+{{ $script := partial "asset-url.html" "js/lab-interface.js" }}
 {{ $document = replace $document "src=\"lab-interface.js\"" (printf "src=\"%s\"" $script) }}
-{{ range slice "app.js" "style.css" "engine.js" "schema.js" "chart-schema.js" "recording-sources.js" "lab-media.js" "data-loader.js" "lab-config.js" }}
+{{ range slice "app.js" "style.css" "engine.js" "schema.js" "chart-schema.js" "recording-sources.js" "lab-media.js" "lab-data.js" "data-loader.js" "lab-config.js" }}
   {{ $file := . }}{{ with $page.Resources.GetMatch (printf "ui/%s" $file) }}
     {{ $versioned := printf "%s?v=%s" $file (.Content | md5) }}
     {{ $document = replaceRE (printf "(src|href)=\"%s(?:\\?[^\"]*)?\"" (replace $file "." "\\.")) (printf "${1}=\"%s\"" $versioned) $document }}
   {{ end }}
 {{ end }}
-{{ $sharedRuntime := printf "%s?v=%s" ("js/lab-runtime.js" | relURL) (readFile "static/js/lab-runtime.js" | md5) }}
+{{ $sharedRuntime := partial "asset-url.html" "js/lab-runtime.js" }}
 {{ $document = replace $document "src=\"lab-runtime.js\"" (printf "src=\"%s\"" $sharedRuntime) }}
-{{ $math := printf "%s?v=%s" ("js/lab-math.js" | relURL) (readFile "static/js/lab-math.js" | md5) }}
+{{ $math := partial "asset-url.html" "js/lab-math.js" }}
 {{ $document = replace $document "src=\"lab-math.js\"" (printf "src=\"%s\"" $math) }}
-{{ $controls := printf "%s?v=%s" ("js/ui-controls.js" | relURL) (readFile "static/js/ui-controls.js" | md5) }}
+{{ $controls := partial "asset-url.html" "js/ui-controls.js" }}
 {{ $document = replace $document "src=\"ui-controls.js\"" (printf "src=\"%s\"" $controls) }}
-{{ $app := resources.FromString (printf "labs/%s/ui/index.html" $page.Params.id) $document }}
+{{ $app := resources.FromString (printf "labs/%s/ui/index-%s.html" $page.Params.id ($document | md5)) $document }}
 
+{{ $entry := resources.FromString (printf "labs/%s/ui/index.html" $page.Params.id) (printf "<!doctype html><meta http-equiv=\"refresh\" content=\"0;url=%s\"><a href=\"%s\">Open lab</a>" $app.RelPermalink $app.RelPermalink) }}
+{{ $published := $entry.RelPermalink }}
 {{ return $app.RelPermalink }}

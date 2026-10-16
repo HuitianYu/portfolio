@@ -268,8 +268,8 @@ function initializeMobileKeyboardExit() {
 document.querySelector("#restart-lab")?.addEventListener("click", () => {
   const old = document.querySelector("#lab-frame");
   if (!old) return;
-  const fresh = old.cloneNode(false);
-  old.replaceWith(fresh);
+  // Keep the shared host sizing/sticky observers attached when restarting.
+  old.src = old.src;
 });
 
 initializeSiteControls();
@@ -281,35 +281,7 @@ initializeMobileKeyboardExit();
 function playbackIcon(play) {
   return `<svg viewBox="0 0 20 20" width="16" height="16" aria-hidden="true" focusable="false">${play ? '<path d="M6 3.5v13l10-6.5z" fill="currentColor"/>' : '<rect x="5" y="4" width="3" height="12" rx=".7" fill="currentColor"/><rect x="12" y="4" width="3" height="12" rx=".7" fill="currentColor"/>'}</svg>`;
 }
-function updateHostHeaderSize() {
-  const frame = document.querySelector("#lab-frame");
-  const contentWidth = frame?.contentDocument?.documentElement?.clientWidth;
-  if (contentWidth > 0)
-    document.documentElement.style.setProperty(
-      "--lab-scrollbar-size",
-      Math.max(0, frame.clientWidth - contentWidth) + "px",
-    );
-  const firstRow = document.querySelector(".header-inner");
-  if (firstRow?.offsetHeight)
-    document.documentElement.style.setProperty(
-      "--navigation-button-top",
-      firstRow.offsetHeight / 2 - 18 + "px",
-    );
-  const hidden =
-    document.body.classList.contains("site-nav-hidden") ||
-    document.body.classList.contains("mobile-nav-away");
-  document.documentElement.style.setProperty(
-    "--site-header-size",
-    (hidden
-      ? document.body.classList.contains("site-nav-hidden") &&
-        !document.body.classList.contains("lab-workspace")
-        ? 36
-        : 0
-      : document.querySelector(".site-header")?.offsetHeight || 0) + "px",
-  );
-}
 function initializeResponsiveHeader() {
-  const headerSize = window.UIControls.frameTask(updateHostHeaderSize);
   let previousY = 0,
     travel = 0,
     transitionUntil = 0;
@@ -317,7 +289,6 @@ function initializeResponsiveHeader() {
     if (document.body.classList.contains("mobile-nav-away") !== hidden)
       transitionUntil = performance.now() + 300;
     document.body.classList.toggle("mobile-nav-away", hidden);
-    updateHostHeaderSize();
   }
   function followScroll(y) {
     if (!Number.isFinite(y)) return;
@@ -327,10 +298,7 @@ function initializeResponsiveHeader() {
       travel = 0;
       return;
     }
-    if (
-      !matchMedia("(max-width:760px), (max-height:480px) and (orientation:landscape)").matches ||
-      document.body.classList.contains("site-nav-hidden")
-    )
+    if (!matchMedia("(max-width:760px), (max-height:480px) and (orientation:landscape)").matches)
       return;
     if (document.querySelector(".menu-toggle")?.getAttribute("aria-expanded") === "true") return;
     travel = Math.sign(delta) === Math.sign(travel) ? travel + delta : delta;
@@ -345,45 +313,10 @@ function initializeResponsiveHeader() {
   addEventListener(
     "scroll",
     () => {
-      if (!document.body.classList.contains("lab-workspace")) followScroll(scrollY);
+      followScroll(scrollY);
     },
     { passive: true },
   );
-  let previousLabY = 0;
-  function followLabScroll(y) {
-    if (!Number.isFinite(y)) return;
-    const next = Math.max(0, y);
-    const delta = next - previousLabY;
-    previousLabY = next;
-    // Returning through an embedded workspace also leaves the outer footer.
-    // Clamp to the document top; never position or hide the footer itself.
-    if (delta < 0 && scrollY > 0)
-      window.scrollBy({ top: Math.max(-scrollY, delta), behavior: "instant" });
-    followScroll(next);
-  }
-  addEventListener("message", (event) => {
-    if (
-      event.origin === location.origin &&
-      event.source === document.querySelector("#lab-frame")?.contentWindow &&
-      ["lab:scroll", "lab:layout"].includes(event.data?.type)
-    ) {
-      if (event.data.type === "lab:layout") {
-        transitionUntil = performance.now() + 350;
-        travel = 0;
-      } else followLabScroll(event.data.y);
-    }
-  });
-  addEventListener("message", (event) => {
-    if (
-      event.origin !== location.origin ||
-      event.source !== document.querySelector("#lab-frame")?.contentWindow ||
-      event.data?.type !== "lab:viewport"
-    )
-      return;
-    const inset = Number(event.data.scrollbar);
-    if (Number.isFinite(inset) && inset >= 0 && inset <= 40)
-      document.documentElement.style.setProperty("--lab-scrollbar-size", inset + "px");
-  });
   document.querySelector(".menu-toggle")?.addEventListener("click", () => {
     revealNavigation(false);
   });
@@ -394,15 +327,5 @@ function initializeResponsiveHeader() {
     if (!matchMedia("(max-width:760px), (max-height:480px) and (orientation:landscape)").matches)
       revealNavigation(false);
   });
-  new ResizeObserver(headerSize.schedule).observe(document.querySelector(".site-header"));
-  document.addEventListener(
-    "load",
-    (event) => {
-      if (event.target.id === "lab-frame") headerSize.schedule();
-    },
-    true,
-  );
-  addEventListener("resize", headerSize.schedule);
-  updateHostHeaderSize();
 }
 initializeResponsiveHeader();

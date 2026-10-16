@@ -141,6 +141,7 @@
           Search across papers, conferences, labs and pages.
         </p>
         <div id="search-results" class="search-results"></div>
+        {{ partial "site-qr.html" . }}
         <script
           defer
           src="{{ "js/search.js" | relURL }}?v={{ readFile "static/js/search.js" | md5 }}"

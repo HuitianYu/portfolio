@@ -86,3 +86,10 @@ working copy as part of a cleanup.
 Execution commands never switch the selected Lab section. A first media Play may load and then play, but keeps the current section; viewing Display is always an explicit navigation action.
 
 Section navigation never starts media loading. StableGSensor loads recordings through Play or an explicit case/method selection; first Display remains ready without a transient Cancel state.
+
+The shared Lab host observes natural body height and pins the Lab control row within the content boundary. The website owns the only page scroller and footer. No wheel/touch interception, nested viewport height, or scroll relay is allowed. Standalone Labs retain their independent document layout.
+
+Site content has two levels: category overviews and detail pages. Both share baseof.html; detail pages add the context/return row. Lab controls and internal sections are local content navigation. Shared assets use Hugo resource fingerprints to invalidate preview/deployment caches. Search and Contact share one centered homepage code using the crystal silhouette and HYU; the footer remains text links only.
+
+LabData owns bounded Local requests and explicit source fallback. Curvature reads bundled payloads as data without script execution; media retries bundled recordings before eligible Cloud fallback. Cancellation never starts fallback. Cache/UI source labels retain the actual source. Build checks validate all bundled crystal payloads, local case recordings and Lab script/style dependencies.
+Homepage QR is generated from config.yaml and colour tokens during build, using vector HYU outlines; no QR library or font is downloaded by visitors.

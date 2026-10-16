@@ -125,7 +125,14 @@
         updates.push([
           owner,
           "--lab-menu-room",
-          Math.max(80, innerHeight - bounds.bottom - 12) + "px",
+          Math.max(
+            80,
+            (window.parent === window
+              ? innerHeight
+              : parent.innerHeight - window.frameElement.getBoundingClientRect().top) -
+              bounds.bottom -
+              12,
+          ) + "px",
         ]);
         updates.push([
           owner,
@@ -290,7 +297,6 @@
       compactToggle.setAttribute("aria-label", "Hide Lab controls");
 
       function setCompact(collapsed) {
-        if (window.parent !== window) parent.postMessage({ type: "lab:layout" }, location.origin);
         workspaceHeader.classList.toggle("mobile-controls-collapsed", collapsed);
         compactToggle.setAttribute("aria-expanded", String(!collapsed));
         compactToggle.setAttribute(
@@ -351,108 +357,6 @@
     document.fonts?.ready.then(alignment.schedule);
     alignToolbarUtilities();
   }
-  function initializeViewportBridge() {
-    if (window.parent === window) return;
-    function reportViewport() {
-      parent.postMessage(
-        { type: "lab:viewport", scrollbar: innerWidth - document.documentElement.clientWidth },
-        location.origin,
-      );
-    }
-    const viewport = window.UIControls.frameTask(reportViewport);
-    new ResizeObserver(viewport.schedule).observe(document.documentElement);
-    addEventListener("resize", viewport.schedule);
-    reportViewport();
-    // Transfer an unconsumed gesture across the iframe boundary immediately.
-    // Ordinary pages/posts keep their single native document scroller.
-    function handoff(event, delta) {
-      if (!event.cancelable || !Number.isFinite(delta) || !delta) return;
-      let host;
-      try {
-        host = parent.document.scrollingElement;
-      } catch {
-        return;
-      }
-      if (!host) return;
-      for (let node = event.target; node && node !== document.body; node = node.parentElement) {
-        if (
-          node.scrollHeight > node.clientHeight + 1 &&
-          /auto|scroll/.test(getComputedStyle(node).overflowY)
-        ) {
-          const room =
-            delta > 0 ? node.scrollHeight - node.clientHeight - node.scrollTop : node.scrollTop;
-          if (room > 1) return;
-        }
-      }
-      const local = document.scrollingElement;
-      const localRoom = Math.max(0, local.scrollHeight - local.clientHeight - local.scrollTop);
-      const hostRoom =
-        delta > 0 ? host.scrollHeight - host.clientHeight - host.scrollTop : host.scrollTop;
-      if (hostRoom <= 0 || (delta > 0 && delta <= localRoom)) return;
-      if (delta < 0 && host.scrollTop <= 0) return;
-      event.preventDefault();
-      if (delta > 0 && localRoom > 0) {
-        local.scrollTop += localRoom;
-        delta -= localRoom;
-      }
-      parent.scrollBy({
-        top: Math.sign(delta) * Math.min(Math.abs(delta), hostRoom),
-        behavior: "instant",
-      });
-    }
-    addEventListener(
-      "wheel",
-      (event) => {
-        if (event.ctrlKey || event.shiftKey || Math.abs(event.deltaX) > Math.abs(event.deltaY))
-          return;
-        const scale = event.deltaMode === 1 ? 16 : event.deltaMode === 2 ? innerHeight : 1;
-        handoff(event, event.deltaY * scale);
-      },
-      { passive: false },
-    );
-    let touch = null;
-    addEventListener(
-      "touchstart",
-      (event) => {
-        touch =
-          event.touches.length === 1
-            ? { x: event.touches[0].clientX, y: event.touches[0].clientY }
-            : null;
-      },
-      { passive: true },
-    );
-    addEventListener(
-      "touchmove",
-      (event) => {
-        if (!touch || event.touches.length !== 1) return;
-        const next = event.touches[0];
-        const dy = touch.y - next.clientY,
-          dx = touch.x - next.clientX;
-        touch = { x: next.clientX, y: next.clientY };
-        if (Math.abs(dy) > Math.abs(dx)) handoff(event, dy);
-      },
-      { passive: false },
-    );
-    addEventListener(
-      "touchend",
-      () => {
-        touch = null;
-      },
-      { passive: true },
-    );
-    let scrollPosition = 0;
-    const scroll = window.UIControls.frameTask(() => {
-      parent.postMessage({ type: "lab:scroll", y: scrollPosition }, location.origin);
-    });
-    addEventListener(
-      "scroll",
-      () => {
-        scrollPosition = scrollY;
-        scroll.schedule();
-      },
-      { passive: true },
-    );
-  }
   if (window.parent !== window) document.body.classList.add("embedded-lab");
   // Shared container height follows wrapped and collapsed workspace controls.
   if (workspaceHeader) {
@@ -465,9 +369,85 @@
     new ResizeObserver(sizeChrome.schedule).observe(workspaceHeader);
     sizeChrome.schedule();
   }
+  const parameterPreviews = [];
+  // Plain numeric parameters share the same value preview as expression fields.
+  document
+    .querySelectorAll(
+      "#parameters input:not([type=checkbox]):not([type=search]), #parameters select",
+    )
+    .forEach((input) => {
+      const label = input.closest("label");
+      if (
+        !label ||
+        label.querySelector(".resolved") ||
+        input.closest(".field")?.querySelector(".resolved")
+      )
+        return;
+      const parse = window.parseNumericExpression || Number;
+      try {
+        if (!input.value.trim() || !Number.isFinite(parse(input.value))) return;
+        if (
+          input.tagName === "SELECT" &&
+          [...input.options].some((option) => !Number.isFinite(Number(option.value)))
+        )
+          return;
+      } catch {
+        return;
+      }
+      const heading = label.querySelector(".label-with-unit");
+      const unit = (label.textContent.match(/\[([^\]]+)\]/)?.[1] || "-").trim();
+      const symbol = label.querySelector(".parameter-symbol");
+      const inlineSymbol = heading?.querySelector("i");
+      const symbolText = inlineSymbol?.textContent || "";
+      inlineSymbol?.remove();
+      if (heading) heading.textContent = heading.textContent.replace(/\[[^\]]+\]/, "").trim();
+      const unitTex = unit.replace(/µ/g, "\\mu ").replace(/%/g, "\\%");
+      const unitLabel = document.createElement("span");
+      unitLabel.className = "parameter-unit";
+      unitLabel.textContent =
+        "$" + (symbolText ? symbolText + "\\;" : "") + "[\\mathrm{" + unitTex + "}]$";
+      if (symbol) symbol.append(unitLabel);
+      else input.before(unitLabel);
+      window.LabMath?.typeset([unitLabel]);
+      const result = document.createElement("small");
+      result.className = "resolved";
+      input.after(result);
+      const update = () => {
+        let value;
+        try {
+          value = parse(input.value);
+        } catch {
+          value = NaN;
+        }
+        const numeric = Number.isFinite(value)
+          ? String(Number(value.toPrecision(8))).replace(/e([+-]?\d+)/, "\\times 10^{$1}")
+          : "";
+        const text =
+          input.value.trim() && numeric
+            ? "$= " +
+              numeric +
+              (unit && !["-", "−", "—"].includes(unit) ? "\\;\\mathrm{" + unitTex + "}" : "") +
+              "$"
+            : "";
+        if (result.dataset.value === text) return;
+        window.MathJax?.typesetClear?.([result]);
+        result.textContent = text;
+        result.dataset.value = text;
+        window.LabMath?.typeset([result]);
+      };
+      parameterPreviews.push(update);
+      input.addEventListener("input", update);
+      input.addEventListener("change", update);
+      update();
+    });
+  for (const event of ["change", "click"]) {
+    document.addEventListener(event, () => {
+      if (parameterPreviews.length)
+        requestAnimationFrame(() => parameterPreviews.forEach((update) => update()));
+    });
+  }
   initializeCompactControls();
   initializeToolbarAlignment();
-  initializeViewportBridge();
   initializePointerBehavior();
   initializeMetricSizing();
   initializeToolbarMenus();

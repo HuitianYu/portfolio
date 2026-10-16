@@ -309,16 +309,33 @@ async function select(c) {
   $("data-error").hidden = true;
   let downloadPercent = -1;
   try {
-    const loaded = await window.CrystalData.load(c.id, (fraction) => {
-      const percent = Math.round(fraction * 100);
-      if (token !== loadToken || percent <= downloadPercent) return;
-      downloadPercent = percent;
-      setProgress(
-        percent,
-        percent >= 100 ? "Unpacking crystal data…" : "Downloading crystal data…",
-        "running",
-      );
-    });
+    const loaded = await window.CrystalData.load(
+      c.id,
+      (fraction) => {
+        const percent = Math.round(fraction * 100);
+        if (token !== loadToken || percent <= downloadPercent) return;
+        downloadPercent = percent;
+        setProgress(
+          percent,
+          percent >= 100 ? "Unpacking crystal data…" : "Downloading crystal data…",
+          "running",
+        );
+      },
+      (actualSource, reason) => {
+        if (token !== loadToken) return;
+        window.LabUI.source($("data-source"), actualSource);
+        downloadPercent = -1;
+        setProgress(
+          0,
+          reason
+            ? "Local example could not be loaded · trying Cloud…"
+            : actualSource === "cloud"
+              ? "Connecting to Zenodo…"
+              : "Loading Local crystal…",
+          "running",
+        );
+      },
+    );
     if (token !== loadToken) return;
     if (!loaded?.single) throw Error("The crystal data does not contain a single-crystal mesh.");
     loadingData = false;
@@ -1734,3 +1751,30 @@ for (const [buttonKey, panelKey, selector] of [
     panelKey,
   });
 }
+
+// Search across parameter categories without changing scientific state.
+const parameterSearch = $("parameter-search");
+function filterParameterCards() {
+  const query = parameterSearch.value.trim().toLowerCase();
+  const selected = document.querySelector("[data-parameter-page].active")?.dataset.parameterPage;
+  let matches = 0;
+  document.querySelectorAll("[data-parameter-panel]").forEach((panel) => {
+    const text =
+      panel.textContent +
+      " " +
+      [...panel.querySelectorAll("input,select")]
+        .map((input) => input.id + " " + (input.getAttribute("aria-label") || ""))
+        .join(" ");
+    const visible = query
+      ? text.toLowerCase().includes(query)
+      : panel.dataset.parameterPanel === selected;
+    panel.hidden = !visible;
+    if (visible) matches++;
+  });
+  $("parameter-search-empty").hidden = !query || matches > 0;
+}
+parameterSearch.addEventListener("input", filterParameterCards);
+document.querySelector(".curvature-parameter-tabs").addEventListener("click", () => {
+  parameterSearch.value = "";
+  $("parameter-search-empty").hidden = true;
+});

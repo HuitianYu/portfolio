@@ -20,6 +20,7 @@
     "ui/styles/labs/states.css",
     "ui/styles/labs/display.css",
     "ui/styles/labs/shell.css",
-    "ui/styles/labs/progress.css"
+    "ui/styles/labs/progress.css",
+    "ui/styles/labs/parameters.css"
   ]
 }

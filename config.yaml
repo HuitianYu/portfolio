@@ -32,3 +32,12 @@ markup:
 build:
   cleanDestinationDir:
     enable: true
+
+# Track shared UI assets as build dependencies, including during local preview.
+module:
+  mounts:
+    - {source: content, target: content}
+    - {source: data, target: data}
+    - {source: layouts, target: layouts}
+    - {source: static, target: static}
+    - {source: static, target: assets}

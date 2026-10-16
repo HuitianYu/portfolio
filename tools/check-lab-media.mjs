@@ -28,11 +28,15 @@ export async function checkLabMedia(root) {
   let tick = null;
   const context = {
     window: {},
+    AbortController,
+    setTimeout,
+    clearTimeout,
     setInterval: (callback) => ((tick = callback), 1),
     clearInterval: () => {
       tick = null;
     },
   };
+  vm.runInNewContext(await fs.readFile(new URL("static/js/lab-data.js", root), "utf8"), context);
   vm.runInNewContext(await fs.readFile(new URL("static/js/lab-media.js", root), "utf8"), context);
   const videos = [0, 1].map(() => ({
     currentTime: 0,
@@ -129,4 +133,45 @@ export async function checkLabMedia(root) {
   console.log(
     "Media transport: playing/paused seek, in-flight seek, stale play cancellation and playback failure passed.",
   );
+  class Video extends EventTarget {
+    attempts = [];
+    set src(url) {
+      this.attempts.push(url);
+      queueMicrotask(() => this.dispatchEvent(new Event(url === "local" ? "error" : "canplay")));
+    }
+    pause() {}
+    removeAttribute() {}
+    load() {}
+  }
+  const video = new Video(),
+    sources = [];
+  const loaded = await context.window.LabMedia.loadVideo(video, {
+    local: "local",
+    cloud: "cloud",
+    signal: new AbortController().signal,
+    onSource: (source) => sources.push(source),
+  });
+  assert.equal(loaded.source, "cloud");
+  assert.deepEqual(video.attempts, ["local", "local", "cloud"]);
+  assert.deepEqual(sources, ["local", "cloud"]);
+  class StalledVideo extends EventTarget {
+    attempts = [];
+    set src(url) {
+      this.attempts.push(url);
+    }
+    pause() {}
+    removeAttribute() {}
+    load() {}
+  }
+  const waiting = new StalledVideo(),
+    stop = new AbortController();
+  const waitingLoad = context.window.LabMedia.loadVideo(waiting, {
+    local: "local",
+    cloud: "cloud",
+    signal: stop.signal,
+  });
+  const waitingCheck = assert.rejects(waitingLoad, { name: "AbortError" });
+  stop.abort();
+  await waitingCheck;
+  assert.deepEqual(waiting.attempts, ["local"], "Cancelling a video does not start Cloud fallback");
 }

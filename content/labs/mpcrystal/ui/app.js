@@ -435,7 +435,7 @@
         if (f.gain) field.dataset.gain = f.gain;
         field.dataset.search = (f.name + " " + f.key + " " + f.tex).toLowerCase();
         const id = "parameter-" + f.key.replace(/\./g, "-");
-        field.innerHTML = `<span class="parameter-name">${escape(f.name)}</span><label for="${id}"><span>$${escape(f.tex)}$</span><span class="unit">$${escape(f.unit)}$</span></label><input id="${id}" class="expression" ${f.derived ? 'readonly aria-readonly="true"' : ""} aria-label="${escape(f.name)}" autocomplete="off" spellcheck="false"><small class="resolved">${f.derived ? "Calculated from dependencies" : ""}</small>`;
+        field.innerHTML = `<span class="parameter-name">${escape(f.name)}</span><label for="${id}"><span>$${escape(f.tex)}$</span><span class="unit">[$${escape(f.unit)}$]</span></label><input id="${id}" class="expression" ${f.derived ? 'readonly aria-readonly="true"' : ""} aria-label="${escape(f.name)}" autocomplete="off" spellcheck="false"><small class="resolved">${f.derived ? "Calculated from dependencies" : ""}</small>`;
         if (f.note) {
           const note = document.createElement("small");
           note.className = "parameter-note";
@@ -458,7 +458,7 @@
                 markControllerRefresh(true);
               values = next;
               input.classList.remove("invalid");
-              field.querySelector(".resolved").textContent = "= " + fmt(value);
+              showParameterValue(field, value, f.unit);
               if (sim) {
                 sim.update(values, options());
               }
@@ -491,6 +491,20 @@
     updateDerived(true);
     filterParameters();
   }
+  function showParameterValue(field, value, unit) {
+    const result = field.querySelector(".resolved");
+    if (!Number.isFinite(value)) {
+      result.textContent = "";
+      return;
+    }
+    const text =
+      "= " + fmt(value) + (unit && !["-", "−", "—"].includes(unit) ? " $" + unit + "$" : "");
+    if (result.dataset.value === text) return;
+    clearMath(result);
+    result.innerHTML = text;
+    result.dataset.value = text;
+    typeset([result]);
+  }
   function updateDerived(all = false) {
     const p = E.derive(sim?.values || values, $("target").value);
     const activeUnit = inputs.get("target_set").field.querySelector(".unit"),
@@ -501,7 +515,7 @@
       activeUnit.dataset.tex = unitTex;
       typeset([activeUnit]);
     }
-    for (const [key, { input, f }] of inputs) {
+    for (const [key, { input, field, f }] of inputs) {
       if (f.derived || all) {
         input.value = key === "params.PI_mode" ? "Ziegler–Nichols" : fmt(p[key]);
         input.classList.remove("invalid");
@@ -509,6 +523,15 @@
       if (!f.derived && sim && ["params.n", "params.k_0", "params.E_A"].includes(key) && adaptive) {
         input.value = fmt(sim.values[key]);
       }
+      showParameterValue(
+        field,
+        Number(p[key]),
+        key === "target_set"
+          ? $("target").value === "G"
+            ? "\\mathrm{m}\\,\\mathrm{s}^{-1}"
+            : "-"
+          : f.unit,
+      );
     }
   }
   function filterParameters() {
@@ -547,7 +570,6 @@
       }
       h.hidden = !visible;
     });
-    document.querySelector(".controller-settings").hidden = category !== "Control" || !!q;
     $("no-results").hidden = count > 0;
     document
       .querySelectorAll("button[data-category]")

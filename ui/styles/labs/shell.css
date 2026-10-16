@@ -104,3 +104,19 @@ html:root body .data-label-row {
 html:root body .recording-case > .source-badge {
   justify-self: start;
 }
+
+/* Embedded Labs are content, not viewport-sized scrolling applications. */
+html.embedded-workspace,
+html.embedded-workspace body {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+html.embedded-workspace body main.lab-content {
+  min-height: 0;
+  height: auto;
+}
+html.embedded-workspace body .fixed-workspace-header {
+  position: relative;
+  top: auto;
+}

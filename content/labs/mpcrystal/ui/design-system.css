@@ -4235,13 +4235,6 @@ html:root body .fixed-workspace-header #calculation-mode option {
   font-size: 14px !important;
 }
 /* Align math fields with ordinary parameter labels and controls. */
-html:root body #parameters #curvature-calculation .field-math-wrapper {
-  display: flex !important;
-  flex-direction: column;
-  gap: 6px;
-  margin: 0 !important;
-  padding: 0 !important;
-}
 html:root body #parameters #curvature-calculation .parameter-label {
   display: block;
   font-family: var(--sans);
@@ -5504,6 +5497,22 @@ html:root body .recording-case > .source-badge {
   justify-self: start;
 }
 
+/* Embedded Labs are content, not viewport-sized scrolling applications. */
+html.embedded-workspace,
+html.embedded-workspace body {
+  height: auto !important;
+  min-height: 0 !important;
+  overflow: hidden !important;
+}
+html.embedded-workspace body main.lab-content {
+  min-height: 0;
+  height: auto;
+}
+html.embedded-workspace body .fixed-workspace-header {
+  position: relative;
+  top: auto;
+}
+
 /* Source: ui/styles/labs/progress.css */
 /* Persistent source and status rows avoid jumps when loading finishes. */
 .analysis-progress {
@@ -5763,4 +5772,142 @@ html:root
   ) {
   background: var(--teal) !important;
   color: var(--paper) !important;
+}
+
+/* Source: ui/styles/labs/parameters.css */
+/* Shared parameter presentation: Curvature is the reference surface. */
+html:root body #parameters :is(.parameter-card, .parameter-group) {
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  background: var(--card);
+  padding: var(--lab-panel-padding);
+  margin: 0;
+  min-width: 0;
+}
+html:root body #parameters .property-section:has(> .parameter-group) {
+  border: 0;
+  padding: 0;
+  background: transparent;
+}
+html:root body #parameters .parameter-group + .parameter-group {
+  margin-top: var(--lab-panel-gap);
+}
+html:root body #parameters .parameter-group > summary {
+  font: 500 13px/1.5 var(--sans);
+  color: var(--ink);
+}
+html:root body #parameters :is(.fields, .semantic-fields) {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px 24px;
+  padding-top: 16px;
+}
+html:root body #parameters .field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-width: 0;
+}
+html:root body #parameters .field .parameter-name {
+  font: 400 13px/1.5 var(--sans);
+  color: var(--ink);
+  min-height: 0;
+  margin: 0;
+}
+html:root body #parameters .field > label {
+  display: flex;
+  flex-direction: row;
+  justify-content: flex-start;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 4px 8px;
+  min-height: 24px;
+  font: 400 13px/1.5 var(--sans);
+  color: var(--ink);
+}
+html:root body #parameters .field :is(.unit, .parameter-unit) {
+  font: inherit;
+  color: var(--ink);
+  white-space: normal;
+  margin: 0;
+}
+html:root body #parameters .field :is(input:not([type="checkbox"]), select) {
+  width: 100%;
+  min-width: 0;
+  height: var(--ui-field);
+  box-sizing: border-box;
+  font: 400 14px/1.5 var(--sans);
+}
+html:root body #parameters .field .resolved {
+  font: 400 12px/1.5 var(--sans);
+  min-height: 0;
+}
+html:root body #parameters .field .resolved:empty {
+  display: none;
+}
+@media (max-width: 650px) {
+  html:root body #parameters :is(.fields, .semantic-fields) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* Every parameter reserves the same name, symbol/unit, control and result rows. */
+html:root
+  body
+  #parameters
+  .parameter-card
+  label:not(.check):not(.smoothing-header-toggle):has(> input:not([type="checkbox"]), > select) {
+  display: grid !important;
+  grid-template-rows: minmax(20px, auto) 24px auto minmax(18px, auto);
+  align-content: start;
+  gap: 6px;
+}
+html:root body #parameters .parameter-card label > :is(.parameter-unit, .parameter-symbol) {
+  grid-row: 2;
+}
+html:root body #parameters .parameter-card label > :is(input:not([type="checkbox"]), select) {
+  grid-row: 3;
+  margin: 0;
+}
+html:root body #parameters .parameter-card label > .resolved {
+  grid-row: 4;
+  font: 400 12px/1.5 var(--sans);
+}
+html:root body #parameters .parameter-card label > .label-with-unit {
+  grid-row: 1;
+}
+
+/* Formula selectors reserve the same rows as native parameter controls. */
+html:root body #parameters .parameter-card :is(.field-math-wrapper, .normalization-control) {
+  display: grid !important;
+  grid-template-rows: minmax(20px, auto) 24px auto minmax(18px, auto);
+  gap: 6px;
+  align-content: start;
+  margin: 0;
+}
+html:root
+  body
+  #parameters
+  .parameter-card
+  :is(.field-math-wrapper, .normalization-control)
+  > .parameter-label {
+  grid-row: 1;
+  margin: 0;
+  font: 400 13px/1.5 var(--sans);
+}
+html:root
+  body
+  #parameters
+  .parameter-card
+  :is(.field-math-wrapper, .normalization-control)
+  > .math-select {
+  grid-row: 3;
+  margin: 0;
+}
+html:root body #parameters .parameter-card .curvature-definition {
+  grid-row: 4;
+}
+
+#parameters .parameter-symbol > .parameter-unit {
+  margin-inline-start: 0.35em;
 }

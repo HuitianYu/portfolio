@@ -1,42 +1,10 @@
-/* Site navigation can be folded from every page, without restarting a Lab. */
-.site-header-toggle {
-  position: fixed;
-  top: 18px;
-  right: 12px;
-  z-index: 45;
-  width: 36px;
-  height: 32px;
-  display: grid;
-  place-items: center;
-  border: 1px solid var(--line);
-  border-radius: 6px;
-  background: var(--paper);
-  color: var(--teal);
-  padding: 0;
-}
 .header-inner {
   padding-right: 64px;
 }
-.site-nav-hidden .site-header {
-  display: none;
-}
 
-.lab-workspace #main {
-  height: calc(100dvh - var(--site-header-size, 90px));
-}
-.lab-workspace .lab-shell {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-}
 .lab-workspace .lab-toolbar {
   flex: none;
   padding-right: 24px;
-}
-.lab-workspace .lab-shell iframe {
-  flex: 1;
-  height: 0;
-  min-height: 0;
 }
 .carousel-arrows button {
   display: grid;
@@ -48,26 +16,13 @@
   background: linear-gradient(90deg, var(--pale), transparent 75%);
 }
 @media (max-width: 760px) {
-  .site-header-toggle {
-    top: 14px;
-    right: 10px;
-  }
   .header-inner {
     padding-right: 60px;
   }
   .mobile-nav-away .site-header {
     transform: translateY(-100%);
   }
-  .mobile-nav-away .site-header-toggle {
-    top: 6px;
-  }
-  .lab-workspace .site-header {
-    position: fixed;
-    width: 100%;
-  }
-  .lab-workspace #main {
-    margin-top: var(--site-header-size, 80px);
-  }
+
   .lab-toolbar {
     gap: 8px;
     flex-wrap: wrap;
@@ -118,15 +73,6 @@
   }
 }
 
-/* Navigation actions share the same vertical centre and hit area. */
-.site-header-toggle {
-  top: calc(var(--site-header-size, 86px) / 2 - 18px);
-  height: 36px;
-}
-.site-nav-hidden .site-header-toggle,
-.mobile-nav-away .site-header-toggle {
-  top: 6px;
-}
 .carousel-heading-actions > .text-link {
   display: inline-flex;
   align-items: center;
@@ -153,43 +99,17 @@
   margin-bottom: 0;
 }
 
-/* Navigation and Lab controls share one right-hand axis. */
-.lab-workspace .site-header-toggle {
-  right: calc(12px + var(--lab-scrollbar-size, 0px));
-}
 .lab-toolbar {
   position: relative;
 }
-.lab-workspace.site-nav-hidden::before {
-  content: "";
-  display: block;
-  height: 44px;
-  background: var(--paper);
-  border-bottom: 1px solid var(--line);
-}
+
 @media (max-width: 760px) {
   .lab-toolbar .lab-toolbar-brand {
-    padding-right: calc(48px + var(--lab-scrollbar-size, 0px));
+    padding-right: 48px;
   }
   .lab-toolbar .lab-toolbar-actions {
     padding-right: 0;
   }
-  .lab-workspace.site-nav-hidden::before {
-    display: none;
-  }
-}
-
-.site-nav-hidden .site-header-toggle {
-  width: 24px;
-  height: 24px;
-
-  right: 18px;
-}
-.lab-workspace.site-nav-hidden .site-header-toggle {
-  right: calc(18px + var(--lab-scrollbar-size, 0px));
-}
-.lab-workspace.site-nav-hidden::before {
-  display: none;
 }
 
 /* Workspace links wrap only when necessary, as intact actions. */
@@ -204,9 +124,6 @@
   }
   .lab-toolbar > .lab-toolbar-brand {
     padding-right: 0;
-  }
-  .lab-workspace.site-nav-hidden .lab-toolbar > .lab-toolbar-brand {
-    padding-right: 36px;
   }
 }
 
@@ -256,24 +173,8 @@
   .lab-resource-action > span {
     display: none;
   }
-  .site-nav-hidden .lab-toolbar {
-    padding-right: calc(48px + var(--lab-scrollbar-size, 0px));
-  }
 }
 
-/* A folded navigation always has a visible, recognisable recovery action. */
-.site-nav-hidden .site-header-toggle {
-  width: 36px;
-  height: 36px;
-  right: 12px;
-  top: 6px;
-  font-size: 16px;
-  background: var(--white);
-  border-color: var(--teal);
-}
-.lab-workspace.site-nav-hidden .site-header-toggle {
-  right: calc(12px + var(--lab-scrollbar-size, 0px));
-}
 @media (max-width: 760px) {
   .lab-toolbar {
     gap: 6px;
@@ -283,28 +184,9 @@
   }
 }
 
-.mobile-nav-away .site-header-toggle {
-  width: 36px;
-  height: 36px;
-  top: 6px;
-  background: var(--white);
-  border-color: var(--teal);
-  font-size: 16px;
-}
-
-.site-header-toggle span,
-.site-header-toggle svg {
-  display: block;
-}
-.site-header-toggle,
-.site-nav-hidden .site-header-toggle,
-.mobile-nav-away .site-header-toggle {
-  background: var(--paper);
-  border-color: var(--line);
-}
 @media (max-width: 760px) {
   .header-inner {
-    padding-right: calc(82px + var(--lab-scrollbar-size, 0px));
+    padding-right: 82px;
   }
   .menu-toggle {
     display: inline-flex;
@@ -323,53 +205,20 @@
     height: 32px;
     min-height: 32px;
   }
-
-  /* Scrolling back restores the whole navigation group; avoid two overlapping fold icons. */
-  .mobile-nav-away:not(.site-nav-hidden) .site-header-toggle {
-    opacity: 0;
-    pointer-events: none;
-  }
 }
 
-/* Website navigation and the Lab return/context row form one collapsible header. */
-.site-header-toggle {
-  top: var(--navigation-button-top, 20px);
-}
-.compact-header-label {
-  display: none;
-}
 .site-header .lab-toolbar {
   border-top: 1px solid var(--line);
   border-bottom: 0;
 }
-.site-nav-hidden .site-header {
-  display: block;
-  height: 36px;
-}
-.site-nav-hidden .site-header > :is(.header-inner, .lab-toolbar) {
+
+.lab-toolbar) {
   display: none;
 }
-.site-nav-hidden .site-header > .compact-header-label {
-  display: block;
-  height: 36px;
-  padding: 0 64px 0 16px;
-  font: 15px/36px var(--serif);
-  color: var(--muted);
-}
-.site-nav-hidden .site-header-toggle {
-  top: 2px;
-  width: 32px;
-  height: 32px;
-}
-.lab-workspace.site-nav-hidden .site-header-toggle {
-  right: calc(14px + var(--lab-scrollbar-size, 0px));
-}
+
 @media (max-width: 760px) {
   .site-header .lab-toolbar {
     padding-right: 12px;
-  }
-  .lab-workspace.site-nav-hidden #main {
-    margin-top: 36px;
   }
 }
 
@@ -377,26 +226,6 @@
   .site-header {
     transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
   }
-  .site-header-toggle {
-    transition: opacity 180ms ease;
-  }
-  .lab-workspace #main {
-    transition:
-      margin-top 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
-      height 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
-  }
-}
-
-/* The retained workspace tab row owns the switches for both upper levels. */
-.lab-workspace.workspace-toggle-ready > .site-header-toggle {
-  display: none;
-}
-.lab-workspace.site-nav-hidden .site-header {
-  display: none;
-  height: 0;
-}
-.lab-workspace.site-nav-hidden #main {
-  margin-top: 0;
 }
 
 /* No manual website fold control: reclaim its former reserved space. */
@@ -416,10 +245,6 @@
 
 /* Low-height Lab windows use the same automatic website-header behaviour as phones. */
 @media (max-height: 480px) and (orientation: landscape) {
-  .lab-workspace .site-header {
-    position: fixed;
-    width: 100%;
-  }
   .lab-workspace .header-inner {
     min-height: 48px;
     padding-block: 8px;
@@ -431,26 +256,13 @@
     min-height: 40px;
     padding-block: 4px;
   }
-  .lab-workspace #main {
-    margin-top: var(--site-header-size, 88px);
-    height: calc(100dvh - var(--site-header-size, 88px));
-  }
   .lab-workspace.mobile-nav-away .site-header {
     transform: translateY(-100%);
   }
-  .lab-workspace .site-header {
-    transition: transform 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
-  }
-  .lab-workspace #main {
-    transition:
-      margin-top 280ms cubic-bezier(0.22, 0.61, 0.36, 1),
-      height 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
-  }
 }
 @media (prefers-reduced-motion: reduce) {
-  .site-header,
-  .lab-workspace #main {
-    transition: none !important;
+  .site-header {
+    transition: none;
   }
 }
 
