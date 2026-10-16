@@ -294,7 +294,7 @@ function initializeResponsiveHeader() {
     if (!Number.isFinite(y)) return;
     const delta = y - previousY;
     previousY = y;
-    if (performance.now() < transitionUntil) {
+    if (performance.now() < Math.max(transitionUntil, window.labNavigationUntil || 0)) {
       travel = 0;
       return;
     }
@@ -302,10 +302,11 @@ function initializeResponsiveHeader() {
       return;
     if (document.querySelector(".menu-toggle")?.getAttribute("aria-expanded") === "true") return;
     travel = Math.sign(delta) === Math.sign(travel) ? travel + delta : delta;
-    if (y < 40 || travel < -20) {
+    const lab = document.body.classList.contains("lab-route");
+    if (y < (lab ? 4 : 40) || travel < -20) {
       revealNavigation(false);
       travel = 0;
-    } else if (y > 100 && travel > 32) {
+    } else if (y > (lab ? 8 : 100) && travel > (lab ? 8 : 32)) {
       revealNavigation(true);
       travel = 0;
     }

@@ -267,54 +267,87 @@ export async function checkLabRuntime(root) {
   const interfaceSource = await fs.readFile(new URL("static/js/lab-interface.js", root), "utf8");
   assert.ok(!interfaceSource.includes('addEventListener("wheel"'));
   assert.ok(!interfaceSource.includes('type: "lab:scroll"'));
-  let contentHeight = 1200,
-    frameTop = 132;
+  let contentHeight = 1200;
   const controls = { offsetHeight: 100, style: {} };
   const body = {
     dataset: { section: "overview" },
+    ownerDocument: {},
     getBoundingClientRect: () => ({ height: contentHeight }),
     querySelector: () => controls,
   };
+  const listeners = {},
+    resizeCallbacks = [],
+    frames = [];
+  let changedSection;
   const frame = {
     style: {},
+    previousElementSibling: { offsetHeight: 100 },
     contentDocument: { body, readyState: "complete" },
     addEventListener() {},
-    getBoundingClientRect: () => ({ top: frameTop }),
+    getBoundingClientRect: () => ({ top: 180 - sizing.scrollY }),
   };
-  const header = { getBoundingClientRect: () => ({ bottom: 80 }), addEventListener() {} };
-  const listeners = {};
+  const header = { offsetHeight: 80, getBoundingClientRect: () => ({ bottom: 80 }) };
+  const flushFrame = () => frames.splice(0).forEach((callback) => callback());
   const sizing = {
-    document: { querySelector: (selector) => (selector === "#lab-frame" ? frame : header) },
-    window: { UIControls: { frameTask: (callback) => ({ schedule: callback }) } },
+    scrollY: 0,
+    performance: { now: () => 0 },
+    requestAnimationFrame: (callback) => {
+      frames.push(callback);
+      return 1;
+    },
+    document: {
+      documentElement: { style: { setProperty() {} } },
+      querySelector: (selector) => (selector === "#lab-frame" ? frame : header),
+    },
+    window: {
+      UIControls: { frameTask: (callback) => ({ schedule: callback }) },
+      LabNativeToolbar: () => () => {},
+      scrollTo: ({ top }) => {
+        sizing.scrollY = top;
+      },
+    },
     MutationObserver: class {
-      constructor() {}
+      constructor(callback) {
+        changedSection = callback;
+      }
       observe() {}
       disconnect() {}
     },
     ResizeObserver: class {
-      constructor() {}
-      observe() {}
+      constructor(callback) {
+        this.callback = callback;
+      }
+      observe() {
+        resizeCallbacks.push(this.callback);
+      }
       disconnect() {}
     },
-    addEventListener: (event, callback) => (listeners[event] = callback),
+    addEventListener: (event, callback) => {
+      listeners[event] = callback;
+    },
   };
-  vm.runInNewContext(await fs.readFile(new URL("static/js/lab-host.js", root), "utf8"), sizing);
+  const hostSource = await fs.readFile(new URL("static/js/lab-host.js", root), "utf8");
+  vm.runInNewContext(hostSource, sizing);
   assert.equal(frame.style.height, "1200px");
   contentHeight = 420;
-  listeners.resize();
-  assert.equal(frame.style.height, "420px", "Shorter tabs shrink natural content height");
-  frameTop = -100;
+  resizeCallbacks.forEach((callback) => callback());
+  assert.equal(frame.style.height, "420px", "Shorter panels shrink natural height");
+  sizing.scrollY = 380;
   listeners.scroll();
   assert.equal(
     controls.style.transform,
-    "translateY(180px)",
-    "Lab controls pin below the shared site header",
+    undefined,
+    "Native sticky never positions controls from scroll handlers",
   );
-  frameTop = -1000;
-  listeners.scroll();
-  assert.equal(
-    controls.style.transform,
-    "translateY(320px)",
-    "Pinned controls stop at the Lab boundary before the footer",
-  );
+  body.dataset.section = "parameters";
+  changedSection();
+  assert.equal(sizing.scrollY, 0, "New sections start at their content origin before paint");
+  flushFrame();
+  flushFrame();
+  body.dataset.section = "overview";
+  changedSection();
+  assert.equal(sizing.scrollY, 380, "Revisited sections restore their previous depth before paint");
+  flushFrame();
+  flushFrame();
+  assert.ok(!hostSource.includes("translate3d"), "Legacy transform pinning is removed");
 }

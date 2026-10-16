@@ -544,3 +544,26 @@ body > .site-footer {
   width: 100%;
   height: 100%;
 }
+
+.lab-native-toolbar {
+  position: sticky;
+  top: var(--site-header-height, 132px);
+  z-index: 25;
+  background: var(--paper);
+  transition: top 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.lab-native-toolbar > iframe {
+  display: block;
+  position: absolute;
+  width: 100%;
+  border: 0;
+  inset: 0 auto auto 0;
+}
+.mobile-nav-away .lab-native-toolbar {
+  top: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-native-toolbar {
+    transition: none;
+  }
+}

@@ -54,6 +54,7 @@
     <script defer src="{{ partial "asset-url.html" "js/ui-controls.js" }}"></script>
     <script defer src="{{ partial "asset-url.html" "js/site.js" }}"></script>
     {{ if and .IsPage (eq .Section "labs") }}
+      <script defer src="{{ partial "asset-url.html" "js/lab-native-toolbar.js" }}"></script>
       <script defer src="{{ partial "asset-url.html" "js/lab-host.js" }}"></script>
     {{ end }}
     {{ block "head" . }}{{ end }}

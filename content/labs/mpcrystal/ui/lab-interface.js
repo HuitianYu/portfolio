@@ -446,6 +446,48 @@
         requestAnimationFrame(() => parameterPreviews.forEach((update) => update()));
     });
   }
+  // Each standalone section remembers its own position for the current workspace session.
+  if (window.parent === window) {
+    document.documentElement.style.overflowAnchor = "none";
+    let activeSection = document.body.dataset.section;
+    const positions = new Map();
+    let restoring = false;
+    addEventListener(
+      "scroll",
+      () => {
+        if (!restoring && activeSection === document.body.dataset.section)
+          positions.set(activeSection, scrollY);
+      },
+      { passive: true },
+    );
+    document.addEventListener(
+      "click",
+      (event) => {
+        if (!restoring && event.target.closest?.(".fixed-workspace-header [data-section]"))
+          positions.set(activeSection, scrollY);
+      },
+      true,
+    );
+    new MutationObserver(() => {
+      if (activeSection === document.body.dataset.section) return;
+      activeSection = document.body.dataset.section;
+      restoring = true;
+      const destination = activeSection;
+      const restore = () => {
+        if (destination !== document.body.dataset.section) return;
+        // Force layout of the new panel before restoring, without painting its initial position.
+        document.documentElement.getBoundingClientRect();
+        window.scrollTo({ top: positions.get(destination) || 0, behavior: "instant" });
+      };
+      restore();
+      requestAnimationFrame(() => {
+        restore();
+        requestAnimationFrame(() => {
+          if (destination === document.body.dataset.section) restoring = false;
+        });
+      });
+    }).observe(document.body, { attributes: true, attributeFilter: ["data-section"] });
+  }
   initializeCompactControls();
   initializeToolbarAlignment();
   initializePointerBehavior();

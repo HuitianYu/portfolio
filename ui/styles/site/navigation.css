@@ -212,10 +212,6 @@
   border-bottom: 0;
 }
 
-.lab-toolbar) {
-  display: none;
-}
-
 @media (max-width: 760px) {
   .site-header .lab-toolbar {
     padding-right: 12px;
@@ -401,4 +397,21 @@
 .lab-toolbar-actions :is(.lab-icon-action, .lab-resource-action):hover {
   background: var(--pale);
   border-color: var(--teal);
+}
+
+/* Collapsing the site header moves the whole Lab, including its toolbar and content. */
+@media (max-width: 760px), (max-height: 480px) and (orientation: landscape) {
+  .lab-route > #main {
+    margin-top: 0;
+    overflow-anchor: none;
+    transition: margin-top 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .lab-route.mobile-nav-away > #main {
+    margin-top: calc(-1 * var(--site-header-height, 132px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-route > #main {
+    transition: none;
+  }
 }

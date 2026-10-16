@@ -120,3 +120,17 @@ html.embedded-workspace body .fixed-workspace-header {
   position: relative;
   top: auto;
 }
+
+/* The host updates pinned controls with the outer header animation. */
+html.embedded-workspace body .fixed-workspace-header {
+  will-change: transform;
+  transition: none;
+}
+
+html.embedded-workspace body .fixed-workspace-header.native-toolbar-source {
+  position: absolute !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none;
+  width: 100%;
+}

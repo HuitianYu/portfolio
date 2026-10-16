@@ -87,7 +87,7 @@ Execution commands never switch the selected Lab section. A first media Play may
 
 Section navigation never starts media loading. StableGSensor loads recordings through Play or an explicit case/method selection; first Display remains ready without a transient Cancel state.
 
-The shared Lab host observes natural body height and pins the Lab control row within the content boundary. The website owns the only page scroller and footer. No wheel/touch interception, nested viewport height, or scroll relay is allowed. Standalone Labs retain their independent document layout.
+The shared Lab host observes natural body height. lab-native-toolbar.js presents the existing controls in a native sticky host; original controls remain the single source of scientific state. There is no scroll-time positioning loop. The host and standalone interface each remember section positions for the current document, restore before paint, and reset on reload. The website owns the only page scroller and footer. No wheel/touch interception, nested viewport height, or scroll relay is allowed. Standalone Labs retain their independent document layout.
 
 Site content has two levels: category overviews and detail pages. Both share baseof.html; detail pages add the context/return row. Lab controls and internal sections are local content navigation. Shared assets use Hugo resource fingerprints to invalidate preview/deployment caches. Search and Contact share one centered homepage code using the crystal silhouette and HYU; the footer remains text links only.
 

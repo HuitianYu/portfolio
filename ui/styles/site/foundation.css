@@ -720,9 +720,6 @@ img {
 .news-item h2 {
   margin-top: 10px;
 }
-.lab-route .site-header {
-  position: relative;
-}
 .lab-toolbar {
   padding: 10px 25px;
   display: flex;

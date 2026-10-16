@@ -746,9 +746,6 @@ img {
 .news-item h2 {
   margin-top: 10px;
 }
-.lab-route .site-header {
-  position: relative;
-}
 .lab-toolbar {
   padding: 10px 25px;
   display: flex;
@@ -2334,6 +2331,29 @@ body > .site-footer {
   height: 100%;
 }
 
+.lab-native-toolbar {
+  position: sticky;
+  top: var(--site-header-height, 132px);
+  z-index: 25;
+  background: var(--paper);
+  transition: top 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+}
+.lab-native-toolbar > iframe {
+  display: block;
+  position: absolute;
+  width: 100%;
+  border: 0;
+  inset: 0 auto auto 0;
+}
+.mobile-nav-away .lab-native-toolbar {
+  top: 0;
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-native-toolbar {
+    transition: none;
+  }
+}
+
 /* Source: ui/styles/site/navigation.css */
 .header-inner {
   padding-right: 64px;
@@ -2549,10 +2569,6 @@ body > .site-footer {
   border-bottom: 0;
 }
 
-.lab-toolbar) {
-  display: none;
-}
-
 @media (max-width: 760px) {
   .site-header .lab-toolbar {
     padding-right: 12px;
@@ -2738,6 +2754,23 @@ body > .site-footer {
 .lab-toolbar-actions :is(.lab-icon-action, .lab-resource-action):hover {
   background: var(--pale);
   border-color: var(--teal);
+}
+
+/* Collapsing the site header moves the whole Lab, including its toolbar and content. */
+@media (max-width: 760px), (max-height: 480px) and (orientation: landscape) {
+  .lab-route > #main {
+    margin-top: 0;
+    overflow-anchor: none;
+    transition: margin-top 280ms cubic-bezier(0.22, 0.61, 0.36, 1);
+  }
+  .lab-route.mobile-nav-away > #main {
+    margin-top: calc(-1 * var(--site-header-height, 132px));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lab-route > #main {
+    transition: none;
+  }
 }
 
 /* Source: ui/styles/site/context.css */
