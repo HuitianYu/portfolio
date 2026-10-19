@@ -206,3 +206,22 @@ if (labs.includes("orbitalflatness")) {
 console.log(
   `${files.length} scripts passed syntax checks; checks completed for present Labs: ${labs.join(", ") || "none"}.`,
 );
+
+// Embedded paper/DOI links require user-initiated top navigation and independent popup documents.
+{
+  const template = await fs.readFile(
+    new URL("../layouts/labs/single.html", import.meta.url),
+    "utf8",
+  );
+  const permissions = template.match(/sandbox="([^"]+)"/)[1].split(/\s+/);
+  for (const permission of [
+    "allow-top-navigation-by-user-activation",
+    "allow-popups",
+    "allow-popups-to-escape-sandbox",
+  ])
+    assert.ok(permissions.includes(permission), `Lab link navigation requires ${permission}`);
+  assert.ok(
+    !permissions.includes("allow-top-navigation"),
+    "Top navigation must require user activation",
+  );
+}

@@ -188,8 +188,15 @@ a {
   font: 12px/1.8 var(--sans);
 }
 .lab-reference a {
+  color: var(--teal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
   text-underline-offset: 4px;
 }
+.lab-reference a:hover {
+  color: var(--ink);
+}
+
 @media (max-width: 650px) {
   .fixed-workspace-header > header,
   .fixed-workspace-header > .topbar {

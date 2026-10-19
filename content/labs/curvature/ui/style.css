@@ -1080,11 +1080,6 @@ input[readonly] {
 .lab-reference p {
   font-size: 13px;
 }
-.lab-reference a {
-  color: var(--teal);
-  text-decoration: underline;
-  text-underline-offset: 3px;
-}
 .brand img {
   height: 36px;
   width: 36px;
