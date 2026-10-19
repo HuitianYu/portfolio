@@ -50,95 +50,85 @@ export async function checkCurvatureCamera(root) {
     context.animate(t);
     await new Promise((resolve) => setImmediate(resolve));
   };
-  await tick(100);
-  for (const [index, eye] of [
-    { x: 0.4, y: 0.3, z: 0.2 },
-    { x: 4, y: 3, z: 2 },
-    { x: 0.04, y: 0.03, z: -0.2 },
-  ].entries()) {
-    camera.eye = { ...eye };
-    const targetBefore = { ...camera.center };
-    await tick(200 + index * 100);
-    assert.ok(
-      Math.abs(
-        Math.hypot(camera.eye.x - camera.center.x, camera.eye.y - camera.center.y) -
-          Math.hypot(eye.x - targetBefore.x, eye.y - targetBefore.y),
-      ) < 1e-10,
-      "Rotation must preserve zoom distance",
-    );
-    assert.equal(camera.eye.z, eye.z, "Rotation must preserve camera height");
-  }
-  assert.ok(Math.abs(Math.hypot(camera.center.x, camera.center.y) - Math.hypot(0.1, 0.2)) < 1e-10);
-  assert.deepEqual(structuredClone(camera.up), { x: 0, y: 0, z: 1 });
-  // The serialized snapshot is deliberately stale: user zoom/pan/tilt only
-  // changed the live scene. Reading layout.camera must fail this regression.
-  camera = {
-    eye: { x: 0.8, y: -0.2, z: 0.6 },
-    center: { x: 0.3, y: -0.4, z: 0.1 },
-    up: { x: 0.2, y: 0.4, z: 0.8 },
-    projection: { type: "perspective" },
+  const baseline = {
+    eye: { x: 1.5, y: 1.5, z: 1.1 },
+    center: { x: 0, y: 0, z: 0 },
+    up: { x: 0, y: 0, z: 1 },
   };
-  const before = structuredClone(camera);
-  const view = (c) => [c.eye.x - c.center.x, c.eye.y - c.center.y, c.eye.z - c.center.z];
+  const near = (a, b) => a.forEach((n, i) => assert.ok(Math.abs(n - b[i]) < 1e-9));
+  near(context.worldRotationAxis(baseline), [0, 0, 1]);
+  const tilted = {
+    eye: { x: 2, y: 0.7, z: -0.5 },
+    center: { x: 0, y: 0, z: 0 },
+    up: { x: 0.1, y: 0.2, z: 1 },
+  };
+  const axis = context.worldRotationAxis(tilted);
+  assert.ok(
+    Math.hypot(axis[0], axis[1]) > 0.1,
+    "After manual tilt, world Z must differ from the object's original Z",
+  );
   const dot = (a, b) => a.reduce((sum, n, i) => sum + n * b[i], 0);
-  await tick(500);
+  const axisInView = (c) => context.cameraFrame(c).map((b) => dot(b, context.worldRotationAxis(c)));
+  const distance = (c) =>
+    Math.hypot(c.eye.x - c.center.x, c.eye.y - c.center.y, c.eye.z - c.center.z);
+  camera = structuredClone(tilted);
+  camera.center = { x: 0.3, y: -0.2, z: 0.1 };
+  const before = structuredClone(camera);
+  const frameBefore = axisInView(camera);
+  await tick(100);
+  for (let i = 0; i < 15; i++) {
+    await tick(200 + i * 100);
+    near(axisInView(camera), frameBefore);
+    assert.ok(
+      Math.abs(distance(camera) - distance(before)) < 1e-9,
+      "Rotation must preserve live zoom",
+    );
+    assert.deepEqual(
+      structuredClone(camera.center),
+      before.center,
+      "Pan must not co-rotate and cancel the orbital motion",
+    );
+  }
+  // Project the original crystal centre to verify pan actually produces an orbit.
+  const project = (c) => {
+    const frame = context.cameraFrame(c),
+      origin = [-c.center.x, -c.center.y, -c.center.z];
+    return [dot(frame[0], origin), dot(frame[1], origin)];
+  };
   assert.ok(
-    Math.abs(Math.hypot(...view(camera)) - Math.hypot(...view(before))) < 1e-10,
-    "Live zoom distance must survive stale layout state",
+    Math.hypot(...project(camera).map((n, i) => n - project(before)[i])) > 0.01,
+    "Panned crystal must move around the fixed pivot",
   );
+  const fullTurn = context.rotateCamera(before, Math.PI * 2);
+  near(Object.values(fullTurn.eye), Object.values(before.eye));
+  near(Object.values(fullTurn.up), Object.values(before.up));
+  camera.eye = { x: 4, y: 2, z: 1 };
+  const zoom = distance(camera);
+  await tick(1800);
   assert.ok(
-    Math.abs(
-      Math.hypot(...Object.values(camera.center)) - Math.hypot(...Object.values(before.center)),
-    ) < 1e-10,
+    Math.abs(distance(camera) - zoom) < 1e-9,
+    "A wheel zoom must survive the next rotation frame",
   );
-  assert.deepEqual(structuredClone(camera.up), before.up, "Displayed vertical must remain fixed");
-  assert.ok(
-    Math.abs(
-      dot(view(camera), Object.values(camera.up)) - dot(view(before), Object.values(before.up)),
-    ) < 1e-10,
-    "Camera tilt must remain consistent",
-  );
-  assert.deepEqual(
-    structuredClone(camera.center),
-    before.center,
-    "Pan translation must not co-rotate with the viewing frame and cancel orbital motion",
-  );
-  assert.deepEqual(camera.projection, before.projection);
+  const count = updates;
+  context.rotationPointers.add(1);
+  await tick(1900);
+  assert.equal(updates, count);
+  context.rotationPointers.clear();
+  context.rotationInteractionUntil = 2200;
+  await tick(2000);
+  assert.equal(updates, count);
+  await tick(2300);
+  assert.equal(updates, count + 1);
+  context.rotating = false;
+  await tick(2400);
+  assert.equal(updates, count + 1);
   assert.deepEqual(
     plot._fullLayout.scene.camera,
     snapshot,
-    "Test must retain the stale layout snapshot",
+    "Regression must exercise a stale serialized camera",
   );
-  const quarterTurn = context.rotateCamera(
-    { eye: { x: 2, y: 0, z: 3 }, center: { x: 1, y: 0, z: 1 }, up: { x: 1, y: 0, z: 0 } },
-    Math.PI / 2,
-  );
-  for (const [key, expected] of Object.entries({
-    eye: [2, -2, 1],
-    center: [1, 0, 1],
-    up: [1, 0, 0],
-  })) {
-    Object.values(quarterTurn[key]).forEach((value, index) =>
-      assert.ok(
-        Math.abs(value - expected[index]) < 1e-10,
-        "World axis must not follow a translated target or tilted camera",
-      ),
-    );
-  }
-  let count = updates;
-  context.rotationPointers.add(1);
-  await tick(600);
-  assert.equal(updates, count, "Dragging must pause automatic rotation");
-  context.rotationPointers.clear();
-  context.rotationInteractionUntil = 900;
-  await tick(800);
-  assert.equal(updates, count, "Zoom gesture must pause automatic rotation");
-  await tick(1000);
-  assert.equal(updates, count + 1, "Rotation must resume after interaction");
-  context.rotating = false;
-  await tick(1100);
-  assert.equal(updates, count + 1, "Pause must stop camera updates");
+  assert.ok(!source.includes("Plotly.restyle("), "Rotation must not rebuild mesh coordinates");
   console.log(
-    "Curvature camera: fixed displayed vertical, live zoom, pan, tilt and gesture pause passed.",
+    "Curvature camera-only rotation: independent fixed axis, pan orbit, live zoom and gesture pause passed.",
   );
 }

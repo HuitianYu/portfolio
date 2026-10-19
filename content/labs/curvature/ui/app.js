@@ -1082,21 +1082,56 @@ function readCamera() {
   // Layout camera values may lag behind wheel, drag and touch interactions.
   return $("plot")._fullLayout?.scene?._scene?.getCamera();
 }
-function rotateCamera(camera, angle) {
-  const cos = Math.cos(angle),
-    sin = Math.sin(angle);
+function cameraFrame(camera) {
+  const normalize = (v) => {
+    const length = Math.hypot(...v) || 1;
+    return v.map((n) => n / length);
+  };
+  const cross = (a, b) => [
+    a[1] * b[2] - a[2] * b[1],
+    a[2] * b[0] - a[0] * b[2],
+    a[0] * b[1] - a[1] * b[0],
+  ];
+  const forward = normalize([
+    camera.eye.x - camera.center.x,
+    camera.eye.y - camera.center.y,
+    camera.eye.z - camera.center.z,
+  ]);
   const up = camera.up || { x: 0, y: 0, z: 1 };
-  const length = Math.hypot(up.x, up.y, up.z) || 1;
-  const axis = { x: up.x / length, y: up.y / length, z: up.z / length };
-  // The displayed vertical remains fixed after a manual orbit. Rotating around
-  // the crystal's original Z would make its own axis follow the automatic spin.
+  const right = normalize(cross([up.x, up.y, up.z], forward));
+  return [right, normalize(cross(forward, right)), forward];
+}
+function worldRotationAxis(camera) {
+  // Freeze world Z in the initial view frame. A manual orbit changes the
+  // object's pose relative to that frame, rather than redefining world Z as
+  // the object's original axis. This is an inverse rigid camera transform;
+  // mesh coordinates, topology and scientific results are never updated.
+  const baseline = cameraFrame({
+    eye: { x: 1.5, y: 1.5, z: 1.1 },
+    center: { x: 0, y: 0, z: 0 },
+    up: { x: 0, y: 0, z: 1 },
+  });
+  const frame = cameraFrame(camera);
+  return [0, 1, 2].map((i) => frame.reduce((sum, basis, j) => sum + basis[i] * baseline[j][2], 0));
+}
+function rotateCamera(camera, angle) {
+  const axis = worldRotationAxis(camera),
+    cos = Math.cos(angle),
+    sin = Math.sin(angle);
   const rotate = (v) => {
-    const dot = axis.x * v.x + axis.y * v.y + axis.z * v.z;
-    return {
-      x: v.x * cos + (axis.y * v.z - axis.z * v.y) * sin + axis.x * dot * (1 - cos),
-      y: v.y * cos + (axis.z * v.x - axis.x * v.z) * sin + axis.y * dot * (1 - cos),
-      z: v.z * cos + (axis.x * v.y - axis.y * v.x) * sin + axis.z * dot * (1 - cos),
-    };
+    const p = [v.x, v.y, v.z];
+    const dot = p.reduce((sum, n, i) => sum + n * axis[i], 0);
+    const cross = [
+      axis[1] * p[2] - axis[2] * p[1],
+      axis[2] * p[0] - axis[0] * p[2],
+      axis[0] * p[1] - axis[1] * p[0],
+    ];
+    return Object.fromEntries(
+      ["x", "y", "z"].map((key, i) => [
+        key,
+        p[i] * cos + cross[i] * sin + axis[i] * dot * (1 - cos),
+      ]),
+    );
   };
   const offset = rotate({
     x: camera.eye.x - camera.center.x,
@@ -1111,7 +1146,7 @@ function rotateCamera(camera, angle) {
       z: camera.center.z + offset.z,
     },
     center: { ...camera.center },
-    up: { ...up },
+    up: rotate(camera.up || { x: 0, y: 0, z: 1 }),
   };
 }
 function animate(t) {
