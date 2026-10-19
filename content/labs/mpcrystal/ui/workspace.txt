@@ -34,7 +34,7 @@
             ["\\(", "\\)"],
           ],
         },
-        svg: { fontCache: "local" },
+        svg: { fontCache: "none" },
         options: { enableMenu: false },
       };
     </script>

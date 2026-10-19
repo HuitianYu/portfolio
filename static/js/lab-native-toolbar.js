@@ -15,15 +15,25 @@
       '<!doctype html><html class="embedded-workspace"><head></head><body class="embedded-lab"></body></html>',
     );
     doc.close();
-    const base = doc.createElement("base");
-    base.href = originalDocument.baseURI;
-    doc.head.append(base);
-    for (const style of originalDocument.querySelectorAll('head style,head link[rel="stylesheet"]'))
-      doc.head.append(doc.importNode(style, true));
+    // Keep fragment-only SVG glyph references inside this document. A base URL
+    // pointing at the source workspace sends MathJax <use> references elsewhere.
+    for (const style of originalDocument.querySelectorAll(
+      'head style,head link[rel="stylesheet"]',
+    )) {
+      const clonedStyle = doc.importNode(style, true);
+      if (style.tagName === "LINK") clonedStyle.href = style.href;
+      doc.head.append(clonedStyle);
+    }
     const style = doc.createElement("style");
     style.textContent =
-      "html,body{margin:0!important;min-height:0!important;height:auto!important;overflow:hidden!important}.fixed-workspace-header{position:relative!important;top:0!important;transform:none!important;visibility:visible!important}";
+      "html.embedded-workspace,html.embedded-workspace body{margin:0!important;min-height:0!important;height:100%!important;overflow:visible!important;background:transparent!important}.fixed-workspace-header{position:relative!important;top:0!important;transform:none!important;visibility:visible!important}";
     doc.head.append(style);
+    // Runtime theme tokens live on the source root, outside the cloned controls.
+    const theme = originalDocument.defaultView.getComputedStyle(originalDocument.documentElement);
+    for (const property of theme) {
+      if (property.startsWith("--"))
+        doc.documentElement.style.setProperty(property, theme.getPropertyValue(property));
+    }
     const originals = new WeakMap();
     const copies = new WeakMap();
     function copy(node) {
@@ -72,9 +82,19 @@
       if (!height) return;
       host.style.height = height + "px";
       let extent = height;
-      for (const panel of controls.querySelectorAll(".module-popover,.toolbar-options[open]")) {
-        if (panel.getClientRects().length && getComputedStyle(panel).visibility !== "hidden")
-          extent = Math.max(extent, panel.getBoundingClientRect().bottom);
+      const room = Math.max(
+        height,
+        window.innerHeight - Math.max(0, host.getBoundingClientRect().top),
+      );
+      for (const panel of controls.querySelectorAll(
+        ".module-popover,.export-options-list,.math-menu,.toolbar-options[open] > :not(summary)",
+      )) {
+        if (!panel.getClientRects().length || getComputedStyle(panel).visibility === "hidden")
+          continue;
+        const top = panel.getBoundingClientRect().top;
+        panel.style.maxHeight = Math.max(80, room - top - 8) + "px";
+        panel.style.overflowY = "auto";
+        extent = Math.max(extent, panel.getBoundingClientRect().bottom);
       }
       view.style.height = Math.ceil(extent + 2) + "px";
     }
@@ -99,6 +119,13 @@
         update.schedule();
       });
     }
+    doc.addEventListener("pointerdown", (event) => {
+      if (event.target.closest(".fixed-workspace-header")) return;
+      originalDocument.body.dispatchEvent(
+        new originalDocument.defaultView.PointerEvent("pointerdown", { bubbles: true }),
+      );
+      update.schedule();
+    });
     doc.addEventListener("click", (event) => {
       const clicked = event.target.closest('button,summary,a,input[type="checkbox"]');
       if (!clicked) return;

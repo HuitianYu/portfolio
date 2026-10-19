@@ -673,3 +673,8 @@ button[data-ui-action].stop-action {
 [data-math-fallback="true"] {
   font-family: var(--serif);
 }
+
+/* Native mobile button text follows each control's explicit state colour. */
+button {
+  -webkit-text-fill-color: currentColor;
+}

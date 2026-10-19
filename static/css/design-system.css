@@ -700,6 +700,11 @@ button[data-ui-action].stop-action {
   font-family: var(--serif);
 }
 
+/* Native mobile button text follows each control's explicit state colour. */
+button {
+  -webkit-text-fill-color: currentColor;
+}
+
 /* Source: ui/styles/labs/workspace.css */
 /* Working views favour the data; Overview retains the editorial introduction. */
 .workspace-introduction {
@@ -1850,6 +1855,13 @@ body > .lab-header-toggle {
   display: inline-flex;
 }
 .controller-mode-switch button {
+  -webkit-appearance: none;
+  appearance: none;
+  -webkit-text-fill-color: currentColor;
+  font: inherit;
+  color: var(--ink);
+  background: var(--paper);
+  border: 1px solid var(--line);
   height: var(--ui-control-standard);
   min-width: 64px;
   border-radius: 0;
@@ -1861,7 +1873,7 @@ body > .lab-header-toggle {
   border-radius: 0 6px 6px 0;
   margin-left: -1px;
 }
-.controller-mode-switch button.active {
+.controller-mode-switch button:is(.active, [aria-pressed="true"]) {
   color: white;
   background: var(--accent);
 }

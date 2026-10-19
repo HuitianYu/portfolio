@@ -88,16 +88,20 @@ export async function checkCurvatureCamera(root) {
   );
   assert.ok(
     Math.abs(
-      Math.hypot(camera.center.x, camera.center.y) - Math.hypot(before.center.x, before.center.y),
+      Math.hypot(...Object.values(camera.center)) - Math.hypot(...Object.values(before.center)),
     ) < 1e-10,
-    "Pan must preserve its distance from the fixed world axis",
   );
-  assert.equal(camera.center.z, before.center.z);
+  assert.deepEqual(structuredClone(camera.up), before.up, "Displayed vertical must remain fixed");
   assert.ok(
     Math.abs(
       dot(view(camera), Object.values(camera.up)) - dot(view(before), Object.values(before.up)),
     ) < 1e-10,
     "Camera tilt must remain consistent",
+  );
+  assert.deepEqual(
+    structuredClone(camera.center),
+    before.center,
+    "Pan translation must not co-rotate with the viewing frame and cancel orbital motion",
   );
   assert.deepEqual(camera.projection, before.projection);
   assert.deepEqual(
@@ -110,9 +114,9 @@ export async function checkCurvatureCamera(root) {
     Math.PI / 2,
   );
   for (const [key, expected] of Object.entries({
-    eye: [0, 2, 3],
-    center: [0, 1, 1],
-    up: [0, 1, 0],
+    eye: [2, -2, 1],
+    center: [1, 0, 1],
+    up: [1, 0, 0],
   })) {
     Object.values(quarterTurn[key]).forEach((value, index) =>
       assert.ok(
@@ -135,6 +139,6 @@ export async function checkCurvatureCamera(root) {
   await tick(1100);
   assert.equal(updates, count + 1, "Pause must stop camera updates");
   console.log(
-    "Curvature camera: fixed world origin/Z axis, live zoom, pan, tilt and gesture pause passed.",
+    "Curvature camera: fixed displayed vertical, live zoom, pan, tilt and gesture pause passed.",
   );
 }

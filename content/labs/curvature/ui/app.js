@@ -1085,14 +1085,33 @@ function readCamera() {
 function rotateCamera(camera, angle) {
   const cos = Math.cos(angle),
     sin = Math.sin(angle);
-  const rotate = (v) => ({ x: v.x * cos - v.y * sin, y: v.x * sin + v.y * cos, z: v.z });
-  // Rotate the whole camera frame around the immutable world Z axis through
-  // (0, 0, 0). Neither a panned target nor the camera's up vector defines it.
+  const up = camera.up || { x: 0, y: 0, z: 1 };
+  const length = Math.hypot(up.x, up.y, up.z) || 1;
+  const axis = { x: up.x / length, y: up.y / length, z: up.z / length };
+  // The displayed vertical remains fixed after a manual orbit. Rotating around
+  // the crystal's original Z would make its own axis follow the automatic spin.
+  const rotate = (v) => {
+    const dot = axis.x * v.x + axis.y * v.y + axis.z * v.z;
+    return {
+      x: v.x * cos + (axis.y * v.z - axis.z * v.y) * sin + axis.x * dot * (1 - cos),
+      y: v.y * cos + (axis.z * v.x - axis.x * v.z) * sin + axis.y * dot * (1 - cos),
+      z: v.z * cos + (axis.x * v.y - axis.y * v.x) * sin + axis.z * dot * (1 - cos),
+    };
+  };
+  const offset = rotate({
+    x: camera.eye.x - camera.center.x,
+    y: camera.eye.y - camera.center.y,
+    z: camera.eye.z - camera.center.z,
+  });
   return {
     ...camera,
-    eye: rotate(camera.eye),
-    center: rotate(camera.center),
-    up: rotate(camera.up),
+    eye: {
+      x: camera.center.x + offset.x,
+      y: camera.center.y + offset.y,
+      z: camera.center.z + offset.z,
+    },
+    center: { ...camera.center },
+    up: { ...up },
   };
 }
 function animate(t) {
